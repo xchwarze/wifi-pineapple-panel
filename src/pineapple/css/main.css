@@ -1,5 +1,5 @@
 body {
-    background-color: #fff;
+    background-color: #f8f8f8;
 }
 
 .module-table > * > tr:nth-child(even) {
@@ -142,10 +142,12 @@ body {
         width: calc(100% - 50px);
         margin-left: 50px;
         padding: 15px 30px;
+        border-left: 1px solid #e7e7e7;
     }
 
     .sidebar{
         width: 200px;
+        height: 100%;
         margin-left: -150px;
         float: left;
         z-index: 99;
