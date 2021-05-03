@@ -64,12 +64,12 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        Scan Results
+                        Scan Results 
                         <span class="pull-right">
-                        <button type="button" class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getScans();">
-                            Refresh
-                        </button>
-                    </span>
+                            <button type="button" class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getScans();">
+                                Refresh
+                            </button>
+                        </span>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -105,6 +105,9 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         Scan Results
+                        <span ng-show="accessPoints.length">
+                            ({{ accessPoints.length }})
+                        </span>
                         <span class="dropdown" ng-show="accessPoints.length || outOfRangeClients.length || unassociatedClients.length">
                             <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="reconDropdown"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="running && !paused">
@@ -185,7 +188,12 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Out of Range Clients</h3>
+                    <h3 class="panel-title">
+                        Out of Range Clients
+                        <span ng-show="outOfRangeClients.length">
+                            ({{ outOfRangeClients.length }})
+                        </span>
+                    </h3>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
@@ -219,7 +227,12 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Unassociated Clients</h3>
+                    <h3 class="panel-title">
+                        Unassociated Clients
+                        <span ng-show="unassociatedClients.length">
+                            ({{ unassociatedClients.length }})
+                        </span>
+                    </h3>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
