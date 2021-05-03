@@ -1,0 +1,11 @@
+{
+    "author": "Hak5",
+    "description": "Download new community modules, and system module updates.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Modules",
+    "version": "1.2"
+}

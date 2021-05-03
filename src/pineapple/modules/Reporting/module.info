@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Generate reports at specified intervals.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Reporting",
+    "version": "1.1",
+    "index": 9
+}

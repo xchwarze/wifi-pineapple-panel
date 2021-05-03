@@ -1,0 +1,53 @@
+<div class="row" ng-controller="ClientsController">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Clients <button class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getClientData()">Refresh</button></h3>
+            </div>
+            <div class="table-responsive table-dropdown" ng-show="clients.length">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>MAC Address</th>
+                        <th>IP Address</th>
+                        <th>SSID</th>
+                        <th>Hostname</th>
+                        <th>Kick Client</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="client in clients">
+                        <td>
+                            <hook-button hook="mac" content="client['mac'].toUpperCase()" probes="true" client="true"></hook-button>
+                            <span class="autoselect uppercase">{{ client['mac'] }}</span>
+                        </td>
+                        <td>
+                            <span ng-class="client['ip'] === undefined ? 'text-info' : 'autoselect'">
+                                {{ client['ip'] == null ? "No IP" : client['ip'] }}
+                            </span>
+                        </td>
+                        <td>
+                            <hook-button ng-if="client['ssid']" hook="ssid" content="client['ssid']" client="true"></hook-button>
+                            <span ng-class="client['ssid'] === undefined ? 'text-info' : 'autoselect'" >
+                                {{ client['ssid'] == null ? 'No SSID' : client['ssid'] }}
+                            </span>
+                        </td>
+                        <td>
+                            <span ng-class="client['host'] === undefined ? 'text-info' : 'autoselect'" >
+                                {{ client['host'] == null ? 'No Hostname' : client['host'] }}
+                            </span>
+                        </td>
+                        <td>
+                            <button ng-hide="client['kicking']" type="button" class="btn btn-default" ng-click="kickClient(client)">Kick</button>
+                            <img ng-show="client['kicking']" src='img/throbber.gif'>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-body" ng-hide="clients.length">
+                No clients found.
+            </div>
+        </div>
+    </div>
+</div>

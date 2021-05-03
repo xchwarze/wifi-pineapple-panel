@@ -1,0 +1,246 @@
+<div ng-controller="ReconController">
+    <div class="row">
+         <div class="col-md-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Scan Settings</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="input-group">
+                                <div ng-show="device == 'tetra'">
+                                    <label class="radio-inline"><input type="radio" ng-model="scanType" value="0" ng-disabled="running">2.4GHz</label>
+                                    <label class="radio-inline"><input type="radio" ng-model="scanType" value="1" ng-disabled="running">5GHz</label>
+                                    <label class="radio-inline"><input type="radio" ng-model="scanType" value="2" ng-disabled="running">Both</label>
+                                </div>
+                                <label class="checkbox-inline"><input type="checkbox" ng-model="scanSettings.live" ng-disabled="running || scanSettings.scanDuration === '0'" ng-change="updateScanSettings()">Live</label>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row form-inline">
+                            <select class="fixed-width-200 form-control" ng-model="scanSettings.scanDuration" ng-change="updateScanSettings()" ng-disabled="running">
+                                <option value="0">Continuous</option>
+                                <option value="30">30 Seconds</option>
+                                <option value="60">1 Minute</option>
+                                <option value="120">2 Minutes</option>
+                                <option value="300">5 Minutes</option>
+                                <option value="600">10 Minutes</option>
+                            </select>
+                            <br/><br/>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" ng-click="startScan()" ng-disabled="running || !statusObtained || pineAPDStarting || preparingScan">
+                                    <span ng-show="!running">Start</span>
+                                    <img class="button-throbber" ng-show="running" src="img/throbber.gif"></button>
+                                </button>
+                                <button type="button" class="btn btn-default" ng-click="pauseLiveScan()" ng-show="scanSettings.live && running && !paused && !captureRunning" ng-disabled="!scanSettings.live && !running">Pause</button>
+                                <button type="button" class="btn btn-default" ng-click="resumeLiveScan()" ng-show="scanSettings.live && running && paused && !captureRunning" ng-disabled="!scanSettings.live && !running">Resume</button>
+                                <button type="button" class="btn btn-default" ng-click="stopHandshake()" ng-show="captureRunning">Stop Handshake Capture</button>
+                                <button type="button" class="btn btn-default" ng-click="stopScan()" ng-disabled="!running">Stop</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <br/>
+                            <div class="progress" ng-show="running && scanSettings.scanDuration > 0">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%">{{ percent | roundCeil }}%
+                                </div>
+                                <div class="alert well-sm alert-danger" ng-show="error">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer" ng-show="!pineAPDRunning">
+                    <div class="alert alert-info">
+                        <strong>Notice:</strong> In order to use Recon, PineAP must first be enabled.<br/>
+                        <button class="btn btn-default" ng-click="startPineAP()" ng-disabled="pineAPDStarting">
+                            <span ng-hide="pineAPDStarting">Start PineAP</span>
+                            <img class="button-throbber" ng-show="pineAPDStarting" src="img/throbber.gif">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Scan Results
+                        <span class="pull-right">
+                        <button type="button" class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getScans();">
+                            Refresh
+                        </button>
+                    </span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">Scans Location</span>
+                        <input class="form-control" ng-model="scanLocation" ng-disabled="running || loading">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="setScanLocation()" ng-disabled="running || loading">Set</button>
+                        </span>
+                    </div>
+                    <br/>
+                    <div class="input-group">
+                        <span class="input-group-addon">Scan</span>
+                        <select class="form-control" ng-options="scan.date for scan in scans | filter:shouldShowScan track by scan.scan_id" ng-model="selectedScan" ng-disabled="scans == '' || running"></select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="displayScan();" ng-disabled="running || loading || scans == ''">Load</button>
+                            <button class="btn btn-default" ng-click="removeScan();" ng-disabled="running || loading || scans == ''">Remove</button>
+                        </span>
+                    </div>
+                    <br/>
+                    <img ng-show="loadingScan" src="img/throbber.gif"/>
+                    <p class="alert well-sm alert-success" ng-show="setLocationSuccess">Succcessfully set scan location.</p>
+                    <p class="alert well-sm alert-success" ng-show="removedScan">Succcessfully removed scan.</p>
+                    <p class="alert well-sm alert-info" ng-show="scans == '' && !running">There are no scans available. Please run Recon at least once.</p>
+                    <p class="alert well-sm alert-danger" ng-show="error && error != 'The PineAP Daemon must be running.'">{{ error }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Scan Results
+                        <span class="dropdown" ng-show="accessPoints.length || outOfRangeClients.length || unassociatedClients.length">
+                            <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="reconDropdown"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="running && !paused">
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="reconDropdown">
+                            <li ng-click="addAllSSIDS()" ng-disabled="(accessPoints.length === 0)"><a>Add all SSIDs to PineAP Pool</a></li>
+                            <li ng-click="downloadResults()" ng-disabled="scanID == null"><a>Download Results</a></li>
+                            </ul>
+                        </span>
+                        <span class="text-success" ng-show="dropdownMessage">
+                            {{ dropdownMessage }}
+                        </span>
+                    </h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" ng-hide="(accessPoints.length == 0)">
+                        <thead>
+                        <tr class="default-cursor">
+                            <th ng-click="orderByName='ssid'; reverseSort = !reverseSort">SSID <span ng-show="orderByName=='ssid'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='bssid'; reverseSort = !reverseSort">MAC <span ng-show="orderByName=='bssid'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='encryption'; reverseSort = !reverseSort">Security <span ng-show="orderByName=='encryption'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='wps'; reverseSort = !reverseSort">WPS <span ng-show="orderByName=='wps'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='channel'; reverseSort = !reverseSort">Channel <span ng-show="orderByName=='channel'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='power'; reverseSort = !reverseSort">Signal <span ng-show="orderByName=='power'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='lastSeen'; reverseSort = !reverseSort">Last Seen <span ng-show="orderByName=='lastSeen'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat-start="accessPoint in accessPoints|orderBy:orderByName:reverseSort">
+                            <td class="autoselect">
+                                <hook-button disable="running && !paused" hook="ssid" content="accessPoint.ssid"
+                                             deauth="{bssid: accessPoint.bssid, clients: accessPoint.clients, channel: accessPoint.channel}"></hook-button>
+                                <span class="text-info" ng-hide="accessPoint.ssid"><i>Hidden</i></span>
+                                {{ accessPoint.ssid }}
+                            </td>
+                            <td>
+                                <hook-button disable="running && !paused" hook="mac" content="accessPoint.bssid"></hook-button>
+                                <span class="autoselect" ng-bind-html="(hasNote(accessPoint.bssid) === true ? accessPoint.bssid.italics() : accessPoint.bssid) | rawHTML"></span>
+                            </td>
+                            <td>
+                                <clone-button disable="accessPoint.encryption.includes('Enterprise') === false && accessPoint.encryption.includes('WPA') === false || !accessPoint.ssid || (running && !paused)" hook="encryption" content="accessPoint"></clone-button>
+                                {{ accessPoint.encryption }}
+                            </td>
+                            <td>{{ (accessPoint.wps == 1) ? "Yes" : "No" }}</td>
+                            <td>{{ (accessPoint.channel == 0) ? "Wi-Fi Direct" : accessPoint.channel }}</td>
+                            <td>{{ accessPoint.power }}</td>
+                            <td class="autoselect">{{ accessPoint.lastSeen | timesinceepoch }}</td>
+                        </tr>
+                        <tr ng-repeat="client in accessPoint.clients" ng-repeat-end class="active">
+                            <td></td>
+                            <td class="autoselect">
+                                <hook-button disable="running && !paused" hook="mac" content="client.mac"
+                                                                deauth="{bssid: accessPoint.bssid, channel: accessPoint.channel}"
+                                                                probes="true" client="true"></hook-button>
+                                <span class="autoselect" ng-bind-html="(hasNote(client.mac) === true ? client.mac.italics() : client.mac) | rawHTML"></span>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ client.lastSeen | timesinceepoch }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-body" ng-if="(accessPoints.length === 0) && !running">
+                    No scan results.
+                </div>
+                <div class="panel-body" ng-if="(accessPoints.length === 0) && running">
+                    <img src="img/throbber.gif">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-hide="(outOfRangeClients.length == 0)">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Out of Range Clients</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Client MAC</th>
+                            <th>Access Point MAC</th>
+                            <th>Last Seen</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="(client, data) in outOfRangeClients track by $index">
+                            <td class="autoselect">
+                                <hook-button disable="running && !paused" hook="mac" content="client" probes="true" client="true"></hook-button>
+                                {{ client }}
+                            </td>
+                            <td class="autoselect">
+                                <hook-button disable="running && !paused" hook="mac" content="data.bssid"></hook-button>
+                                <span class="autoselect" ng-bind-html="(hasNote(data.bssid) === true ? data.bssid.italics() : data.bssid) | rawHTML"></span><span> </span>
+                            </td>
+                            <td>{{ data.lastSeen | timesinceepoch }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-hide="(unassociatedClients.length == 0)">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Unassociated Clients</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>MAC</th>
+                                <th>Last Seen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="client in unassociatedClients track by $index">
+                                <td class="autoselect">
+                                    <hook-button disable="running && !paused" hook="mac" content="client.mac" probes="true" client="true"></hook-button>
+                                    <span class="autoselect" ng-bind-html="(hasNote(client.mac) === true ? client.mac.italics() : client.mac) | rawHTML"></span><span> </span>
+                                </td>
+                                <td>{{ client.lastSeen | timesinceepoch }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

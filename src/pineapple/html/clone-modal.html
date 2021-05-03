@@ -1,0 +1,73 @@
+<div class="modal fade" data-keyboard="true" id="clone-hook" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" ng-click="destroyModal()" class="close">&times;</button>
+                <h3 class="text-center autoselect" style="word-wrap: break-word" ng-show="content.bssid">{{ content.ssid }}</h3>
+                <h4 class="text-center autoselect" style="word-wrap: break-word" ng-show="content.bssid">{{ content.bssid }}</h4>
+                <h4 class="text-center text-info" style="word-wrap: break-word" ng-show="!content.bssid">Unknown BSSID</h4>
+                <p class="text-center text-muted autoselect" ng-show="ouiPresent()">{{ oui }}</p>
+            </div>
+            <div class="modal-body">
+                <div ng-if="hook == 'encryption' && content.encryption.includes('Enterprise')">
+                    <div id="clone-actions" ng-if="hook == 'encryption'">
+                        <h4>Clone Enterprise Access Point</h4>
+                        <button type="button" class="btn btn-default" ng-click="cloneEnterpriseAP()" ng-disabled="working">
+                            <span ng-hide="working">Clone</span>
+                            <img src="img/throbber.gif" ng-show="working"/>
+                        </button><br/>
+                        <span class="text-muted small">Note: Cloning an Access Point may restart the wireless radios.</span>
+                    </div>
+                    <hr>
+                </div>
+
+                <div ng-show="hook == 'encryption' && content.encryption.includes('WPA') && !content.encryption.includes('Enterprise')">
+                    <div id="capture-handshake">
+                        <h4>Capture Wireless Handshake</h4>
+                        <div ng-hide="fullHandshakeFound || partialHandshakeFound || handshakeForOtherBSSID">
+                            <img ng-show="handshakeWorking" style="margin-right: 5px;" src="img/throbber.gif"/>
+                            <button type="button" class="btn btn-default" ng-click="toggleHandshakeCapture()" ng-disabled="handshakeStarting || error">
+                                <span ng-hide="handshakeWorking">Start Capture</span>
+                                <span ng-show="handshakeWorking">Stop Capture</span>
+                                <img src="img/throbber.gif" class="button-throbber" ng-show="handshakeStarting">
+                            </button>
+                            <button type="button" class="btn btn-default" ng-show="handshakeWorking" ng-click="deauthAP()" ng-disabled="deauthing">
+                                <span>Deauth</span>
+                                <img src="img/throbber.gif" class="button-throbber" ng-show="deauthing">
+                            </button>
+                        </div>
+                        <div ng-show="fullHandshakeFound || partialHandshakeFound">
+                            <p ng-show="fullHandshakeFound">Full handshake found for {{ content.bssid }}.</p>
+                            <p ng-show="partialHandshakeFound">Partial handshake found for {{ content.bssid }}.</p>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" ng-click="downloadHandshake('pcap');">Download PCAP</button>
+                                <button type="button" class="btn btn-default" ng-click="deleteHandshake();">Delete</button>
+                            </div>
+                        </div>
+                        <div ng-show="handshakeForOtherBSSID && !fullHandshakeFound && !partialHandshakeFound">
+                            <span>A handshake capture is already running for another BSSID ({{ currentBSSID }}).</span><br/>
+                            <button type="button" class="btn btn-default" ng-click="stopHandshakeCapture();">Stop Other Capture</button><br/>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+
+                <div class="modal-footer" ng-show="deletedHandshake">
+                    <div class="alert alert-success text-center">Successfully deleted handshake.</div>
+                </div>
+                <div class="modal-footer" ng-show="error == 'Please start PineAP'">
+                    <div class="alert alert-danger text-center">{{ error }}</div>
+                    <button ng-hide="pineAPStarting" type="button" class="btn btn-default center-block" ng-click="startPineAPD()">Start PineAP</button>
+                    <img class="center-block" ng-show="pineAPStarting" src="img/throbber.gif">
+                </div>
+            </div>
+            <div class="modal-footer" ng-show="success">
+                <div class="alert alert-success text-center">Action completed successfully.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#clone-hook').modal('show');
+</script>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pineapple">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
+    <title>WiFi Pineapple</title>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <script src="js/vendor/angular.min.js"></script>
+    <script src="js/vendor/angular-route.min.js"></script>
+    <script src="js/vendor/angular-cookies.min.js"></script>
+    <script src="js/pineapple.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/directives.js"></script>
+    <script src="js/helpers.js"></script>
+</head>
+
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#!/module/Dashboard">
+            <span class="brand-logo"></span>
+            <span class="brand-text"></span>
+        </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right navbar-top-links">
+        <li class="dropdown" ng-controller="NotificationController" ng-show="notifications.length">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="">
+                <img width="18px" src="img/notify.png">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-top">
+                <li ng-repeat="notification in notifications"><a>{{ notification.message }}</a></li>
+                <li role="separator" class="divider"></li>
+                <li ng-click="clearNotifications()"><a><span class="text-center"><i>- Clear -</i></span></a></li>
+            </ul>
+        </li>
+        <li class="dropdown logout" ng-controller="AuthenticationController">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="">
+                <img width="18px" src="img/logout.png">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-top dropdown-menu-logout">
+                <li ng-click="logout()"><a>Log Off</a></li>
+                <li ng-click="rebootPineapple()"><a>Reboot</a></li>
+                <li ng-click="haltPineapple()"><a>Shut Down</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="navbar-default sidebar" role="navigation" ng-controller="NavigationController">
+        <div class="sidebar-nav navbar-collapse collapse">
+            <ul class="nav sidebar-nav">
+                <li ng-repeat-start="systemModule in systemModules" ng-class="getClass(systemModule.name)" module="{{ systemModule.name }}"><a href="#!/modules/{{ systemModule.name }}"><img class="module-icon" ng-src="{{ systemModule.icon }}" ng-if="systemModule.icon != null"> {{ systemModule.title }}</a></li>
+                <li ng-if="$index == 3" ng-repeat-end>
+                    <a ng-class="getModuleClass()" onclick="$('.module-nav').collapse('toggle')" href=''><img class="module-icon" src="/modules/ModuleManager/module_icon.svg"> Modules <span class="caret"></span></a>
+                    <ul class="nav module-nav collapse">
+                        <li ng-class="getClass('ModuleManager')" module="ModuleManager"><a href="#!/modules/ModuleManager">Manage Modules</a></li>
+                        <li ng-class="getClass(userModule.name)" ng-repeat="userModule in userModules" module="{{ userModule.name }}"><a href="#!/modules/{{ userModule.name }}"><img class="module-icon" ng-src="{{ userModule.icon }}" ng-if="userModule.icon != null"/> {{ userModule.title }}</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="module-content" ng-view>
+
+</div>
+
+<div id="loginModal" class="modal fade" role="dialog"  data-keyboard="false" ng-controller="AuthenticationController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">WiFi Pineapple Login</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <img class="img-responsive login-logo" src="img/logo.png">
+                </div>
+                <form role="form" ng-submit="login()">
+                    <fieldset>
+                        <div class="form-group">
+                            <input class="form-control" value="root" type="text" ng-model="username" tabindex="2" autocomplete="false">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Password" type="password" ng-model="password" autofocus="autofocus" tabindex="1" autocomplete="current-password">
+                        </div>
+                        <div class="form-group">
+                            <div class="alert alert-danger" ng-show="message">
+                                {{ message }}
+                            </div>
+                        </div>
+                        <input class="btn btn-lg btn-success btn-block" type="submit" id="submit" value="Login" />
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

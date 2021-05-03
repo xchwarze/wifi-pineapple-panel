@@ -1,0 +1,185 @@
+<div class="row">
+    <div class="col-md-6" ng-controller="AdvancedResourcesController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Resources
+                    <span class="dropdown">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="resourcesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="generalDropdown">
+                            <li ng-click="dropCaches()"><a>Drop Page Caches</a></li>
+                        </ul>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="alert well-sm alert-success ng-hide" ng-show="droppedCaches">Successfully dropped caches.</div>
+                <pre class="scrollable-pre">{{ freeDisk }}</pre>
+                <br/>
+                <pre class="scrollable-pre">{{ freeMem }}</pre>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6" ng-controller="AdvancedUSBController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    USB &amp; Storage
+                    <span class="dropdown" ng-if="device == 'nano'">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="usbDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="generalDropdown">
+                            <li ng-click="formatSDCard()"><a>Format SD Card</a></li>
+                        </ul>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="center-block" ng-hide="lsusb">
+                    <img class="center-block" src="img/throbber.gif">
+                    <br/>
+                </div>
+                <div class="alert well-sm alert-info ng-hide" ng-show="formattingSDCard">Formatting SD Card, please wait. <img src="img/throbber.gif"></div>
+                <div class="alert well-sm alert-success ng-hide" ng-show="formatSuccess">Successfully formatted SD Card</div>
+                <pre class="scrollable-pre" ng-show="lsusb">{{ lsusb }}</pre>
+                <p>
+                    <textarea class="form-control" rows="8" ng-model="fstab"></textarea>
+                </p>
+                <p class="alert well-sm alert-success" ng-show="fstabSaved">Fstab saved successfully</p>
+                <button type="submit" class="btn btn-default" ng-click="saveFstab()">Save Fstab</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="AdvancedUpgradeController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Firmware Upgrade (Current version: {{ firmwareVersion }})</h3>
+            </div>
+            <div class="panel-body">
+                <div ng-hide="upgradeFound">
+                    <p class="text-center text-danger" ng-show="error">{{ error }}</p>
+                    <button class="btn btn-default center-block" ng-click="checkForUpgrade()" ng-hide="loading">Check for Upgrades</button>
+                    <img class="center-block" src="img/throbber.gif" ng-show="loading">
+                    <p>
+                        <hr>
+                    </p>
+                    <p ng-if="device == 'tetra'">
+                        Warning: Firmware upgrades replace all data on the device. Please ensure any important non-system data has been backed up to external storage.
+                    </p>
+                    <p ng-if="device == 'nano'">
+                        Warning: Firmware upgrades replace all data not stored on the SD card. Please ensure any important non-system data has been backed up to external storage.
+                    </p>
+                    <p>
+                        Please stop any unnecessary services and modules before upgrading. Restarting the WiFi Pineapple without starting additional services and modules is recommended to ensure extra processes have been halted properly.
+                    </p>
+                    <p>
+                        Upgrading firmware should only be done while using a stable power source. An Ethernet connection to the WiFi Pineapple is recommended for this process.
+                    </p>
+                    <p>
+                        Once the firmware upgrade has completed the WiFi Pineapple will reboot into an initial setup state. This process will take several minutes. Do not interrupt the upgrade process by unplugging power or closing the web interface as this may result in a soft-brick state.
+                    </p>
+                    <p>
+                        For recovery or manual upgrade instructions and help please visit <a href="https://www.wifipineapple.com/?flashing">https://www.wifipineapple.com/?flashing</a>.
+                    </p>
+                </div>
+                <div ng-show="upgradeFound && !downloading && !downloaded">
+                    <p>
+                        A new Firmware (version {{upgradeData['version']}}) is available.
+                    </p>
+                    <h4>Changelog:</h4>
+                    <p ng-bind-html="upgradeData['changelog'] | rawHTML">
+                        Changelog:
+                    </p>
+                    <p>
+                        <button class="btn btn-default center-block" ng-click="downloadUpgrade()">Perform Upgrade</button>
+                    </p>
+                </div>
+                <div class="text-center" ng-show="downloading">
+                    Please wait while the firmware is being downloaded.
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="downloadPercentage" aria-valuemin="0" aria-valuemax="100" style="width: {{ downloadPercentage }}%">
+                            <span class="sr-only">{{downloadPercentage}}% Complete</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" ng-show="downloaded">
+                    <p>Download completed. Please wait while the firmware is being flashed.</p>
+                    <p>
+                        <img src="img/throbber.gif">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6" ng-controller="AdvancedCSSController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">CSS</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <textarea class="form-control" rows="13" ng-model="css"></textarea>
+                </p>
+                <p class="alert well-sm alert-success" ng-show="cssSaved">CSS saved successfully</p>
+                <button type="submit" class="btn btn-default" ng-click="saveCSS()">Save CSS</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div ng-controller="APITokenController">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Manage API Tokens
+                        <span class="pull-right"><button class="btn btn-default btn-xs btn-fixed-length" ng-click="getApiTokens();">Refresh</button></span>
+                    </h3>
+                </div>
+                <table class="table table-hover table-responsive table-condensed table-layout-fixed" ng-show="apiTokens.length">
+                    <thead>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Token</th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="apiToken in apiTokens">
+                            <td class="col-md-1">{{ apiToken.rowid }}</td>
+                            <td class="col-md-3">{{ apiToken.name }}</td>
+                            <td class="col-md-5 truncated" ng-click="selectOnClick($event);">{{ apiToken.token }}</td>
+                            <td class="col-md-3"><span class="pull-right"><button tokenid="{{ apiToken.rowid }}" class="btn btn-danger btn-sm" ng-click="revokeApiToken($event);">Revoke</button></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="panel-body text-center" ng-hide="apiTokens.length">
+                    <span class="text-info">No API Tokens</span>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Generate New Token
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-inline" role="form" ng-submit="genApiToken()" novalidate>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Token Name</span>
+                                <input name="tokenName" type="text" class="form-control" id="tokenName" ng-model="newToken.name">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-default">Generate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

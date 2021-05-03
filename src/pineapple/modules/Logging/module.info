@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Manage and view various logs.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Logging",
+    "version": "1.1",
+    "index": 8
+}

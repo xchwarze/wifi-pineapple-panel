@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Information on system resources and firmware.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Advanced",
+    "version": "1.0",
+    "index": 12
+}

@@ -1,0 +1,505 @@
+<div class="row">
+    <div class="col-md-7">
+        <div class="panel panel-default" ng-controller="PineAPSettingsController">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Configuration
+                </h3>
+            </div>
+            <div class="panel-body" ng-hide="notifications.length">
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="input-group margin-bottom">
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.allowAssociations">
+                                    Allow Associations
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group margin-bottom">
+                            <span class="input-group-addon">PineAP Daemon: {{ settings.pineAPDaemon ? "Enabled" : "Disabled" }}</span>
+                            <span class="input-group-btn">
+                                <button ng-disabled="pineAPenabling" class="btn btn-default" type="button"
+                                        ng-click="togglePineAP()">
+                                    <span ng-hide="pineAPenabling">Switch</span>
+                                    <img ng-show="pineAPenabling" src="img/throbber.gif">
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">Autostart PineAP: {{ settings.autostartPineAP ? "Enabled" : "Disabled" }}</span>
+                            <span class="input-group-btn">
+                                <button ng-disabled="pineAPenabling" class="btn btn-default" type="button"
+                                        ng-click="toggleAutoStart()">
+                                    <span>Switch</span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.logEvents">
+                                    Log PineAP Events
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.connectNotifications">
+                                    Client Connect Notifications
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.disconnectNotifications">
+                                    Client Disconnect Notifications
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.captureSSIDs">
+                                    Capture SSIDs to Pool
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.beaconResponses">
+                                    Beacon Response
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="settings.broadcastSSIDs">
+                                    Broadcast SSID Pool
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-group margin-bottom">
+                            <span class="input-group-addon">Beacon Response Interval</span>
+                            <select class="form-control" ng-model="settings.responseInterval">
+                                <option value="LOW">Low</option>
+                                <option value="NORMAL">Normal</option>
+                                <option value="AGGRESSIVE">Aggressive</option>
+                            </select>
+                        </div>
+                        <div class="input-group margin-bottom">
+                            <span class="input-group-addon">Broadcast SSID Pool</span>
+                            <select class="form-control" ng-model="settings.broadcastInterval">
+                                <option value="LOW">Low</option>
+                                <option value="NORMAL">Normal</option>
+                                <option value="AGGRESSIVE">Aggressive</option>
+                            </select>
+                        </div>
+                        <br/>
+                        <div class="input-group margin-bottom">
+                            <span class="fixed-addon-width-3 input-group-addon">Source MAC</span>
+                            <input type="text" maxlength="17" class="form-control" ng-model="settings.sourceMAC">
+                        </div>
+                        <div class="input-group margin-bottom">
+                            <span class="fixed-addon-width-3 input-group-addon">Target MAC</span>
+                            <input type="text" maxlength="17" class="form-control" ng-model="settings.targetMAC">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <button class="btn btn-default" ng-hide="disableButton" ng-click="updateSettings()">Save
+                                PineAP Settings
+                            </button>
+                            <img src="img/throbber.gif" alt="throbber.gif" ng-show="disableButton">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer" ng-hide="settings.pineAPDaemon && !saveAlert">
+                <div class="alert alert-info" ng-hide="settings.pineAPDaemon">
+                    <strong>Notice:</strong> In order to use some of these features, PineAP must first be enabled.
+                </div>
+                <div class="alert alert-success" ng-show="saveAlert">
+                    Autostart Configuration Saved
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="panel panel-default" ng-controller="PineAPPoolController">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    SSID Pool
+                    <button class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getPool()">Refresh
+                    </button>
+                    <span class="dropdown">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="poolDropdown"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="poolDropdown">
+                            <li ng-click="downloadPool()"><a>Download SSID Pool</a></li>
+                            <li ng-click="clearPool()"><a>Clear SSID Pool</a></li>
+                            <li ng-click="clearSessionCounter()"><a>Clear Session Counter</a></li>
+                        </ul>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <textarea id="ssidPool" class="form-control" rows="15" ng-mouseup="getSSIDLineNumber()"
+                              ng-model="ssidPool" readonly></textarea>
+                </p>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="SSID" name="ssid" ng-model="ssid">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="addSSID()">Add</button>
+                        <button class="btn btn-default" type="button" ng-click="removeSSID()">Remove</button>
+                    </span>
+                </div>
+                <br/>
+                <div class="input-group">
+                    <span class="input-group-addon">Pool Location</span>
+                    <input type="text" class="form-control" ng-model="poolLocation">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="setPoolLocation()">Save</button>
+                    </span>
+                </div>
+                <br/>
+                <p class="alert well-sm alert-success" ng-show="clearedSSIDPool">SSID pool cleared successfully</p>
+                <p class="alert well-sm alert-success" ng-show="clearedSessionCounter">SSID collection counter cleared successfully</p>
+                <p class="alert well-sm alert-success" ng-show="addedSSID">SSID added successfully</p>
+                <p class="alert well-sm alert-success" ng-show="removedSSID">SSID removed successfully</p>
+                <p class="alert well-sm alert-success" ng-show="updatedPoolLocation">Pool location updated
+                    successfully</p>
+                <p class="alert well-sm alert-danger" ng-show="lengthError">SSID must be between 1 and 32 characters</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12" ng-controller="PineAPEnterpriseController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    PineAP Enterprise
+                    <span class="dropdown" ng-show="view == 'normal'">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="poolDropdown"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="poolDropdown">
+                            <li ng-click="clearCertificate()"><a>Clear Certificates</a></li>
+                            <li ng-hide="chalrespdata.length == 0 && basicdata.length == 0" ng-click="clearDB()"><a>Clear Credentials</a></li>
+                            <li ng-hide="chalrespdata.length == 0" ng-click="downloadJTR()"><a>Download Credentials (JTR Format)</a></li>
+                            <li ng-hide="chalrespdata.length == 0" ng-click="downloadHashcat()"><a>Download Credentials (Hashcat Format)</a></li>
+                        </ul>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <img src="img/throbber.gif" ng-show="loadingView"/>
+                <div ng-show="view === 'certs'">
+                    <span class="text-info">
+                        To use PineAP Enterprise, you must first configure and generate a certificate. Certificate generation may take up to 5 minutes.
+                    </span><br/><br/>
+                    <div class="col-md-5">
+                        <div class="margin-bottom input-group" style="width: 100%">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Locality</span>
+                                <input type="text" maxlength="32" class="form-control" ng-model="certificateSettings.locality"
+                                       ng-disabled="generatingCertificate">
+                            </div>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-2 input-group-addon">State/Province</span>
+                                <input type="text" maxlength="32" class="form-control" ng-model="certificateSettings.state"
+                                       ng-disabled="generatingCertificate">
+                            </div>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Country Code</span>
+                                <input type="text" maxlength="2" class="form-control" ng-model="certificateSettings.country"
+                                       ng-disabled="generatingCertificate">
+                            </div>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Organization</span>
+                                <input type="text" maxlength="32" class="form-control" ng-model="certificateSettings.organization"
+                                       ng-disabled="generatingCertificate">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="margin-bottom input-group" style="width: 100%">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Email</span>
+                                <input type="text" maxlength="32" class="form-control" ng-model="certificateSettings.email"
+                                       ng-disabled="generatingCertificate">
+                            </div>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Common Name</span>
+                                <input type="text" maxlength="32" class="form-control" ng-model="certificateSettings.commonname"
+                                       ng-disabled="generatingCertificate">
+                            </div>
+                        </div>
+                        <button class="btn btn-default" ng-click="generateCertificate();"
+                                ng-disabled="generatingCertificate">Generate Certificate
+                        </button>
+                        <img src="img/throbber.gif" ng-show="generatingCertificate"/>
+                        <span class="alert well-sm alert-danger" ng-show="error">{{ error }}<span>
+                    </div>
+                </div>
+                <div ng-show="view === 'normal'">
+                    <div class="col-md-5" style="height: 100%">
+                        <div class="input-group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" ng-model="settings.enabled" ng-disabled="savingSettings">
+                                    Enable
+                                </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label><input type="checkbox" ng-model="settings.enableAssociations"
+                                              ng-disabled="savingSettings">
+                                    Enable Passthrough
+                                </label>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="margin-bottom input-group" style="width: 100%;">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Enterprise SSID</span>
+                                <input type="text" class="form-control" ng-model="settings.ssid"
+                                       ng-disabled="savingSettings">
+                            </div>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%;">
+                            <div class="input-group">
+                                <span class="fixed-addon-width-3 input-group-addon">Enterprise MAC</span>
+                                <input type="text" maxlength="17" class="form-control" ng-model="settings.mac"
+                                       ng-disabled="savingSettings">
+                            </div>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%;">
+                            <span class="input-group-addon">Encryption Type</span>
+                            <select class="form-control" ng-model="settings.encryptionType"
+                                    ng-disabled="savingSettings">
+                                <option value="wpa2+ccmp">WPA2 Enterprise CCMP</option>
+                                <option value="wpa2+tkip">WPA2 Enterprise TKIP</option>
+                                <option value="wpa2+ccmp+tkip">WPA2 Enterprise TKIP+CCMP</option>
+                                <option value="wpa+ccmp">WPA Enterprise CCMP</option>
+                                <option value="wpa+tkip">WPA Enterprise TKIP</option>
+                                <option value="wpa+ccmp+tkip">WPA Enterprise CCMP+TKIP</option>
+                                <option value="wpa-mixed+ccmp">WPA Mixed Enterprise CCMP</option>
+                                <option value="wpa-mixed+tkip">WPA Mixed Enterprise TKIP</option>
+                                <option value="wpa-mixed+ccmp+tkip">WPA Mixed Enterprise CCMP+TKIP</option>
+                            </select>
+                        </div>
+                        <div class="margin-bottom input-group" style="width: 100%;">
+                            <span class="input-group-addon">Downgrade Attack</span>
+                            <select class="form-control" ng-model="settings.downgrade" ng-disabled="savingSettings">
+                                <option value="DISABLE">Disable</option>
+                                <option value="MSCHAPV2">MSCHAPv2</option>
+                                <option value="GTC">GTC</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <button class="btn btn-default" ng-click="saveSettings();" ng-disabled="savingSettings">
+                                <span ng-hide="savingSettings">Save</span>
+                                <img src="img/throbber.gif" class="button-throbber" ng-show="savingSettings"/>
+                            </button> &nbsp;&nbsp;
+                            <span class="alert well-sm alert-success" ng-show="savedSettings">Settings Saved</span>
+                            <span class="alert well-sm alert-danger" ng-show="error">{{ error }}</span>
+                            <br/>
+                            <span class="text-muted small">Note: Cloning an Access Point may restart the wireless radios.</span>
+                            <br/>
+                            <br/>
+                            <br/>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="col-md-12">
+                            <p class="text-center text-info" ng-show="chalrespdata.length == 0">No Challenge Response Data
+                                Available.</p>
+                            <div class="table-responsive">
+                                <table ng-show="chalrespdata.length" class="table">
+                                    <thead>
+                                    <tr class="default-cursor">
+                                        <th>Type</th>
+                                        <th>Username</th>
+                                        <th>Challenge</th>
+                                        <th>Response</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="datapoint in chalrespdata">
+                                        <td>{{ datapoint.type | uppercase }}</td>
+                                        <td class="autoselect">{{ datapoint.username }}</td>
+                                        <td class="autoselect">{{ datapoint.challenge }}</td>
+                                        <td class="autoselect">{{ datapoint.response }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <p class="text-center text-info" ng-show="basicdata.length == 0">No Basic Data
+                                Available.</p>
+                            <div class="table-responsive">
+                                <table ng-show="basicdata.length" class="table">
+                                    <thead>
+                                    <tr class="default-cursor">
+                                        <th>Type</th>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="datapoint in basicdata">
+                                        <td>{{ datapoint.type | uppercase }}</td>
+                                        <td class="autoselect">{{ datapoint.username }}</td>
+                                        <td class="autoselect">{{ datapoint.password }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6" ng-controller="CapturedHandshakesController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Captured WPA Handshakes
+                    <span class="dropdown" ng-hide="handshakes.length === 0">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="handshakeDropdown"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="handshakeDropdown">
+                            <li ng-click="downloadAllHandshakes()"><a>Download all Handshakes</a></li>
+                            <li ng-click="clearAllHandshakes()"><a>Clear all Handshakes</a></li>
+                        </ul>
+                    </span>
+                    <span>
+                        <button class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getAllHandshakes();">
+                        Refresh
+                        </button>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="text-center" ng-show="handshakes.length === 0">
+                    <span class="text-info"><i>No Handshakes Available</i></span>
+                    <br/>
+                </div>
+                <div class="table-responsive" ng-show="handshakes.length !== 0">
+                    <table class="table">
+                        <thead>
+                        <tr class="default-cursor">
+                            <th>BSSID</th>
+                            <th>Download</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="bssid in handshakes">
+                            <td>{{ bssid }}</td>
+                            <td>
+                                <button class="btn btn-default btn-xs" ng-click="downloadHandshake(bssid)">
+                                    Download PCAP
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-xs" ng-click="deleteHandshake(bssid)">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-show="clearedAllHandshakes" class="alert well-sm alert-success">
+                    <span>Successfully cleared all handshakes.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6" ng-controller="PinejectorController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Inject Raw Frames <img src="img/throbber.gif" ng-show="injecting"/>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <textarea class="form-control uppercase" id="payload" rows="6"
+                                      placeholder="Hex Encoded Payload..." ng-model="payload"></textarea>
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width-1 input-group-addon">Channel</span>
+                            <select class="form-control" id="channel" ng-model="channel"
+                                    ng-options="channel for channel in channels"></select>
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="input-group-addon">Frame Count</span>
+                            <input class="form-control" type="number" id="count" ng-model="frameCount" min="1"
+                                   max="100"/>
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="input-group-addon">Send Delay (ms)</span>
+                            <input class="form-control" type="number" id="delay" ng-model="delay" min="100"
+                                   max="1200000"/>
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <button class="btn btn-lg btn-default btn-block" type="button"
+                                    ng-disabled="injecting || !checkPayload()" ng-click="injectFrames()">
+                                Inject Frames
+                                <img src="img/throbber.gif" ng-show="injecting"/>
+                            </button>
+                        </div>
+                        <div ng-show="error" class="alert well-sm alert-danger">
+                            <span>{{ error }}</span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-md btn-default btn-block" type="button" ng-show="error"
+                                    ng-click="toggleDetails()" data-toggle="collapse" data-target="#detailed-info">
+                                Show Debug Information
+                            </button>
+                        </div>
+                        <div ng-show="error && showDetails" class="alert well-lg alert-danger collapse"
+                             id="detailed-info">
+                            <span>
+                                <h6>Command</h6>
+                                <pre class="autoselect">{{ command }}</pre>
+                                <h6>Exit Code</h6>
+                                <pre class="autoselect">{{ exitCode }}</pre>
+                                <h6>stdout</h6>
+                                <pre class="autoselect">{{ stdout }}</pre>
+                                <h6>stderr</h6>
+                                <pre class="autoselect">{{ stderr }}</pre>
+                            </span>
+                        </div>
+                        <div ng-hide="checkPayload() || payload.length === 0" class="alert well-sm alert-danger">
+                            <span>Invalid hex.</span>
+                        </div>
+                        <div ng-show="checkRadiotap()" class="alert well-sm alert-warning">
+                            <span>It appears that this frame contains a radiotap header. Consider removing it.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

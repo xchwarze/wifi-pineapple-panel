@@ -1,0 +1,52 @@
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="TrackingListController">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Client Tracking List
+                    <span class="dropdown">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="trackingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="trackingDropdown">
+                            <li ng-click="clearMacs()"><a>Clear Client List</a></li>
+                        </ul>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <textarea class="form-control" rows="15" onmouseup="getLineNumber(this);" ng-model="trackingList" readonly></textarea>
+                </p>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="MAC Address" name="mac" ng-model="mac">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="addMac()">Add</button>
+                        <button class="btn btn-default" type="button" ng-click="removeMac()">Remove</button>
+                    </span>
+                </div>
+                <br/>
+                <div class="alert well-sm alert-danger" ng-show="error">
+                    {{ error }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="TrackingScriptController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Tracking Script</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <textarea class="form-control" rows="15" ng-model="trackingScript"></textarea>
+                </p>
+                <p class="alert well-sm alert-success" ng-show="scriptSaved">Script saved successfully</p>
+                <button type="submit" class="btn btn-default" ng-click="saveScript()">Save Script</button>
+            </div>
+        </div>
+    </div>
+
+</div>

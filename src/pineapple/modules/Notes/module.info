@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Easily take notes on different clients and APs.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Notes",
+    "version": "1.0",
+    "index": 13
+}

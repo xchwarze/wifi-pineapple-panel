@@ -1,0 +1,136 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="ConfigurationGeneralController">
+            <div class="panel-heading">
+                <h3 class="panel-title">General
+                    <span class="dropdown">
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="generalDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="generalDropdown">
+                            <li ng-click="haltPineapple()"><a>Shutdown Pineapple</a></li>
+                            <li ng-click="rebootPineapple()"><a>Reboot Pineapple</a></li>
+                            <li ng-click="resetPineapple()"><a>Factory Reset Pineapple</a></li>
+                        </ul>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-10">
+                    <div class="alert well-sm alert-success" ng-show="actionMessage.length != 0">{{ actionMessage }}</div>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">Current Time Zone</span>
+                            <input type="text" class="form-control" ng-model="currentTimeZone" disabled>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">Change Time Zone</span>
+                            <select class="form-control" ng-init="selectedTimeZone = timeZones[12]" ng-model="selectedTimeZone" ng-options="timeZone.description for timeZone in timeZones"></select>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">Custom Time Zone</span>
+                            <input type="text" class="form-control" placeholder="UTC+0030" ng-model="customOffset">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <p class="alert well-sm alert-success" ng-show="showTimeZoneSuccess">Time zone changed successfully.</p>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-default" ng-click="changeTimezone()">Save Time Zone</button>
+                        </div>
+                    </div>
+                    <br/><br/><br/>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">Old Password</span>
+                            <input type="password" class="form-control" ng-model="oldPassword">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">New Password</span>
+                            <input type="password" class="form-control" ng-model="newPassword">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="input-group-addon">Repeat Password</span>
+                            <input type="password" class="form-control" ng-model="newPasswordRepeat">
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <p class="alert well-sm alert-success" ng-show="showPasswordSuccess">Password changed successfully.</p>
+                        <p class="alert well-sm alert-danger" ng-show="showPasswordError">Please check the passwords entered are correct.</p>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-default" ng-click="changePassword()">Change Password</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="ConfigurationLandingPageController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Landing Page</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">Landing Page: {{ landingPageStatus }}</span>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-click="toggleLandingPage()">Switch</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">Auto Start: {{ autoStartStatus }}</span>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-click="toggleAutoStart()">Switch</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <form class="form-horizontal">
+                    <textarea class="form-control" rows="18" ng-model="landingPage"></textarea>
+                    <br/>
+                    <p class="alert well-sm alert-success" ng-show="pageSaved">Landing Page saved successfully</p>
+                    <button type="submit" class="btn btn-default" ng-click="saveLandingPage()">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6" ng-controller="ButtonScriptController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Button Script</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <p class="text-muted text-sm">This script executes when the reset button is pressed for less than 5 seconds.</p>
+                    <textarea class="form-control" rows="10" ng-model="buttonScript"></textarea>
+                    <br/>
+                    <p class="alert well-sm alert-success" ng-show="scriptSaved">Button Script saved successfully</p>
+                    <p class="alert well-sm alert-danger" ng-show="scriptError">{{ scriptError }}</p>
+                    <button type="submit" class="btn btn-default" ng-click="saveButtonScript()">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

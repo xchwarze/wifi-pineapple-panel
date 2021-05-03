@@ -1,0 +1,360 @@
+<div id="setupModule" ng-controller="SetupController">
+    <style type="text/css">
+        .btn-wide {
+            width: 100%;
+        }
+
+        .modal-open {
+            overflow: auto;
+        }
+    </style>
+    <div id="welcomeModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+        <div class="modal-dialog" data-keyboard="false">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="img/logo.png" class="img-responsive center-block" alt="Pineapple Logo">
+                    <h1 class="text-center">Welcome</h1>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="getStarted();" type="button" data-dismiss="modal"
+                            class="btn btn-wide btn-default center-block">Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="showChanges" id="changesModal" class="modal fade modal-open" data-backdrop="static"
+         data-keyboard="false" role="dialog">
+        <div class="modal-dialog" data-keyboard="false">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span class="text-center">
+                        <h1>Changes for {{fwversion}}</h1>
+                    </span>
+                    <div ng-bind-html="changes | rawHTML" data-html="true"></div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="showVerificationModal()" type="button" data-dismiss="modal"
+                            class="btn btn-wide btn-default center-block">Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="verificationModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+        <div class="modal-dialog" data-keyboard="false">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span class="text-center" ng-show="booted">
+                        <h1>Secure Setup</h1>
+                        <p><small>Disabling WiFi is recommended for initial setup.</small></p>
+                        <p><small>Quickly press the reset button (underside of the WiFi Pineapple) to continue with WiFi disabled.</small></p>
+                        <p><small>Hold the reset button for two or more seconds to continue with WiFi enabled.</small></p>
+                    </span>
+                    <span class="text-center" ng-hide="booted">
+                        <h1>The WiFi Pineapple is still booting</h1>
+                        <p><small>Please wait until the WiFi Pineapple has fully booted. The setup will continue automatically.</small></p>
+                    </span>
+                </div>
+                <div class="modal-footer">
+                    <img class="center-block" src="img/throbber.gif">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="complete">
+        <h3 class="text-center">Setup Completed</h3>
+        <img class="center-block" src="img/throbber.gif">
+        <p class="text-center">
+            You will be redirected momentarily.
+        </p>
+    </div>
+
+    <div ng-show="verified">
+        <form ng-submit="doSetup()">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Device Configuration</h4>
+                </div>
+                <div id="DeviceSetup" class="panel-body">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3>Set Root Password</h3>
+                                <p>The root account is used for SSH and Web Interface access. Please set a strong
+                                    password.</p>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-md-10 input-group">
+                                            <span class="input-group-addon">Password:</span>
+                                            <input type="password" class="form-control" id="rootPassword"
+                                                   autocomplete="off" ng-model="rootPassword">
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/><br/>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-md-10 input-group">
+                                            <span class="input-group-addon">Confirm Password:</span>
+                                            <input type="password" class="form-control" id="confirmRootPassword"
+                                                   autocomplete="off" ng-model="confirmRootPassword">
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/><br/>
+                                <h3>Set Time Zone</h3>
+                                <p>Please set the Time Zone on your WiFi Pineapple to your local Time Zone.</p>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-md-10 input-group">
+                                            <span class="input-group-addon">Time Zone:</span>
+                                            <select class="form-control" ng-init="selectedTimeZone = timeZones[12]"
+                                                    ng-model="selectedTimeZone"
+                                                    ng-options="timeZone.description for timeZone in timeZones"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Radio Configuration</h4>
+                </div>
+                <div id="RadioSetup" class="panel-body">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="col-md-10">
+                                    <div class="row">
+                                        <h3>Management AP Setup</h3>
+                                        <p>A WPA2 secured access point may be used for WiFi Pineapple management. Please
+                                            choose a unique SSID and a strong password.</p>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-10 input-group">
+                                                    <span class="input-group-addon">Management SSID:</span>
+                                                    <input type="text" class="form-control" id="managementSSID"
+                                                           ng-model="managementSSID">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/><br/>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-10 input-group">
+                                                    <span class="input-group-addon">WPA2 Password:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                    <input type="password" class="form-control" id="managementPass"
+                                                           autocomplete="" ng-model="managementPass">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/><br/>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-10 input-group">
+                                                    <span class="input-group-addon">Confirm Password:</span>
+                                                    <input type="password" class="form-control"
+                                                           id="confirmManagementPass" autocomplete="off"
+                                                           ng-model="confirmManagementPass">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/><br/>
+                                        <div class="input-group">
+                                            <div class="col-md-5">
+                                                <div class="checkbox">
+                                                    <label for="hideManagementAP"><input id="hideManagementAP"
+                                                                                         type="checkbox" value=""
+                                                                                         ng-model="hideManagementAP">Hide
+                                                        Management AP</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="checkbox">
+                                                    <label for="disableManagementAP"><input id="disableManagementAP"
+                                                                                            type="checkbox" value=""
+                                                                                            ng-model="disableManagementAP">Disable
+                                                        Management AP</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <h3>Open AP Setup</h3>
+                                        <p>The Open AP is used with PineAP for the targets to connect to.</p>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-10 input-group">
+                                                    <span class="input-group-addon">Open AP SSID:</span>
+                                                    <input type="text" class="form-control" id="openSSID"
+                                                           ng-model="openSSID">
+                                                </div>
+                                                <div class="input-group">
+                                                    <div class="col-md-8">
+                                                        <div class="checkbox">
+                                                            <label for="hideOpenAP"><input id="hideOpenAP"
+                                                                                           type="checkbox" value=""
+                                                                                           ng-model="hideOpenAP">Hide
+                                                                Open Access Point</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <h3>Radio Country Code</h3>
+                                        <p>Different countries allow for different transmit power levels. Please select
+                                            your country for the best experience.</p>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-10 input-group">
+                                                    <span class="input-group-addon">Country Code:</span>
+                                                    <select class="form-control"
+                                                            ng-init="selectedCountryCode = countryCodes[0]"
+                                                            ng-model="selectedCountryCode"
+                                                            ng-options="countryCode.country for countryCode in countryCodes"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Filters <span ng-if="device == 'tetra'">&amp; Firewall</span></h4>
+                </div>
+                <div id="FiltersSetup" class="panel-body">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h3>Filters Configuration</h3>
+                                <p>The WiFi Pineapple filtering system limits the scope of engagement by filtering
+                                    devices by MAC address and network by names in an Allow Mode of targeted devices or
+                                    network names and a Deny Mode of off-limit devices or network names.</p>
+                                <br/>
+                                <h3>Client Filters Setting</h3>
+                                <p class="text-info">Client filters specify which devices, by MAC address, are either
+                                    explicitly allowed to connect or explicitly denied from connecting. In Allow Mode
+                                    only the listed MAC Addresses are allowed to connect. In Deny Mode, the listed MAC
+                                    addresses will be prevented from connecting.</p>
+
+                                <div class="input-group">
+                                    <label style="font-weight: normal">
+                                        <input type="radio"
+                                               ng-model="macFilterMode"
+                                               value="Allow"/>
+                                        Allow Mode - only allow listed devices to connect
+                                    </label>
+                                    <br/>
+                                    <label style="font-weight: normal">
+                                        <input type="radio"
+                                               ng-model="macFilterMode"
+                                               value="Deny"/>
+                                        Deny Mode - prevent listed devices from connecting
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h3>SSID Filters Setting</h3>
+                                <p class="text-info">SSID filters specify the network names to which the WiFi Pineapple
+                                    will respond. In Allow Mode, devices will only be allowed to associate with the WiFi
+                                    Pineapple for SSID names listed. In Deny Mode, devices will be prevented from
+                                    associating with the WiFi Pineapple for the listed SSID names.</p>
+                                <div class="input-group">
+                                    <label style="font-weight: normal">
+                                        <input type="radio"
+                                               ng-model="ssidFilterMode"
+                                               value="Allow"/>
+                                        Allow Mode - only allow listed devices to connect
+                                    </label>
+                                    <br/>
+                                    <label style="font-weight: normal">
+                                        <input type="radio"
+                                               ng-model="ssidFilterMode"
+                                               value="Deny"/>
+                                        Deny Mode - prevent listed devices from connecting
+                                    </label>
+                                </div>
+
+                                <br/>
+                                <span style="color: #FF0000"
+                                      ng-show="ssidFilterMode == 'Deny' && macFilterMode == 'Deny'">
+                                WARNING: IN THE SELECTED FILTER CONFIGURATION, ALL DEVICES WILL BE ABLE TO ASSOCIATE WITH THE WIFI PINEAPPLE FOR ALL SSID NAMES.
+                            </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5" ng-show="device == 'tetra'">
+                                <h3>Firewall Settings</h3>
+                                <div class="input-group">
+                                    <p class="text-info">These firewall rules allow you to configure access to the SSH
+                                        and Web Access via the WAN Ethernet port on your device.</p>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" ng-model="WANSSHAccess">Allow SSH Access via
+                                            WAN</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" ng-model="WANUIAccess">Allow Web Access via
+                                            WAN</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">License &amp; EULA</h4>
+                </div>
+                <div id="LicenseAccept" class="panel-body">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3>Legal</h3>
+                                <div class="input-group">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" ng-model="eula">I accept the <a target="_blank"
+                                                                                                      href="/modules/Setup/eula.txt"
+                                                                                                      tabindex="-1">EULA</a></label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" ng-model="license">I accept the <a target="_blank"
+                                                                                                         href="/modules/Setup/license.txt"
+                                                                                                         tabindex="-1">Software
+                                            Licence</a></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/><br/><br/>
+                            <div class="col-md-10">
+                                <div ng-show="error" class="well well-sm alert-danger">
+                                    {{ error }}
+                                </div>
+                                <div class="input-group">
+                                    <button type="submit" class="btn btn-default btn-wide">Complete Setup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

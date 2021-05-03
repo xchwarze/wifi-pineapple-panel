@@ -1,0 +1,54 @@
+#!/bin/bash
+# Simple script to gather log information
+LOG=/tmp/debug.log.tmp
+
+touch $LOG
+echo "Retrieving /proc/cpuinfo"
+echo "============CPUINFO========" > $LOG
+cat /proc/cpuinfo >> $LOG
+echo "Retrieving firmware version"
+echo -n "Firmware Version: " >> $LOG && cat /etc/pineapple/pineapple_version >> $LOG
+echo "Retrieving lsusb output"
+echo "=============LSUSB=========" >> $LOG
+lsusb >> $LOG
+echo "Retrieving disk usage information"
+echo "==============DF===========" >> $LOG
+df -h >> $LOG
+echo "Retrieving iw device list"
+echo "==============IW===========" >> $LOG
+iw dev >> $LOG
+echo "Retrieving ifconfig interface list"
+echo "===========IFCONFIG========" >> $LOG
+ifconfig -a >> $LOG
+echo "Retrieving iwconfig device list"
+echo "===========IWCONFIG========" >> $LOG
+(iwconfig 2>&1) >> $LOG
+echo "Retrieving dmesg log"
+echo "============DMESG==========" >> $LOG
+dmesg >> $LOG
+echo "Retrieving syslog"
+echo "============LOGREAD========" >> $LOG
+logread >> $LOG
+echo "Retrieving /etc/config/wireless"
+echo "===== WIRELESS CONFIG======" >> $LOG
+cat /etc/config/wireless >> $LOG
+echo "Performing site survey"
+echo "============SURVEY=========" >> $LOG
+echo -e "\tEnsuring pineapd is started"
+(/etc/init.d/pineapd start 2>&1) >> $LOG
+scan_type=0
+cat /proc/cpuinfo | grep TETRA && scan_type=2
+echo -e "\tRunning scan type $scan_type for 15 seconds"
+(/usr/bin/pineap /tmp/pineap.conf run_scan 15 $scan_type 2>&1) >> $LOG
+sleep 2
+scan_id="$(/usr/bin/pineap /tmp/pineap.conf get_status | grep scanID | awk '{print $2}' | sed 's/,//')"
+echo -e "\tNew scan id: $scan_id"
+echo -e "\tWaiting for scan to finish"
+while [ "$(/usr/bin/pineap /tmp/pineap.conf get_status | grep 'scanRunning' | awk '{print $2}' | sed 's/,//')" == "true" ]; do sleep 1; done
+echo -e "\tRetrieving scan results, appending to debug log"
+chmod a+x /pineapple/modules/Help/files/dumpscan.php
+/pineapple/modules/Help/files/dumpscan.php $scan_id >> $LOG
+echo "Renaming debug file"
+mv $LOG /tmp/debug.log
+echo "Completed Debug Filed Generation"
+logger "Completed Debug File Generation"

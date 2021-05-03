@@ -1,0 +1,22 @@
+#!/bin/bash
+# Simple wrapper script for PineAP
+
+ps | grep [p]ineapd -q && {
+    [[ "$1" == "stop" ]] && {
+        echo [*] Stopping PineAP
+        /etc/init.d/pineapd stop &> /dev/null
+        echo [*] PineAP successfully stopped
+        exit 0
+    } || {
+        echo -e [*] Executing /usr/bin/pineap /tmp/pineap.conf "$@" "\n"
+        /usr/bin/pineap /tmp/pineap.conf "$@"
+    }
+} || {
+    [[ "$1" == "start" ]] && {
+        echo "[*] Starting PineAP, please wait."
+        /etc/init.d/pineapd start &> /dev/null
+        echo "[*] PineAP started successfully"
+    } || {
+        echo "PineAPd is not running. Start it with 'module PineAP start'"
+    }
+}

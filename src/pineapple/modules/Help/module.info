@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Information and debug log generation for the WiFi Pineapple.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Help",
+    "version": "1.1",
+    "index": 14
+}

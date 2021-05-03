@@ -1,0 +1,60 @@
+<div class="modal fade" data-keyboard="true" id="install-hook" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" onclick="destroyModal()" class="close">&times;</button>
+                <h3 class="text-center autoselect" style="word-wrap: break-word" ng-hide="content.updating">Install Module {{content.module['title']}}</h3>
+                <h3 class="text-center autoselect" style="word-wrap: break-word" ng-show="content.updating">Update Module {{content.module['title']}}</h3>
+            </div>
+            <div class="modal-body">
+                <div ng-show="content.module['type'] !== 'Sys'">
+                    <h4><b>Third Party Module</b></h4>
+                    <span>This module is developed by <b>{{content.module['author']}}</b>, a third-party developer.</span>
+                </div>
+
+                <div ng-show="content.module['type'] == 'Sys'">
+                    <h4><b>First Party Module</b></h4>
+                    <span>This module is developed by <b>Hak5</b>, a first-party developer.</span>
+                </div>
+
+                <span>Generally, module support can be found at <a href=“https://forums.hak5.org/forum/90-nano-tetra-modules/” target=“_blank”>forums.hak5.org.</a></span>
+
+
+                <span class="text-info" ng-show="(!selectedModule.sd && selectedModule.internal && device == 'nano')">
+                    Using an SD card instead of internal storage is strongly recommended.
+                </span>
+
+                <span ng-show="(!selectedModule.sd && !selectedModule.internal)">
+                    You do not have enough free space to install this module. Please insert an SD card and ensure that it is formatted correctly.
+                </span>
+
+                <br/>
+                <br/>
+
+                <div>
+                    <button class="btn btn-default" ng-disabled="downloading || installing" onclick="destroyModal()">Cancel</button>
+                    <button class="btn btn-primary pull-right" ng-disabled="downloading || installing" style="margin-left: 5px;" ng-show="selectedModule.sd && !content.updating" ng-click="downloadModule('sd');">Install to SD Card</button>
+                    <button class="btn btn-primary pull-right" ng-disabled="downloading || installing" ng-show="selectedModule.internal && !content.updating" ng-click="downloadModule('internal');">Install Internally</button>
+                    <button class="btn btn-primary pull-right" ng-disabled="downloading || installing" ng-show="content.updating" ng-click="downloadModule('internal');">Install Update</button>
+                </div>
+
+                <div class="panel-body text-center" ng-if='downloading === true'>
+                    <img src="img/throbber.gif"><br>
+                    Downloading Module, please wait.
+                </div>
+                <div class="panel-body text-center" ng-if='installing === true'>
+                    <img src="img/throbber.gif"><br>
+                    Installing Module, please wait.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#install-hook').modal('show');
+
+    function destroyModal() {
+        $('#install-hook').modal('hide');
+    }
+</script>

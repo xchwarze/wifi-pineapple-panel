@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Continuously scan for specified clients by MAC Addresses.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Tracking",
+    "version": "1.0",
+    "index": 4
+}

@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Make changes to Routing, Access Points, MAC Addresses and the Hostname.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Networking",
+    "version": "1.1",
+    "index": 10
+}

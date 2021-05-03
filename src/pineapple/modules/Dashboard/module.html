@@ -1,0 +1,157 @@
+<div class="row" ng-controller="DashboardOverviewController">
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h2 style="text-align: center">{{ uptime }}</h2>
+                <p class="text-muted text-center">UPTIME</p>
+            </div>
+            <div class="panel-footer text-muted text-center">
+                {{ cpu }}% CPU USAGE
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <a href="/#!/modules/Clients" style="color: black;">
+                    <h2 style="text-align: center">{{ clients }}</h2>
+                    <p class="text-muted text-center">CLIENTS CONNECTED</p>
+                </a>
+            </div>
+            <div class="panel-footer text-muted text-center">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <a href="/#!/modules/PineAP" style="color: black;">
+                    <h2 style="text-align: center">{{ ssids }}</h2>
+                    <p class="text-muted text-center">SSIDS IN POOL</p>
+                </a>
+            </div>
+            <div class="panel-footer text-muted text-center">
+                {{ newssids }} SSIDS ADDED THIS SESSION
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-7">
+        <div class="panel panel-default" ng-controller="DashboardLandingPageController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Landing Page Browser Stats</h3>
+            </div>
+            <table class="table" ng-hide="browsers.length == 0">
+                <tr>
+                    <td>
+                    <img src="img/browser_chrome.png" alt="chrome">
+                    Chrome
+                    </td>
+                    <td class="text-right">{{ browsers['Chrome'] }}</td>
+                </tr>
+                <tr>
+                    <td>
+                    <img src="img/browser_ff.png" alt="Firefox">
+                    Firefox
+                    </td>
+                    <td class="text-right">{{ browsers['Firefox'] }}</td>
+                </tr>
+                <tr>
+                    <td>
+                    <img src="img/browser_ie.png" alt="MSIE">
+                    Internet Explorer
+                    </td>
+                    <td class="text-right">{{ browsers['Internet Explorer'] }}</td>
+                </tr>
+                <tr>
+                    <td>
+                    <img src="img/browser_opera.png" alt="opera">
+                    Opera
+                    </td>
+                    <td class="text-right">{{ browsers['Opera'] }}</td>
+                </tr>
+                <tr>
+                    <td>
+                    <img src="img/browser_safari.png" alt="Safari">
+                    Safari
+                    </td>
+                    <td class="text-right">{{ browsers['Safari'] }}</td>
+                </tr>
+                <tr>
+                    <td>
+                    Other
+                    </td>
+                    <td class="text-right">{{ browsers['Other'] }}</td>
+                </tr>
+            </table>
+
+            <div class="panel-body" ng-show="browsers.length == 0">
+                <span class="text-center"><i>No Landing Page Browser Stats Available</i></span>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-controller="DashboardBulletinsController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Bulletins</h3>
+            </div>
+            <div class="panel-body">
+                <div ng-repeat="bulletin in bulletins" ng-show="bulletins.length">
+                    <h5><strong>{{ bulletin.title }}</strong><span class="pull-right">{{ bulletin.date }}</span></h5>
+                    <div ng-bind-html="bulletin.content | rawHTML"></div>
+                    <hr>
+                </div>
+
+                <div class="panel-body">
+                    <p class="text-center" ng-show="loading">
+                        <img src="img/throbber.gif">
+                    </p>
+                    <p class="text-center" ng-hide="(bulletins.length || loading)">
+                        <button class="btn btn-default" ng-click="getBulletins()">
+                            Load Bulletins from Hak5
+                        </button>
+                    </p>
+                    <p class="text-center text-danger" ng-show="error">
+                        {{ error }}
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="panel panel-default" ng-controller="NotificationController">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Notifications
+                    <span class="pull-right">
+                        <button ng-show="notifications.length" type="button" class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="clearNotifications();">
+                            Clear
+                        </button>
+                    </span>
+                </h3>
+            </div>
+            <table class="table" ng-show="notifications.length">
+                <tbody>
+                    <tr ng-repeat="notification in notifications">
+                        <td>{{ notification.message }}</td>
+                        <td>{{ notification.time | timesincedate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="panel-body" ng-hide="notifications.length">
+                <span class="text-center"><i>No Notifications</i></span>
+            </div>
+        </div>
+    </div>
+
+</div>

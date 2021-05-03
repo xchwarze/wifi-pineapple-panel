@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "PineAP is an effective, modular rogue access point suite.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "PineAP",
+    "version": "1.9",
+    "index": 6
+}

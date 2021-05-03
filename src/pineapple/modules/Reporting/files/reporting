@@ -1,0 +1,122 @@
+#!/bin/bash
+
+tmpdir="/tmp"
+force_email_flag=$1
+
+checkInternet() {
+    ping -c1 -W3 -q 8.8.8.8 &> /dev/null && {
+        echo "1"
+    } || {
+        echo "0"
+    }
+}
+
+checkSDCard() {
+    [[ $(mount | grep /sd) == "" ]] && {
+        echo "1"
+    } || {
+        echo "0"
+    }
+}
+
+sendEmail() {
+    tar_gz=$1
+    to=$(uci get reporting.@ssmtp[0].to)
+    from=$(uci get reporting.@ssmtp[0].from)
+    email_body="To:$to\nFrom:$from\nSubject:WiFi Pineapple Report: $(date)\n\nPlease see the attached file."
+
+    date=$(date +%Y-%m-%d-%H:%M)
+
+    echo -e $email_body | (cat - && cat $tar_gz | uuencode "WiFi_Pineapple_Report_$(date +%Y-%m-%d-%H-%M).tar.gz") | ssmtp $to  &> /dev/null && {
+        echo "$date: Successfully sent email to $to" >> /tmp/reporting.log
+    } || {
+        echo "$date: Failed to send email to $to" >> /tmp/reporting.log
+    }
+}
+
+getPineAPReport() {
+    [[ "$(uci get reporting.@settings[0].log)" == "1" ]] && {
+        /pineapple/modules/Reporting/files/getlog.php > $tmpdir/report/pineap.log
+    }
+}
+
+getClientReport() {
+    [[ "$(uci get reporting.@settings[0].client)" == "1" ]] && {
+        /pineapple/modules/Reporting/files/getlog.php --probes > $tmpdir/report/probing_clients.csv
+    }
+}
+
+getSiteReport() {
+    [[ "$(uci get reporting.@settings[0].survey)" == "1" ]] && {
+        /etc/init.d/pineapd start
+        sleep 3
+        duration=$(uci get reporting.@settings[0].duration)
+        scan_type=0
+        cat /proc/cpuinfo | grep TETRA && scan_type=2
+        echo -e "\tRunning scan type $scan_type for 15 seconds"
+        (/usr/bin/pineap /tmp/pineap.conf run_scan $duration $scan_type 2>&1) >> /tmp/reporting.log
+        sleep 2
+        scan_id="$(/usr/bin/pineap /tmp/pineap.conf get_status | grep scanID | awk '{print $2}' | sed 's/,//')"
+        echo -e "\tNew scan id: $scan_id"
+        echo -e "\tWaiting for scan to finish"
+	    while [ "$(/usr/bin/pineap /tmp/pineap.conf get_status | grep 'scanRunning' | awk '{print $2}' | sed 's/,//')" == "true" ]; do sleep 1; done
+        echo -e "\tRetrieving scan results, appending to debug log"
+        chmod a+x /pineapple/modules/Help/files/dumpscan.php
+        /pineapple/modules/Help/files/dumpscan.php $scan_id > $tmpdir/report/site_survey
+    }
+}
+
+getTrackedClients() {
+    [[ "$(uci get reporting.@settings[0].tracking)" == "1" ]] && {
+        cp /tmp/tracking.report $tmpdir/report/tracked_clients &> /dev/null
+        echo "" > /tmp/tracking.report
+    }
+}
+
+generateReport() {
+    rm -rf $tmpdir/report &> /dev/null
+    mkdir -p $tmpdir/report &> /dev/null
+
+    archive_name="WiFi_Pineapple_Report_$(date +%Y-%m-%d-%H-%M).tar.gz"
+
+    echo getPineAPReport
+    getPineAPReport
+    echo getClientReport
+    getClientReport
+    echo getTrackedclients
+    getTrackedClients
+    echo getSiteReport
+    getSiteReport
+
+    echo tar
+    tar -C $tmpdir -pczhf $tmpdir/$archive_name report
+
+    [[ "$(uci get reporting.@settings[0].send_email)" == "1" ]] || [[ "$force_email_flag" == "force_email" ]] && {
+        [[ "$(checkInternet)" == "1" ]] && {
+            sendEmail $tmpdir/$archive_name
+        } || {
+            echo "$(date +%Y-%m-%d-%H:%M): Failed to email report - no internet connection available" >> /tmp/reporting.log
+        }
+    }
+
+    [[ $(checkSDCard) == "1" ]] && {
+        [[ "$(uci get reporting.@settings[0].save_report)" != "1" ]] && {
+            rm -rf $tmpdir/$archive_name
+        } || {
+            mkdir -p /sd/wifipineapple_reports &> /dev/null
+            mv $tmpdir/$archive_name /sd/wifipineapple_reports/$archive_name
+            echo "$(date +%Y-%m-%d-%H:%M): Report saved to SD card" >> /tmp/reporting.log
+        }
+    } || {
+        echo "$(date +%Y-%m-%d-%H:%M): Failed to save to SD card - no SD card found" >> /tmp/reporting.log
+    }
+
+    rm -rf $tmpdir/report &> /dev/null
+}
+
+tmpdir="/tmp"
+[[ $(checkSDCard) == "1" ]] && {
+    tmpdir="/sd/tmp"
+}
+
+generateReport

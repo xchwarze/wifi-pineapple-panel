@@ -1,0 +1,104 @@
+<div class="panel-group" id="accordion">
+    <div class="panel panel-default" ng-controller="PineAPLogController">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#PineAP" data-parent="#accordion">
+            <h4 class="panel-title">PineAP Log</h4>
+        </div>
+        <div id="PineAP" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <div class="input-group">
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="checkboxOptions.probes">Display Probes</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="checkboxOptions.associations">Display (De)Associations</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="checkboxOptions.removeDuplicates">Remove Duplicates</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-addon">SSID</span>
+                            <input type="text" class="form-control" placeholder="SSID" ng-model="ssid">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">MAC</span>
+                            <input type="text" class="form-control" placeholder="00:11:22:33:44:55" ng-model="mac">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Location</span>
+                            <input type="text" class="form-control" placeholder="SSID" ng-model="logLocation">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-click="setPineapLogLocation()">Save</button>
+                            </span>
+                        </div>
+                        <p class="alert well-sm alert-success" ng-show="locationModified">PineAP log location saved. You must reboot the device for changes to take effect.</p>
+                    </div>
+                </div>
+                <br/>
+                <button class="btn btn-default" ng-click="applyFilter()">Apply Filter</button>
+                <button class="btn btn-default" ng-click="clearFilter()">Clear Filter</button>
+                <button class="btn btn-default" ng-click="refreshLog()">Refresh Log</button>
+                <button class="btn btn-default" ng-click="clearLog()">Clear Log</button>
+                <button class="btn btn-default" ng-click="downloadLog()">Download Log</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" ng-hide="(log.length == 0)">
+                    <thead>
+                        <tr class="default-cursor">
+                            <th ng-click="orderByName='log_time'; reverseSort = !reverseSort">Time <span ng-show="orderByName=='log_time'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='log_type'; reverseSort = !reverseSort">Event <span ng-show="orderByName=='log_type'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='mac'; reverseSort = !reverseSort">MAC <span ng-show="orderByName=='mac'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='ssid'; reverseSort = !reverseSort">SSID <span ng-show="orderByName=='ssid'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                            <th ng-click="orderByName='log_count'; reverseSort = !reverseSort">Count <span ng-show="orderByName=='log_count'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="entry in log|orderBy:orderByName:reverseSort" ng-if="(entry != '' && entry.hidden != true)">
+                            <td>{{ entry.created_at | timesinceepoch }}</td>
+                            <td ng-if="entry.log_type == 0">Probe Request</td>
+                            <td ng-if="entry.log_type == 1">Association</td>
+                            <td ng-if="entry.log_type == 2">De-asscoation</td>
+                            <td class="autoselect"><hook-button hook="mac" content="entry.mac"></hook-button> {{ entry.mac }}</td>
+                            <td class="autoselect"><hook-button hook="ssid" content="entry.ssid"></hook-button> {{ entry.ssid }}</td>
+                            <td ng-if="entry.log_type == 0">{{ entry.dups}}</td>
+                            <td ng-if="entry.log_type != 0">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" ng-controller="SyslogController">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#Syslog" data-parent="#accordion">
+            <h4 class="panel-title">System Log</h4>
+        </div>
+        <div id="Syslog" class="panel-collapse collapse">
+            <div class="panel-body">
+                <pre class="scrollable-pre log-pre">{{ syslog }}</pre>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" ng-controller="DmesgController">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#Dmesg" data-parent="#accordion">
+            <h4 class="panel-title">Dmesg</h4>
+        </div>
+        <div id="Dmesg" class="panel-collapse collapse">
+            <div class="panel-body">
+                <pre class="scrollable-pre log-pre">{{ dmesg }}</pre>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" ng-controller="ReportingLogController">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#Reporting" data-parent="#accordion">
+            <h4 class="panel-title">Reporting Log</h4>
+        </div>
+        <div id="Reporting" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p ng-show="reportingLog.trim() == ''">No log entries found yet.</p>
+                <pre class="scrollable-pre log-pre" ng-hide="reportingLog.trim() == ''">{{ reportingLog }}</pre>
+            </div>
+        </div>
+    </div>
+</div>

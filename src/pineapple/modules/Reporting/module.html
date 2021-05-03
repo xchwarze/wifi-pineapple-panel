@@ -1,0 +1,152 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="ReportConfigurationController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Report Configuration</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-inline">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="config['generateReport']">
+                            Generate Report every
+                        </label>
+                        <select class="form-control padding-left" ng-model="config['interval']">
+                            <option ng-repeat="item in [1, 2, 3, 4, 5, 6]" value="{{ item }}">{{ item }} Hours</option>
+                        </select>
+                    </div><br>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="config['storeReport']" ng-disabled="sdDisabled">
+                            Store Report in /root
+                        </label>
+                    </div><br>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="config['sendReport']">
+                            Send Report via email
+                        </label>
+                    </div><br><br>
+                    <div class="alert well-sm alert-success ng-hide" ng-show="configSaved">Settings saved successfully.</div>
+                    <button class="btn btn-default" ng-click="saveConfiguration()">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="ReportContentController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Report Contents</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-inline" ng-submit="reportContents()">
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="config['pineAPLog']">
+                            PineAP Log
+                        </label><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="config['clearLog']">
+                            Clear when done
+                        </label><br>
+
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="config['siteSurvey']">
+                            PineAP Site Survey
+                        </label><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label class="checkbox-inline">
+                            Duration of AP &amp; Client scan
+                            <select class="form-control padding-left" ng-model="config['siteSurveyDuration']">
+                                <option value="15">15 seconds</option>
+                                <option value="30">30 seconds</option>
+                                <option value="60">1 minutes</option>
+                                <option value="120">2 minutes</option>
+                                <option value="300">5 minutes</option>
+                            </select>
+                        </label><br>
+
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="config['client']">
+                            PineAP Probing Client Report
+                        </label><br>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" ng-model="config['tracking']">
+                            PineAP Tracked Clients Report
+                        </label><br><br>
+                        <div class="alert well-sm alert-success ng-hide" ng-show="configSaved">Settings saved successfully.</div>
+                        <button type="button" class="btn btn-default" ng-click="saveConfiguration()">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default" ng-controller="EmailConfigurationController">
+            <div class="panel-heading">
+                <h3 class="panel-title">Email Configuration</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="input-group">
+                            <span class="fixed-addon-width input-group-addon">From</span>
+                            <input type="text" class="form-control" placeholder="sender@example.com" ng-model="config['from']">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width input-group-addon">To</span>
+                            <input type="text" class="form-control" placeholder="receiver@example.com" ng-model="config['to']">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width-3 input-group-addon">SMTP Server</span>
+                            <input type="text" class="form-control" placeholder="smtp.example.com" ng-model="config['server']">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width-3 input-group-addon fixed-addon">SMTP Port</span>
+                            <input type="text" class="form-control" placeholder="587" ng-model="config['port']">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width-3 input-group-addon">Domain</span>
+                            <input type="text" class="form-control" placeholder="example.com" ng-model="config['domain']">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width-3 input-group-addon">Username</span>
+                            <input type="text" class="form-control" placeholder="user@example.com" ng-model="config['username']">
+                        </div>
+                        <br/>
+                        <div class="input-group">
+                            <span class="fixed-addon-width-3 input-group-addon">Password</span>
+                            <input type="password" class="form-control" placeholder="**********" ng-model="config['password']">
+                        </div>
+                        <div class="input-group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="config['tls']">Use TLS</label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="" ng-model="config['starttls']">Use STARTTLS</label>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" ng-click="saveConfiguration()">Save</button>
+                                <button type="button" class="btn btn-default" ng-click="testConfiguration()">Send Test Email</button>
+                            </div>
+                            <br/><br/>
+                            <div class="alert well-sm alert-success" ng-show="configSaved">Settings saved successfully.</div>
+                            <div class="alert well-sm alert-success" ng-show="testing">Sending test email.</div>
+                            <div class="alert well-sm alert-danger" ng-show="error">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

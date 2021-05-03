@@ -1,0 +1,418 @@
+<div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#FeedbackHelp" data-parent="#accordion">
+            <h4 class="panel-title">Feedback and Support</h4>
+        </div>
+        <div id="FeedbackHelp" class="panel-collapse collapse in" ng-controller="DebugController">
+            <div class="panel-body">
+                <p>
+                   The WiFi Pineapple is more than hardware or software -- it's home to a helpful community of creative penetration testers and IT professionals. Welcome!
+                </p>
+
+                <p>
+                    The <a href="https://www.wifipineapple.com/forum">forums</a> are a great place to share feedback and ideas. You'll also find community support and discussion as well as modules, tutorials and firmware releases. Be sure to use the search feature to find answers to common questions.
+                </p>
+
+                <p>
+                    Find a bug? If it hasn't already been reported, you're encouraged to report it along with detailed steps to reproduce the issue at the <a href="https://www.wifipineapple.com/bugs">bug tracker</a>.
+                </p>
+
+                <p>
+                    Looking for something a little more informal? The IRC channel is home to a passionate group of WiFi Pineapple enthusiasts. Join us at #pineapple on irc.hak5.org -- though be aware that views expressed are not those of Hak5 or the WiFi Pineapple team.
+                </p>
+
+                <p>
+                    <a href="https://hak5.org">© Hak5 LLC</a>.
+                </p>
+
+                <p>
+                    Tips for reporting issues:
+                    <ul>
+                        <li>Search the bug tracker and forums to see if it has already been reported. If the issue is unresolved, sharing your experience may aid in developing a remedy.</li>
+                        <li>Share your configuration. Host OS, web browser and version, WiFi Pineapple firmware version as well as your particular network setup are all important factors to share. Be as descriptive as possible.</li>
+                        <li>Describe how to reproduce the problem step by step. This is immensely important in diagnosing any problem.</li>
+                        <li>Provide logs when possible. Usually the output of commands such as "dmesg", "lsusb", "iwconfig", "ifconfig -a", "cat /etc/config/wireless" are very helpful in diagnosing issues.</li>
+                        <li>Be courteous</li>
+                    </ul>
+                </p>
+                <p class="text-center">
+                    <button class="btn btn-default btn-xs" ng-click="generateDebugFile()" ng-hide="loading">Download Debug File</button>
+                    <div class="text-center" ng-show="loading">
+                        <img src="img/throbber.gif">
+                        <div>The debug file is being generated. Once complete the download will start.</div>
+                    </div>
+                    <h5 class="panel-title" ng-show="debugStarted">Progress</h5>
+                    <p>
+                        <textarea id="output" ng-show="debugStarted" id="debugGenerationOutput" class="form-control autoselect" rows="15" ng-model="output" readonly></textarea>
+                    </p>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#DashboardHelp" data-parent="#accordion">
+            <h4 class="panel-title">Dashboard</h4>
+        </div>
+        <div id="DashboardHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    The dashboard provides an at-a-glance view of the WiFi Pineapple status, landing page browser stats, notifications and bulletins.
+                </p>
+                <p>
+                    <b>Landing Page Browser Stats</b> will display hits from popular web browsers when the Landing Page is enabled from Configuration. <b>Notifications</b> will display notifications from modules. The <b>Bulletins</b> feature fetches the latest project information from wifipineapple.com.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer collapsed" data-toggle="collapse" data-target="#ReconHelp" data-parent="#accordion">
+            <h4 class="panel-title">Recon</h4>
+        </div>
+        <div id="ReconHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    Unlike traditional War Driving, whereby the auditor passively listens for beacons being advertised by Access Points to paint a picture of the surrounding WiFi landscape, the WiFi Pineapple Recon goes one giant step further.
+                </p>
+                <p>
+                    By monitoring channels for both beacons and data activity, Recon paints a more complete picture by combining Access Points with their respective clients. With the WiFi landscape displayed in this manner, a tester can quickly identify potential targets from Recon and immediately take action.
+                </p>
+                <p>
+                    Recon allows the auditor to scan for nearby Access Points and Clients. Clients are identified by sniffing for active traffic and are displayed 
+underneath their 
+parent Access Point. If a Client is associated to an Access Point but idle, it may not appear in the list. Increasing scan duration from the drop-down allows the sniffer to see more potential traffic on each channel. Clients or Access Points that appear in blue have MAC addresses that are locally assigned to the corresponding device. This could be an indication of MAC randomization or spoofing, but also appears when a vendor assigns MACs that are not registered with the IEEE Registration Authority. Italicized MACs have saved information from the Notes module.
+                </p>
+                <p>
+                    The SSID, MAC, Security, Channel and Signal of Access Points are displayed in the table view. Clients are listed as MAC addresses only.
+                </p>
+                <p>
+                    Clicking the menu button next to an MAC address shows a menu providing buttons to add or remove the MAC from the PineAP Filter or PineAP Tracking feature. Opening this menu will automatically look up the MAC address in the OUI database if it has been downloaded. In order to download the OUI database, either the WiFi Pineapple or the web browser itself must have internet access. Deauth uses the multiplier to send multiple deauthentication frames to the target Client. A multiplier of 2 is twice as many deauthentication frames as a multiplier of 1. The menu button is disabled when a scan is active (ie. not stopped or paused).
+                </p>
+                <p>
+                    Clicking the menu button next to an SSID shows a menu providing buttons to add or remove the SSID from the PineAP Pool or PineAP Filter. Deauth Clients will send deauthentication frames to all associated clients currently recognized by Recon using the multiplier. A multiplier of 2 is twice as many deauthentication frames as a multiplier of 1.
+                </p>
+                <p>
+                    Clicking the clone feature for enterprise access points copies the data to the PineAP Enterprise feature so that the access point can be impersonated to capture clients and credentials.
+                </p>
+                <p>
+                    Unassociated Clients show in a unique table listed by MAC Address. These Clients have active radios, however are not associated to an Access Point.
+                </p>
+                <p>
+                    Out Of Range Clients will display in a unique table along with their relationship to their parent Access Point by MAC address only.
+                </p>
+                <p>
+                    When the scan duration is set to Continuous, the scan will run indefinitely until it is stopped by the user. Checking the Live box enables Recon++ and live result streaming. A websocket pushes new scan data to the web interface every five seconds, providing a real time view of the wireless landscape.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#ClientHelp" data-parent="#accordion">
+            <h4 class="panel-title">Clients</h4>
+        </div>
+        <div id="ClientHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    The WiFi Pineapple will allow clients to connect if Allow Associations is checked in PineAP. Connected clients will list in the Clients view along with their respective MAC Address, IP Address, the SSID to which they have connected (if Log Probes is enabled in PineAP) and Hostname. If the SSID or Hostname is unavailable it will display as such.
+                </p>
+                <p>
+                    The Kick button allows the auditor to remove a client from the WiFi Pineapple network.
+                </p>
+                <p>
+                    Clicking the menu button next to an MAC address shows a menu providing buttons to add or remove the MAC from the PineAP Filter or PineAP Tracking feature.
+                </p>
+                <p>
+                    Clicking the menu button next to an SSID shows a menu providing buttons to add or remove the SSID from the PineAP Pool or PineAP Filter.
+                </p>
+                <p>
+                    The Clients table can be updated by clicking the Refresh button.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#FiltersHelp" data-parent="#accordion">
+            <h4 class="panel-title">Filters</h4>
+        </div>
+        <div id="FiltersHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    Filtering may be performed by Client MAC Address or SSID. Both Deny and Allow modes are supported and this option may be toggled using the switch button.
+                </p>
+                <p>
+                    <b>Client Filtering</b><br/>
+                    In Deny Mode, Clients with MAC Addresses listed in the Client Filter will not be able to connect to the WiFi Pineapple. In Allow Mode, only Clients with MAC Addresses listed in the Client Filter will be able to connect. When performing an audit, it is best to use Allow Mode to ensure that only clients within the scope of engagement are targeted.
+                </p>
+                <p>
+                    Client MAC Addresses and SSIDs may be added from menu buttons associated with their respective listings in Recon or Client views. 
+                </p>
+                <p>
+                    <b>SSID Filtering</b><br/>
+                    In Deny Mode, clients will not be able to associate with the WiFi Pineapple if they are attempting to connect to an SSID listed in the filter. In Allow Mode, clients will only be able to associate with the WiFi Pineapple if the SSID they are attempting to connect to is listed in the filter.
+                </p>
+                <p>
+                    SSIDs may be added to the filter from the menu buttons associated with their respective listings in Recon.
+                </p>
+                <p>
+                    <b>Managing Filters</b><br/>
+                    Filtered Clients and SSIDs will display in the lists. Client MAC addresses and SSIDs may be added to the list manually by using the text input field and Add button. Clicking a Client MAC or SSID will populate the text input field and clicking Remove will remove the entry from the Filter list.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#PineAPHelp" data-parent="#accordion">
+            <h4 class="panel-title">PineAP</h4>
+        </div>
+        <div id="PineAPHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    PineAP is an effective, modular rogue access point suite designed to aid the WiFi auditor in collecting clients by thoroughly mimicking Preferred Networks including Enterprise access points. When acting as an Enterprise access point, it can capture clients and credentials.
+                </p>
+                <p>
+                    <b>Allow Associations</b> - when enabled, Client devices will be allowed to associate with the WiFi Pineapple through any requested SSID. E.g. If a Client device sends a Probe Request for SSID "example" the WiFi Pineapple will acknowledge the request, respond and allow the Client device to associate and connect to the WiFi Pineapple network. This feature works in conjunction with Client and SSID filtering. Clients attempting to associate to an SSID disallowed by Filters will be unable to associate. Clients with a MAC blocked by Filters will not be able to associate. When disabled, clients will not be allowed to associate. Formerly named Karma.
+                </p>
+                <p>
+                    <b>PineAP Daemon</b> - This daemon must be enabled in order to use the Log PineAP Events, Client Connect Notifications, Client Disconnect Notifications, Beacon Response, Capture SSIDs to Pool and Broadcast SSID pool features. The PineAP Daemon will coordinate the appropriate actions based on Source and Target MAC settings as well as the Beacon Response and SSID Broadcast intervals. This feature requires access to wlan1 and cannot be used in conjunction with WiFi Client Mode if wlan1 is used. PineAP Daemon must be enabled and PineAP Settings must be saved before the associated features will be available.
+                </p>
+                <p>
+                    <b>Autostart PineAP</b>- when enabled, the PineAP daemon will start automatically at boot.
+                </p>
+                <p>
+                    <b>Log PineAP Events</b> - when enabled, Client device Probe Requests, Client Associations to, and dissassociations from the WiFi Pineapple will be logged. This feature provides information for analysis from the Logging view. If disabled, Associations will not be logged and may not appear in the SSID column from the Clients view.
+                </p>
+                <p>
+                    <b>Client Connect Notifications</b>- when enabled, the WiFi auditor will receive notifications when clients connect to the pineapple.
+                </p>
+                <p>
+                    <b>Client Disconnect Notifications</b>>- when enabled, the WiFi auditor will receive notifications when clients disconnect from the pineapple.
+                </p>
+                <p>
+                    <b>Capture SSIDs to Pool</b> - when enabled, the sniffer will save the SSID data of captured Probe Requests to the SSID Pool. This passive feature benefits the Broadcast SSID Pool feature. The SSID Pool may also be managed manually.
+                </p>
+                <p>
+                    <b>Beacon Response</b> - when enabled, targeted beacons will be transmitted to Client devices in response to a Probe Request with the appropriate SSID. These beacons will not be transmitted to broadcast, but rather specifically to the device making the probe request. This prevents the beacon from being visible to other devices. If Allow Associations is enabled and the Client device associates with the WiFi Pineapple, then targeted Beacon Responses will continue to transmit to the Client device for a period of time. Beacon Responses will use the Source MAC setting, which is also shared with the Broadcast SSID Pool feature.The Beacon Response Interval will dictate how quickly they are transmitted.
+                </p>
+                <p>
+                    <b>Broadcast SSID Pool</b> - when enabled, the SSID Pool will be broadcasted as beacons using the Source MAC and Target MAC settings at the interval specified. Formerly named Dogma.
+                </p>
+                <p>
+                    <b>Broadcast SSID Pool Interval</b> - Specifies the Interval in which to Broadcast SSIDs from the Pool. Aggressive requires more CPU usage while Lower requires less.
+                </p>
+                <p>
+                    <b>Beacon Response Interval</b> - Specifies the Interval in which to transmit Beacon Responses. Aggressive requires more CPU usage while Lower requires less.
+                </p>
+                <p>
+                    <b>Source MAC</b> - by default, this is the MAC address of wlan0 on the WiFi Pineapple. This is the interface for which associations may be allowed and also hosts the Management Access Point. The MAC address of wlan0 may be changed from the Networking view. This MAC address may be set to that of a secondary WiFi Pineapple if desired.
+                </p>
+                <p>
+                    <b>Target MAC</b> - by default, this is the broadcast MAC address FF:FF:FF:FF:FF:FF. Frames transmitted to broadcast will be seen by all nearby Client devices. Setting the Client MAC address will target PineAP features at the single device. Similar to Beacon Response, only SSIDs Broadcast from the Pool will be visible to the targeted Client device. When used in conjunction with Filtering, this feature enables precision device targeting.
+                </p>
+                <p>
+                    <b>SSID Pool</b> - populated automatically when the Capture SSID Pool feature is enabled. May also be added to manually using the text field and Add button. Similarly, clicking a listed SSID will populate the text field allowing for the removal of the entry using the Remove button. From the SSID Pool Menu, Download SSID Pool downloads the list of SSIDs in the database and Clear SSID Pool will remove all entries.
+                </p>
+                    <b>PineAP Enterprise</b>
+                    <ul>
+                        <li>
+                            <b>Dropdown</b>-
+                            <ul>
+                                <li>
+                                    <b>Clear Certificates</b>- Clears the generated SSL certificates for use with the enterprise network.
+                                </li>
+                                <li>
+                                    <b>Download Credentials (JTR Format)</b>- Downloads all captured MSCHAPv2 credentials in John the Ripper format for easy cracking.
+                                </li>
+                                <li>
+                                    <b>Download Credentials (Hashcat Format)</b>- Downloads all captured MSCHAPv2 credentials in John the Ripper format for easy cracking.
+                                </li>
+                            </ul> 
+                        <li>
+                            <b>Enable</b> - Enables enterprise credential capture.
+                        </li>
+                        <li>
+                            <b>Enable Passthrough</b>- Enables authentication passthrough on the enterprise network.
+                        </li>
+                        <li>
+                            <b>Enterprise SSID</b>- The SSID of the enterprise network.
+                        </li>
+                        <li>
+                            <b>Enterprise MAC</b>- The BSSID of the enterprise network.
+                        </li>
+                        <li>
+                            <b>Encryption Type</b>- The type of encryption employed by the enterprise network. This may be set to any combination of the WPA and WPA2 versions and CCMP and TKIP cipher suites.
+                        </li>
+                        <li>
+                            <b>Downgrade Attack</b>- Specifies whether or not a downgrade attack should be enabled and whether to downgrade to to GTC (which is tunneled plaintext auth) or MSCHAPv2 (which uses a weak hashing algorithm).
+                        </li>
+                    </ul>
+                <p>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#TrackingHelp" data-parent="#accordion">
+            <h4 class="panel-title">Tracking</h4>
+        </div>
+        <div id="TrackingHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    The tracking feature will continuously scan for specified Clients by MAC address and execute a customizable Tracking Script. This feature requires the Log Probes and/or Log Associations features of PineAP to be enabled. 
+                </p>
+                <p>
+                    Clients may be specified manually using the text field and add button. Clients may also be added to the Client Tracking List by using the PineAP Tracking Add MAC button from an associated MAC address within the Clients view or Recon view. Selecting a MAC address from the Client Tracking List will populate the text field for removal using the Remove button. 
+                </p>
+                <p>
+                    When a client is identified by a logged Probe or Association, the customizable Tracking Script will execute. The Tracking Script defines variables for the Client MAC address, the identification type (Probe or Association) and the SSID with which the Client is Probing or Associating.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#LoggingHelp" data-parent="#accordion">
+            <h4 class="panel-title">Logging</h4>
+        </div>
+        <div id="LoggingHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    The Logging view displays the PineAP Log, System Log, Dmesg and Reporting Log.
+                </p>
+                <p>
+                    <b>PineAP Log</b> - chronologically displays PineAP events if Log Probes and/or Log Associations are enabled. Each event contains a timestamp, event type (Probe Request or Association), the MAC address of the Client device, and the SSID for which the device is Probing or Associating.
+                </p>
+                <p>
+                    <b>PineAP Log Filtering</b><br/>
+                    The Display Probes and Display Associations checkboxes enable the auditor to toggle the display of Probes or Associations. The Remove Duplicates checkbox will remove any duplicate entry, regardless of timestamp. For example, if a Client transmits a Probe Request for SSID "example" 10 times in 1 hour, checking the Remove Duplicates box will show only the first entry.
+                </p>
+                <p>
+                    Filtering by MAC address and SSID is supported by completing the associated text fields. For example, if de:ad:be:ef:c0:fe is input in the MAC text field, only that Client device activity will show in the PineAP Log. MAC and SSID filters also support Regular Expressions. Similarly the Log may be filtered by SSID.
+                </p>
+                <p>
+                    Filters do not apply until the Apply Filter button is pressed. Clear Filter will reset to the default and display all captured data. Refresh Log will obtain the latest log data from PineAP and Clear Log will empty the Log File. By default PineAP log database is located in /tmp and will not be saved after a reboot.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#ReportingHelp" data-parent="#accordion">
+            <h4 class="panel-title">Reporting</h4>
+        </div>
+        <div id="ReportingHelp" class="panel-collapse collapse" ng-controller="HelpController">
+            <div class="panel-body">
+                <p>
+                    This feature enables the auditor to generate reports at a specified interval. The report may be sent via email and/or saved locally<span ng-if="device == 'nano'"> on a suitable SD card. See the Format SD Card option from the USB menu on the Advanced view to setup a new card</span>. Email Configuration must be complete in order for the Send Report via email function to operate successfully.
+                </p>
+                <p>
+                    The Report Contents may contain: the PineAP Log with an option to clear after generating the report, a PineAP Site Survey similar to the Recon View with option to specify AP & Client scan duration, and PineAP Probing and Tracked Clients.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#NetworkingHelp" data-parent="#accordion">
+            <h4 class="panel-title">Networking</h4>
+        </div>
+        <div id="NetworkingHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    From the Networking view, the auditor may make changes to the Routing, Access Point, MAC Addresses, Hostname and connect to an Access Point using WiFi Client Mode. The view also contains an OUI lookup tool.
+                </p>
+                <p>
+                    <b>Route</b> - the Kernel IP routing table is displayed and may be modified for the selected interface. The Route menu enables the auditor to Restart DNS. By default the expected Default Gateway is 172.16.42.42. When using the WiFi Pineapple Connector Android app, IP routing will automatically update to use usb0 as the default gateway.
+                </p>
+                <p>
+                    <b>Access Point</b> - The WiFi Pineapple primary open access point and management access point may be configured. Both the open and management access point share the same channel. The open access point may be hidden and the management access point may be disabled.
+                </p>
+                <p>
+                    <b>OUI Lookup</b> - this feature allows the auditor to look up MAC addresses and prefixes as needed. The dropdown menu adjacent to OUI Lookup provides the option to delete and reset the OUI database, which is a mirror of the copy hosted by Wireshark and can is downloaded from <a href="https://wifipineapple.com/oui.txt">wifipineapple.com</a>.
+                </p>
+                <p>
+                    <b>WiFi Client Mode</b> - this feature enables the auditor to connect the WiFi Pineapple to another wireless access point for Internet or local network access. When using WiFi Client Mode, the IP routing will automatically update to use the selected interface. The WiFi Pineapple can be used with a number of supported USB WiFi adapters to add a third (wlan2) interface. wlan0 is reserved for use by the Access Point and wlan1 is required by PineAP and cannot be used if the PineAP Daemon and its subsequent features are being used. 
+                </p>
+                <p>
+                    To connect to a nearby Access Point, select the desired Interface and click Scan. From the Access Point list, choose the desired network, enter the Passphrase (if required) and click Connect. Once connected the WiFi Pineapple IP address will display and the Default Route will update to that of the newly connected network. Click Disconnect to end the connection.
+                </p>
+                <p>
+                    <b>MAC Address</b> - The Current MAC address for the selected interface will display. A New MAC address may be specified manually, or set randomly using the New MAC text field and Set New MAC or Set Random MAC buttons. MAC Addresses may be reset to default from the MAC Address menu button. Changing MAC addresses may disconnect connected clients from the WiFi Pineapple.
+                </p>
+                <p>
+                    <b>Advanced</b> - The Hostname may be updated using the hostname text field and Update Hostname button. Wireless configuration may be reset using the Reset WiFi Config to Defaults option from the Advanced menu button. The output of ifconfig is displayed.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#ConfigurationHelp" data-parent="#accordion">
+            <h4 class="panel-title">Configuration</h4>
+        </div>
+        <div id="ConfigurationHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    The Configuration view provides the auditor with means to set general settings and modify the landing page.
+                </p>
+                <p>
+                    <b>General</b> - Timezone settings is displayed and may be manually selected. The system password may be set. The WiFi Pineapple may be rebooted or reset to factory defaults from the General menu button.
+                </p>
+                <p>
+                    <b>Landing Page</b> - when enabled, this feature will act as a captive portal. New clients connecting to the WiFi Pineapple will be forwarded to this landing page. Some client devices will automatically launch a browser to this page upon connection. Landing page browser stats will display on the dashboard. PHP and HTML are accepted. The Landing Page may only display if the WiFi Pineapple has an Internet connection.
+                </p>
+                <p>
+                    <b>Button Script</b> - this feature allows the auditor to control the action performed when the reset button is pressed. The default is a shell script that reboots the pineapple, but this can be modified to better suit the auditor's needs.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#AdvancedHelp" data-parent="#accordion">
+            <h4 class="panel-title">Advanced</h4>
+        </div>
+        <div id="AdvancedHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    The Advanced view provides the auditor with information on system resources, USB devices, file system table, CSS and the ability to upgrade the WiFi Pineapple firmware.
+                </p>
+                <p>
+                    <b>Resources</b> - displays file system disk usage and memory. From the Resources menu button Page Caches may be dropped.
+                </p>
+                <p>
+                    <b>USB</b> - displays connected USB peripherals and allows the auditor to set the file system table (fstab). SD cards may be formatted from the USB menu button.
+                </p>
+                <p>
+                    <b>CSS</b> - The WiFi Pineapple Web Interface stylesheet may be modified.
+                </p>
+                <p>
+                    <b>Manage API Tokens</b> - displays existing API tokens that can be used to authenticate remotely with the pineapple's API without a password. Tokens can be revoked and copied from this view. Note that when an API token is clicked in this view, the entire token is selected despite it appearing truncated with ellipsis.
+                </p>
+                <p>
+                    <b>Generate New Token</b> - allows the auditor to securely generate new API tokens.
+                </p>
+                <p>
+                    <b>Firmware Upgrade</b> - displays current firmware version and allows the auditor to check for updates. This requires an Internet connection and will initiate a connection to WiFiPineapple.com. If an update is available, the changelog will display and the option to Perform Upgrade will be available. Users are advised to carefully read the warnings related to the firmware upgrade feature.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading pointer" data-toggle="collapse" data-target="#NotesHelp" data-parent="#accordion">
+            <h4 class="panel-title">Notes</h4>
+        </div>
+        <div id="NotesHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+                <p>
+                    This feature enables the auditor to easily take notes on different clients and APs. MAC addresses can also be given nicknames, making it easy for the auditor to keep track of important devices. The Download button generates a JSON file containing all the notes taken. Refresh refreshes the view to check for new notes. The delete button to the right of each note allows the note and nickname associated with a device to be easily removed.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

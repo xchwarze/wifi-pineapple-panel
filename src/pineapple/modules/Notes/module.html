@@ -1,0 +1,114 @@
+<style type="text/css">
+.table td.text {
+    max-width: 177px;
+}
+.table td.text span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
+}
+</style>
+<div class="row" ng-controller="NotesController">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    MAC Notes
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-default btn-xs btn-fixed-length" ng-click="downloadNotes()">Download</button>
+                        <button class="btn btn-default btn-xs btn-fixed-length" ng-click="getNotes()">Refresh</button>
+                    </div>
+                </h3>
+            </div>
+            <div class="table-responsive table-dropdown" ng-show="macs.length">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>MAC Address</th>
+                            <th>Note</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="mac in macs">
+                            <td>
+                                <span class="autoselect">
+                                    {{ mac.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="autoselect">
+                                    <hook-button disable="running && !paused" hook="mac" content="mac.key" probes="true" client="true"></hook-button>
+                                    {{ mac.key }}
+                                </span>
+                            </td>
+                            <td class="text autoselect">
+                                <span class="autoselect">
+                                    <i>{{ mac.note }}</i>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-default btn-xs" key="{{mac.key}}" ng-click="deleteNote($event)">Delete Note</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-body" ng-hide="macs.length">
+                No MAC notes found.
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    SSID Notes
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-default btn-xs btn-fixed-length" ng-click="downloadNotes()">Download</button>
+                        <button class="btn btn-default btn-xs btn-fixed-length" ng-click="getNotes()">Refresh</button>
+                    </div>
+                </h3>
+            </div>
+            <div class="table-responsive table-dropdown" ng-show="ssids.length">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>SSID</th>
+                            <th>Note</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="ssid in ssids">
+                            <td>
+                                <span class="autoselect">
+                                    {{ ssid.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="autoselect">
+                                    <hook-button disable="running && !paused" hook="ssid" content="ssid.key" probes="true" client="false"></hook-button>
+                                    {{ ssid.key }}
+                                </span>
+                            </td>
+                            <td class="text autoselect">
+                                <span class="autoselect">
+                                    <i>{{ ssid.note }}</i>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-default btn-xs" key="{{ssid.key}}" ng-click="deleteNote($event)">Delete Note</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-body" ng-hide="ssids.length">
+                No SSID notes found.
+            </div>
+        </div>
+    </div>
+</div>

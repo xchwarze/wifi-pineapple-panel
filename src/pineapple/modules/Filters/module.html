@@ -1,0 +1,93 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="clientFilterController">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Client Filtering
+                    <span class="dropdown">
+                        <ul class="dropdown-menu" aria-labelledby="clearClients">
+                            <li ng-click="clearAll()"><a>Clear all</a></li>
+                        </ul>
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="clearClients"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <span class="input-group-addon">{{ mode }} Listed MAC(s)</span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="toggleMode()">Switch</button>
+                    </span>
+                </div>
+                <br/>
+                <p>
+                    <textarea class="form-control" rows="15" onmouseup="getClientLineNumber(this);"
+                              ng-model="clientFilters" readonly></textarea>
+                </p>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="MAC Address" name="mac" ng-model="mac">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="addClient()">Add</button>
+                        <button class="btn btn-default" type="button" ng-click="removeClient()">Remove</button>
+                    </span>
+                </div>
+                <br>
+                <div>
+                    <p style="color: #31708f"><b>Client filters</b> specify which devices, by MAC address, are either explicitly allowed to
+                        connect or
+                        explicitly denied from connecting. In Allow Mode only the listed MAC Addresses are allowed to
+                        connect. In Deny Mode, the listed MAC addresses will be prevented from connecting.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="ssidFilterController">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    SSID Filtering
+                    <span class="dropdown">
+                        <ul class="dropdown-menu" aria-labelledby="clearSSIDs">
+                            <li ng-click="clearAll()"><a>Clear all</a></li>
+                        </ul>
+                        <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="clearSSIDs"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                        </button>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <span class="input-group-addon">{{ mode }} Listed SSID(s)</span>
+                    <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-click="toggleMode()">Switch</button>
+                            </span>
+                </div>
+                <br/>
+                <p>
+                    <textarea class="form-control" rows="15" onmouseup="getSSIDLineNumber(this);" ng-model="ssidFilters"
+                              readonly></textarea>
+                </p>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="SSID" name="ssid" ng-model="ssid">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="addSSID()">Add</button>
+                        <button class="btn btn-default" type="button" ng-click="removeSSID()">Remove</button>
+                    </span>
+                </div>
+                <br>
+                <div>
+                    <p style="color: #31708f"><b>SSID filters</b> specify the network names to which the WiFi Pineapple will respond. In Allow Mode,
+                        devices will only be allowed to associate with the WiFi Pineapple for SSID names listed. In Deny
+                        Mode, devices will be prevented from associating with the WiFi Pineapple for the listed SSID
+                        names.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

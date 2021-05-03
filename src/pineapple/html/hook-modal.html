@@ -1,0 +1,108 @@
+<div class="modal fade" data-keyboard="true" id="pineap-hook" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" ng-click="destroyModal()" class="close">&times;</button>
+                <h3 class="text-center autoselect" style="word-wrap: break-word" ng-show="content">{{ content }}</h3>
+                <h3 class="text-center text-info" style="word-wrap: break-word" ng-show="!content">Hidden SSID</h3>
+                <p class="text-center text-muted autoselect" ng-show="ouiPresent()" ng-if="hook == 'mac'">{{ oui }}</p>
+                <p class="text-center text-muted" ng-if="hook == 'mac'" ng-show="locallyAssignedMac()">
+                    This MAC was likely locally assigned and was not assigned by the hardware vendor.
+                    This could be the result of MAC randomization, Spoofing, or a vendor that has not registered with the IEEE Registration Authority.
+                </p>
+                <p class="text-center text-muted" ng-if="hook == 'mac'" ng-show="!locallyAssignedMac()">
+                    This MAC was likely globally assigned by the hardware vendor.
+                    It has probably not been randomized for privacy.
+                </p>
+                <img class="center-block" ng-show="ouiLoading && ouiPresent()" src="img/throbber.gif">
+            </div>
+            <div class="modal-body">
+                <div id="ssid-actions" ng-if="hook == 'ssid' && content != ''">
+                    <h4>PineAP Pool</h4>
+                    <button type="button" class="btn btn-default" ng-click="addSSIDToPool()">Add SSID</button>
+                    <button type="button" class="btn btn-default" ng-click="removeSSIDFromPool()">Remove SSID</button>
+                    <hr>
+                    <h4>PineAP Filter</h4>
+                    <button type="button" class="btn btn-default" ng-click="addSSIDToFilter()">Add SSID</button>
+                    <button type="button" class="btn btn-default" ng-click="removeSSIDFromFilter()">Remove SSID</button>
+                    <button ng-if="deauth.clients" type="button" class="btn btn-default" ng-click="addClientsToFilter()">Add all Clients</button>
+                    <hr ng-if="deauth && ((hook === 'ssid' && deauth.clients) || hook === 'mac')">
+                </div>
+                <div id="mac-actions" ng-if="hook == 'mac'">
+                    <h4>PineAP Filter</h4>
+                    <button type="button" class="btn btn-default" ng-click="addMACToFilter()">Add MAC</button>
+                    <button type="button" class="btn btn-default" ng-click="removeMacFromFilter()">Remove MAC</button>
+                    <hr>
+                    <h4>PineAP Tracking</h4>
+                    <button type="button" class="btn btn-default" ng-click="addMacToTracking()">Add MAC</button>
+                    <button type="button" class="btn btn-default" ng-click="removeMacFromTracking()">Remove MAC</button>
+                    <hr ng-if="deauth && ((hook === 'ssid' && deauth.clients) || hook === 'mac')">
+                </div>
+                <h4 ng-if="deauth && ((hook === 'ssid' && deauth.clients) || hook === 'mac')">Deauth Clients</h4>
+                <div class="form-group" ng-if="deauth && ((hook === 'ssid' && deauth.clients) || hook === 'mac')" ng-hide="error">
+                    <label for="deauthMultiply">Deauth Multiplier</label>
+                    <select class="form-control" id="deauthMultiply" ng-init="deauthMultiple = 1" ng-model="deauthMultiple" ng-options="multiplier for multiplier in [1,2,3,4,5,6,7,8,9,10]">
+                    </select>
+                    <br>
+                    <button type="button" class="btn btn-default" ng-if="hook === 'mac'" ng-click="deauthClient()" ng-disabled="deauthActive">
+                        Deauth <img src="../img/throbber.gif" class="button-throbber" ng-show="deauthActive"/>
+                    </button>
+                    <button type="button" class="btn btn-default" ng-if="hook === 'ssid'" ng-click="deauthAP()" ng-disabled="deauthActive">
+                        Deauth <img src="../img/throbber.gif" class="button-throbber" ng-show="deauthActive"/>
+                    </button>
+                </div>
+                <div ng-if="show_probes == true">
+                    <hr>
+                    <h4>PineAP Logged Probes</h4>
+                    <button type="button" class="btn btn-default" ng-click="loadProbes()">Load</button>
+                    <button type="button" class="btn btn-default" ng-click="addProbes()" ng-show="probes">Add all probes to PineAP Pool</button>
+                    <br>
+                    <br>
+                    <div class="alert well-sm alert-success" ng-show="probesAdded">All probes added to the PineAP Pool</div>
+                    <div class="alert alert-danger text-center" ng-show="probeError">{{ probeError }}</div>
+                    <textarea class="form-control" rows="10" ng-model="probes" ng-show="probes" readonly></textarea>
+                </div>
+                <div ng-if="hook == 'mac'">
+                    <hr>
+                    <h4>OUI</h4>
+                    <span class="autoselect" ng-show="ouiPresent()">{{ oui }}</span>
+                    <img class="center-block" ng-show="ouiLoading && ouiPresent()" src="img/throbber.gif">
+                    <div ng-hide="ouiPresent()">
+                        <button type="button" class="btn btn-default" ng-click="loadOUIFile()" ng-disabled="gettingOUI"><span ng-hide="gettingOUI">Download OUI File</span><img ng-show="gettingOUI" class="module-icon" src="img/throbber.gif"></button>
+                        <br/>
+                        <span class="small text-muted">Note: The OUI Database is downloaded from WiFiPineapple.com</span>
+                    </div>
+                </div>
+                <div>
+                    <hr>
+                    <h4>Notes</h4>
+                    <input class="form-control" type="text" name="name" ng-model="noteData.name" placeholder="Nickname">
+                    <textarea class="form-control" id="notes" rows="6" placeholder="Add notes..." ng-model="noteData.note">
+                    </textarea>
+                    <button class="btn btn-lg btn-default btn-block" type="button" ng-click="setNoteData()">
+                        Save Notes
+                    </button>
+                    <div class="alert well-sm alert-success" ng-show="noteSaved">Note saved</div>
+                </div>
+            </div>
+            <div class="modal-footer" ng-show="success">
+                <div class="alert alert-success text-center">Action completed successfully.</div>
+            </div>
+            <div class="modal-footer" ng-show="error == 'Please start PineAP'">
+                <div class="alert alert-danger text-center">{{ error }}</div>
+                <button ng-hide="pineAPStarting" type="button" class="btn btn-default center-block" ng-click="startPineAP()">Start PineAP</button>
+                <img class="center-block" ng-show="pineAPStarting" src="img/throbber.gif">
+            </div>
+            <div class="modal-footer" ng-show="error == 'This AP has no clients'">
+                <div class="alert alert-danger text-center">{{ error }}</div>
+            </div>
+            <div class="modal-footer" ng-show="error == 'An internet connection is required to download the OUI file'">
+                <div class="alert alert-danger text-center">{{ error }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$('#pineap-hook').modal('show');
+</script>

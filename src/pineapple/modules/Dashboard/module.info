@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "At-a-glance view of the WiFi Pineapple.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Dashboard",
+    "version": "1.0",
+    "index": 1
+}

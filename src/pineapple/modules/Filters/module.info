@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Filters",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Filters",
+    "version": "1.0",
+    "index": 5
+}

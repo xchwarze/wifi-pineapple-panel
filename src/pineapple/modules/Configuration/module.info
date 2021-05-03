@@ -1,0 +1,12 @@
+{
+    "author": "Hak5",
+    "description": "Manage general settings and the landing page.",
+    "devices": [
+        "nano",
+        "tetra"
+    ],
+    "system": true,
+    "title": "Configuration",
+    "version": "1.0",
+    "index": 11
+}
