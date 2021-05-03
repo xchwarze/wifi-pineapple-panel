@@ -108,7 +108,7 @@ body {
 }
 
 .module-nav li a {
-    margin-left: 30px;
+    margin-left: 10px;
 }
 
 .module-nav li:hover {
@@ -167,7 +167,7 @@ body {
     }
 
     .sidebar:hover{
-        margin-left: 0px;
+        margin-left: 0;
     }
 }
 
@@ -177,7 +177,7 @@ body {
         margin-left: 200px;
     }
     .sidebar{
-        margin-left: 0px;
+        margin-left: 0;
         float: left;
     }
 }
