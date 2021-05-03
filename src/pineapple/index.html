@@ -36,47 +36,49 @@
             <span class="brand-logo"></span>
             <span class="brand-text"></span>
         </a>
-    </div>
-    <ul class="nav navbar-nav navbar-right navbar-top-links">
-        <li class="dropdown" ng-controller="NotificationController" ng-show="notifications.length">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="">
-                <img width="18px" src="img/notify.png">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-top">
-                <li ng-repeat="notification in notifications"><a>{{ notification.message }}</a></li>
-                <li role="separator" class="divider"></li>
-                <li ng-click="clearNotifications()"><a><span class="text-center"><i>- Clear -</i></span></a></li>
-            </ul>
-        </li>
-        <li class="dropdown logout" ng-controller="AuthenticationController">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="">
-                <img width="18px" src="img/logout.png">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-top dropdown-menu-logout">
-                <li ng-click="logout()"><a>Log Off</a></li>
-                <li ng-click="rebootPineapple()"><a>Reboot</a></li>
-                <li ng-click="haltPineapple()"><a>Shut Down</a></li>
-            </ul>
-        </li>
-    </ul>
-
-    <div class="navbar-default sidebar" role="navigation" ng-controller="NavigationController">
-        <div class="sidebar-nav navbar-collapse collapse">
-            <ul class="nav sidebar-nav">
-                <li ng-repeat-start="systemModule in systemModules" ng-class="getClass(systemModule.name)" module="{{ systemModule.name }}"><a href="#!/modules/{{ systemModule.name }}"><img class="module-icon" ng-src="{{ systemModule.icon }}" ng-if="systemModule.icon != null"> {{ systemModule.title }}</a></li>
-                <li ng-if="$index == 3" ng-repeat-end>
-                    <a ng-class="getModuleClass()" onclick="$('.module-nav').collapse('toggle')" href=''><img class="module-icon" src="/modules/ModuleManager/module_icon.svg"> Modules <span class="caret"></span></a>
-                    <ul class="nav module-nav collapse">
-                        <li ng-class="getClass('ModuleManager')" module="ModuleManager"><a href="#!/modules/ModuleManager">Manage Modules</a></li>
-                        <li ng-class="getClass(userModule.name)" ng-repeat="userModule in userModules" module="{{ userModule.name }}"><a href="#!/modules/{{ userModule.name }}"><img class="module-icon" ng-src="{{ userModule.icon }}" ng-if="userModule.icon != null"/> {{ userModule.title }}</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+        <ul class="nav navbar-nav navbar-right pull-right navbar-top-links">
+            <li class="dropdown" ng-controller="NotificationController" ng-show="notifications.length">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="">
+                    <img width="18px" src="img/notify.png">
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-top">
+                    <li ng-repeat="notification in notifications"><a>{{ notification.message }}</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li ng-click="clearNotifications()"><a><span class="text-center"><i>- Clear -</i></span></a></li>
+                </ul>
+            </li>
+            <li class="dropdown logout" ng-controller="AuthenticationController">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="">
+                    <img width="18px" src="img/logout.png">
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-top dropdown-menu-logout">
+                    <li ng-click="logout()"><a>Log Off</a></li>
+                    <li ng-click="rebootPineapple()"><a>Reboot</a></li>
+                    <li ng-click="haltPineapple()"><a>Shut Down</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
 </nav>
+
+<div class="navbar-default sidebar" role="navigation" ng-controller="NavigationController">
+    <div class="sidebar-nav navbar-collapse collapse">
+        <ul class="nav sidebar-nav">
+            <li ng-repeat-start="systemModule in systemModules" ng-class="getClass(systemModule.name)" module="{{ systemModule.name }}">
+                <a href="#!/modules/{{ systemModule.name }}"><img class="module-icon pull-right" ng-src="{{ systemModule.icon }}" ng-if="systemModule.icon != null"> {{ systemModule.title }}</a>
+            </li>
+            <li ng-if="$index == 3" ng-repeat-end>
+                <a ng-class="getModuleClass()" onclick="$('.module-nav').collapse('toggle')" href=''><img class="module-icon pull-right" src="/modules/ModuleManager/module_icon.svg"> Modules <span class="caret"></span></a>
+                <ul class="nav module-nav collapse">
+                    <li ng-class="getClass('ModuleManager')" module="ModuleManager"><a href="#!/modules/ModuleManager">Manage Modules</a></li>
+                    <li ng-class="getClass(userModule.name)" ng-repeat="userModule in userModules" module="{{ userModule.name }}"><a href="#!/modules/{{ userModule.name }}"><img class="module-icon pull-right" ng-src="{{ userModule.icon }}" ng-if="userModule.icon != null"/> {{ userModule.title }}</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
 
 <div class="module-content" ng-view>
 
