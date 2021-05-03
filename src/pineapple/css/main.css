@@ -154,8 +154,8 @@ body {
         position: relative;
     }
 
-    nav.sidebar a{
-        padding-right: 13px;
+    .sidebar a{
+        padding-right: 12px !important;
     }
 
     .sidebar .navbar-collapse, .sidebar .container-fluid{
@@ -247,6 +247,11 @@ body {
 
     .navbar-brand {
         padding: 15px 15px 15px 0;
+    }
+
+    .module-icon.pull-right {
+        float: left !important;
+        margin-right: 10px;
     }
 }
 
