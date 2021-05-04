@@ -14,7 +14,6 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
         removeDuplicates: false
     };
 
-
     $scope.refreshLog = (function() {
         $scope.log = [];
         $scope.loadingPineapLog = true;
@@ -145,9 +144,8 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
 }]);
 
 registerController('SyslogController', ['$api', '$scope', function($api, $scope) {
-    $scope.syslog = 'Loading...';
-
-    $scope.refreshLog = (function() {
+    $scope.refreshLog = (function(force) {
+        $scope.syslog = 'Loading...';
         $api.request({
             module: 'Logging',
             action: 'getSyslog'
@@ -157,14 +155,11 @@ registerController('SyslogController', ['$api', '$scope', function($api, $scope)
             }
         })
     });
-
-    $scope.refreshLog();
 }]);
 
 registerController('DmesgController', ['$api', '$scope', function($api, $scope) {
-    $scope.dmesg = 'Loading...';
-
     $scope.refreshLog = (function() {
+        $scope.dmesg = 'Loading...';
         $api.request({
             module: 'Logging',
             action: 'getDmesg'
@@ -174,14 +169,11 @@ registerController('DmesgController', ['$api', '$scope', function($api, $scope) 
             }
         })
     });
-
-    $scope.refreshLog();
 }]);
 
 registerController('ReportingLogController', ['$api', '$scope', function($api, $scope) {
-    $scope.reportingLog = '';
-
     $scope.refreshLog = (function() {
+        $scope.reportingLog = 'Loading...';
         $api.request({
             module: 'Logging',
             action: 'getReportingLog'
@@ -191,6 +183,4 @@ registerController('ReportingLogController', ['$api', '$scope', function($api, $
             }
         })
     });
-
-    $scope.refreshLog();
 }]);

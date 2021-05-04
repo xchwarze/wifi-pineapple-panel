@@ -74,7 +74,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-default" ng-controller="SyslogController">
+    <div id="syslogController" class="panel panel-default" ng-controller="SyslogController">
         <div class="panel-heading pointer" data-toggle="collapse" data-target="#Syslog" data-parent="#accordion">
             <h4 class="panel-title">System Log</h4>
         </div>
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-default" ng-controller="DmesgController">
+    <div id="dmesgController" class="panel panel-default" ng-controller="DmesgController">
         <div class="panel-heading pointer" data-toggle="collapse" data-target="#Dmesg" data-parent="#accordion">
             <h4 class="panel-title">Dmesg</h4>
         </div>
@@ -94,7 +94,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel-default" ng-controller="ReportingLogController">
+    <div id="reportingLogController" class="panel panel-default" ng-controller="ReportingLogController">
         <div class="panel-heading pointer" data-toggle="collapse" data-target="#Reporting" data-parent="#accordion">
             <h4 class="panel-title">Reporting Log</h4>
         </div>
@@ -106,3 +106,12 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    // dirty hack for handle bootstrap events
+    $(function() {
+        $('#syslogController,#dmesgController,#reportingLogController').on('shown.bs.collapse', function (event) {
+            angular.element(event.currentTarget).scope().refreshLog();
+        });
+    });
+</script>
