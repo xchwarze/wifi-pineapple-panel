@@ -54,7 +54,7 @@
             $api.getNotifications(function(data){
                 $scope.notifications = data;
             });
-        }, 6000);
+        }, 20000);
 
         $scope.$on('$destroy', function() {
             $interval.cancel($scope.notificationInterval);
