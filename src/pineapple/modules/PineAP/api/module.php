@@ -453,7 +453,8 @@ class PineAP extends SystemModule
             'broadcastInterval' => $this->pineAPHelper->getSetting("beacon_interval"),
             'responseInterval' => $this->pineAPHelper->getSetting("beacon_response_interval"),
             'sourceMAC' => $sourceMAC,
-            'targetMAC' => $targetMAC
+            'targetMAC' => $targetMAC,
+            'interface' => $this->pineAPHelper->getSetting("pineap_interface"),
         );
         $this->response = array('settings' => $settings, 'success' => true);
         return $settings;
@@ -519,6 +520,8 @@ class PineAP extends SystemModule
         $this->uciSet("pineap.@config[0].target_mac", $settings->targetMAC);
         $this->pineAPHelper->setSource($settings->sourceMAC);
         $this->uciSet("pineap.@config[0].pineap_mac", $settings->sourceMAC);
+        $this->pineAPHelper->setPineapInterface($settings->interface);
+        $this->uciSet("pineap.@config[0].pineap_interface", $settings->interface);
 
         $this->response = array("success" => true);
     }

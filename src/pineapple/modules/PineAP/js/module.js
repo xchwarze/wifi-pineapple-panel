@@ -154,8 +154,10 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
         broadcastInterval: 'NORMAL',
         responseInterval: 'NORMAL',
         sourceMAC: '00:00:00:00:00:00',
-        targetMAC: 'FF:FF:FF:FF:FF:FF'
+        targetMAC: 'FF:FF:FF:FF:FF:FF',
+        interface: 'wlan1mon'
     };
+    $scope.interfaces = [];
 
     $scope.togglePineAP = (function() {
         $scope.pineAPenabling = true;

@@ -1,0 +1,65 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2018 Hak5.org
+
+
+START=99
+
+gen_config() {
+cat << EOF > /tmp/pineap.conf
+autostart = $(uci get pineap.@config[0].autostart)
+karma = $(uci get pineap.@config[0].karma)
+beacon_interval = $(uci get pineap.@config[0].beacon_interval)
+beacon_response_interval = $(uci get pineap.@config[0].beacon_response_interval)
+beacon_responses = $(uci get pineap.@config[0].beacon_responses)
+capture_ssids = $(uci get pineap.@config[0].capture_ssids)
+broadcast_ssid_pool = $(uci get pineap.@config[0].broadcast_ssid_pool)
+logging = $(uci get pineap.@config[0].logging)
+mac_filter = $(uci get pineap.@config[0].mac_filter)
+ssid_filter = $(uci get pineap.@config[0].ssid_filter)
+ap_channel = $(uci get pineap.@config[0].ap_channel)
+pineap_mac = $(ifconfig -a wlan0 | grep HWaddr | awk '{print $5}')
+target_mac = $(uci get pineap.@config[0].target_mac)
+pineap_interface = $(uci get pineap.@config[0].pineap_interface)
+recon_db_path = $(uci get pineap.@config[0].recon_db_path)
+hostapd_db_path = $(uci get pineap.@config[0].hostapd_db_path)
+ssid_db_path = $(uci get pineap.@config[0].ssid_db_path)
+connect_notifications = $(uci get pineap.@config[0].connect_notifications)
+disconnect_notifications = $(uci get pineap.@config[0].disconnect_notifications)
+rts_enabled = off
+rts_scan_id = -1
+EOF
+}
+
+start() {
+    interface_mon=$(uci get pineap.@config[0].pineap_interface)
+    interface=${interface_mon/mon/''}
+
+    mkdir -p /tmp/handshakes
+    gen_config
+    
+    #ifconfig wlan1mon &>/dev/null || airmon-ng start wlan1 &>/dev/null
+    ifconfig interface_mon &>/dev/null || airmon-ng start interface &>/dev/null
+    /usr/sbin/pineapd /tmp/pineap.conf &>/dev/null &
+    sleep 1
+}
+
+stop() {
+    killall -9 pineapd
+    rm /var/run/pineapd.sock
+    rm /var/run/pineapd.lock
+}
+
+restart() {
+    stop
+    start
+}
+
+boot() {
+    gen_config
+    /usr/sbin/pineapd /tmp/pineap.conf --initdb
+    if [[ $(uci get pineap.@config[0].autostart) == '1' ]]; then
+        start
+    fi
+    logger =========== PineAP ==============
+}
+

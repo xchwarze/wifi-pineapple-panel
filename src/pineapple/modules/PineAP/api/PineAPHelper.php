@@ -266,4 +266,15 @@ class PineAPHelper
         exec("pineap /tmp/pineap.conf deauth $source $target $channel $multiplier");
         return true;
     }
+
+    public function getPineapInterface()
+    {
+        return $this->getSetting("pineap_interface");
+    }
+
+    public function setPineapInterface($interface)
+    {
+        $this->setSetting("pineap_interface", "{$interface}");
+        return true;
+    }
 }
