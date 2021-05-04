@@ -43,6 +43,10 @@
                 <button class="btn btn-default" ng-click="clearLog()">Clear Log</button>
                 <button class="btn btn-default" ng-click="downloadLog()">Download Log</button>
             </div>
+            <div class="center-block" ng-show="loadingPineapLog">
+                <img class="center-block" src="img/throbber.gif">
+                <br>
+            </div>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" ng-hide="(log.length == 0)">
                     <thead>

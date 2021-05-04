@@ -6,6 +6,7 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
     $scope.locationModified = false;
     $scope.orderByName = 'log_time';
     $scope.reverseSort = true;
+    $scope.loadingPineapLog = false;
 
     $scope.checkboxOptions = {
         probes: true,
@@ -16,10 +17,12 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
 
     $scope.refreshLog = (function() {
         $scope.log = [];
+        $scope.loadingPineapLog = true;
         $api.request({
             module: 'Logging',
             action: 'getPineapLog'
         }, function(response) {
+            $scope.loadingPineapLog = false;
             if (response.error === undefined) {
                 $scope.log = response.pineap_log;
                 $scope.applyFilter();
@@ -142,7 +145,7 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
 }]);
 
 registerController('SyslogController', ['$api', '$scope', function($api, $scope) {
-    $scope.syslog = 'Loading..';
+    $scope.syslog = 'Loading...';
 
     $scope.refreshLog = (function() {
         $api.request({
@@ -159,7 +162,7 @@ registerController('SyslogController', ['$api', '$scope', function($api, $scope)
 }]);
 
 registerController('DmesgController', ['$api', '$scope', function($api, $scope) {
-    $scope.dmesg = 'Loading..';
+    $scope.dmesg = 'Loading...';
 
     $scope.refreshLog = (function() {
         $api.request({
@@ -176,7 +179,7 @@ registerController('DmesgController', ['$api', '$scope', function($api, $scope) 
 }]);
 
 registerController('ReportingLogController', ['$api', '$scope', function($api, $scope) {
-    $scope.reportingLog = "";
+    $scope.reportingLog = '';
 
     $scope.refreshLog = (function() {
         $api.request({
