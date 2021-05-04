@@ -322,9 +322,11 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
 registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
     $scope.hostnameUpdated = false;
     $scope.wirelessReset = false;
+    $scope.wirelessUpdated = false;
     $scope.data = {
         hostname: "Pineapple",
-        ifconfig: ""
+        ifconfig: "",
+        wireless: ""
     };
 
     $scope.reloadData = (function() {
@@ -362,6 +364,21 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
                 $scope.wirelessReset = true;
                 $timeout(function(){
                     $scope.wirelessReset = false;
+                }, 5000);
+            }
+        });
+    });
+
+    $scope.saveWirelessConfig = (function() {
+        $api.request({
+            module: 'Networking',
+            action: 'saveWirelessConfig',
+            wireless: $scope.data['wireless']
+        }, function(response) {
+            if (response.success === true) {
+                $scope.wirelessUpdated = true;
+                $timeout(function(){
+                    $scope.wirelessUpdated = false;
                 }, 5000);
             }
         });

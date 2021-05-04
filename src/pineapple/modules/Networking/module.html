@@ -288,8 +288,8 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6" ng-controller="NetworkingMACAddressesController">
-        <div class="panel panel-default">
+    <div class="col-md-6">
+        <div class="panel panel-default" ng-controller="NetworkingMACAddressesController">
             <div class="panel-heading">
                 <h3 class="panel-title">MAC Addresses
                     <span class="dropdown">
@@ -331,12 +331,10 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-6" ng-controller="NetworkingAdvancedController">
-        <div class="panel panel-default">
+        <div class="panel panel-default" ng-controller="NetworkingAdvancedController">
             <div class="panel-heading">
-                <h3 class="panel-title">Advanced
+                <h3 class="panel-title">
+                    Wireless config
                     <span class="dropdown">
                         <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="NetworkingAdvancedDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <small><span class="caret"></span></small>
@@ -346,6 +344,21 @@
                         </ul>
                     </span>
                 </h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <textarea class="form-control" rows="12" ng-model="data['wireless']"></textarea>
+                </p>
+                <p class="alert well-sm alert-success" ng-show="wirelessUpdated">Config saved successfully</p>
+                <button type="submit" class="btn btn-default" ng-click="saveWirelessConfig()">Save config</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6" ng-controller="NetworkingAdvancedController">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Advanced</h3>
             </div>
             <div class="panel-body">
                 <div class="alert well-sm alert-success" ng-show="wirelessReset">The Wireless Configuration has been reset. The Network will now restart.</div>
@@ -368,8 +381,4 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="row">
-
 </div>

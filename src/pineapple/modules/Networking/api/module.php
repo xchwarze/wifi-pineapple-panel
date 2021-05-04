@@ -92,6 +92,10 @@ class Networking extends SystemModule
             case 'setFirewallConfig':
                 $this->setFirewallConfig();
                 break;
+
+            case 'saveWirelessConfig':
+                $this->saveWirelessConfig();
+                break;
         }
     }
 
@@ -121,7 +125,11 @@ class Networking extends SystemModule
     private function getAdvancedData()
     {
         exec("ifconfig -a", $ifconfig);
-        $this->response = array("hostname" => gethostname(), "ifconfig" => implode("\n", $ifconfig));
+        $this->response = array(
+            "hostname" => gethostname(),
+            "ifconfig" => implode("\n", $ifconfig),
+            "wireless" => file_get_contents('/etc/config/wireless')
+        );
     }
 
     private function setHostname()
@@ -251,5 +259,14 @@ class Networking extends SystemModule
         exec('/etc/init.d/firewall restart');
 
         $this->response = array("success" => true);
+    }
+
+    private function saveWirelessConfig()
+    {
+        if (isset($this->request->wireless)) {
+            file_put_contents('/etc/config/wireless', $this->request->wireless);
+            $this->execBackground('wifi');
+            $this->response = array("success" => true);
+        }
     }
 }
