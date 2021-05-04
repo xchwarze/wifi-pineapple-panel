@@ -4,7 +4,10 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Clients <button class="btn btn-default btn-xs btn-fixed-length pull-right" ng-click="getClientData()">Refresh</button></h3>
             </div>
-            <div class="table-responsive table-dropdown" ng-show="clients.length">
+            <div class="center-block" ng-show="loading">
+                <br><img class="center-block" src="img/throbber.gif"><br>
+            </div>
+            <div class="table-responsive table-dropdown" ng-show="clients.length && !loading">
                 <table class="table">
                     <thead>
                     <tr>
@@ -45,7 +48,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="panel-body" ng-hide="clients.length">
+            <div class="panel-body" ng-show="(clients.length === 0) && !loading">
                 No clients found.
             </div>
         </div>

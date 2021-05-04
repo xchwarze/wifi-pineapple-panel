@@ -1,11 +1,14 @@
 registerController("ClientsController", ['$api', '$scope', '$timeout', function($api, $scope, $timeout){
     $scope.clients  = [];
+    $scope.loading = false;
 
     $scope.getClientData = function(){
+        $scope.loading = true;
         $api.request({
             module: "Clients",
             action: "getClientData"
         }, function(response) {
+            $scope.loading = false;
             $scope.parseClients(response.clients);
         });
     };
