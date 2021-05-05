@@ -2,6 +2,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
     $scope.accessPoints = [];
     $scope.unassociatedClients = [];
     $scope.outOfRangeClients = [];
+    $scope.outOfRangeClientsCount = 0;
     $scope.scans = [];
     $scope.selectedScan = "";
     $scope.loadedScan = null;
@@ -57,6 +58,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         $scope.accessPoints = data['ap_list'];
         $scope.unassociatedClients = data['unassociated_clients'];
         $scope.outOfRangeClients = data['out_of_range_clients'];
+        $scope.outOfRangeClientsCount = Object.keys(data['out_of_range_clients']).length;
     }
 
     function checkScanStatus() {

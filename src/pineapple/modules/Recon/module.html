@@ -104,10 +104,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        Scan Results
-                        <span ng-show="accessPoints.length">
-                            ({{ accessPoints.length }})
-                        </span>
+                        Scan Results <span ng-show="accessPoints.length" class="badge">{{ accessPoints.length }}</span>
                         <span class="dropdown" ng-show="accessPoints.length || outOfRangeClients.length || unassociatedClients.length">
                             <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="reconDropdown"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="running && !paused">
@@ -124,7 +121,7 @@
                     </h3>
                 </div>
                 <div class="table-responsive">
-                    <table class="table" ng-hide="(accessPoints.length == 0)">
+                    <table class="table" ng-hide="(accessPoints.length === 0)">
                         <thead>
                         <tr class="default-cursor">
                             <th ng-click="orderByName='ssid'; reverseSort = !reverseSort">SSID <span ng-show="orderByName=='ssid'"><span class="caret" ng-show="reverseSort"></span><span class="caret caret-reversed" ng-show="!reverseSort"></span></span></th>
@@ -184,15 +181,12 @@
         </div>
     </div>
 
-    <div class="row" ng-hide="(outOfRangeClients.length == 0)">
+    <div class="row" ng-hide="(outOfRangeClients.length === 0)">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        Out of Range Clients
-                        <span ng-show="outOfRangeClients.length">
-                            ({{ outOfRangeClients.length }})
-                        </span>
+                        Out of Range Clients <span class="badge">{{ outOfRangeClientsCount }}</span>
                     </h3>
                 </div>
                 <div class="table-responsive">
@@ -223,15 +217,12 @@
         </div>
     </div>
 
-    <div class="row" ng-hide="(unassociatedClients.length == 0)">
+    <div class="row" ng-hide="(unassociatedClients.length === 0)">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        Unassociated Clients
-                        <span ng-show="unassociatedClients.length">
-                            ({{ unassociatedClients.length }})
-                        </span>
+                        Unassociated Clients <span class="badge">{{ unassociatedClients.length }}</span>
                     </h3>
                 </div>
                 <div class="table-responsive">
