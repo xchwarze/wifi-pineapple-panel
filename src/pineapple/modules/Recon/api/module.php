@@ -33,6 +33,8 @@ class Recon extends SystemModule
 {
     private $scanID = null;
     private $dbConnection = null;
+    const PATH_WS_SCRIPT = '/pineapple/modules/Recon/api/reconpp.py';
+    const CLI_PINEAP = 'pineap /tmp/pineap.conf';
 
     public function __construct($request)
     {
@@ -108,7 +110,7 @@ class Recon extends SystemModule
 
     private function startPineAPDaemon()
     {
-        if(!$this->checkRunningFull("/usr/sbin/pineapd")) {
+        if(!$this->checkPineAPDaemon()) {
             exec("/etc/init.d/pineapd start");
         }
         $this->response = array("success" => true);
@@ -116,11 +118,7 @@ class Recon extends SystemModule
 
     private function checkPineAPDaemon()
     {
-        if($this->checkRunningFull("/usr/sbin/pineapd")) {
-           return true;
-        } else {
-            return false;
-        }
+        return (bool) $this->checkRunningFull("/usr/sbin/pineapd");
     }
 
     private function startNormalScan()
@@ -129,7 +127,7 @@ class Recon extends SystemModule
         $scanType = $this->request->scanType;
         if ($this->checkPineAPDaemon()) {
             $this->startPineAPDaemon();
-            exec("pineap /tmp/pineap.conf run_scan {$scanDuration} {$scanType}");
+            exec(Recon::CLI_PINEAP . " run_scan {$scanDuration} {$scanType}");
             $scanID = $this->getCurrentScanID();
             $this->response = array("success" => true, "scanID" => $scanID);
         } else {
@@ -139,32 +137,31 @@ class Recon extends SystemModule
 
     private function startReconPP()
     {
-
-        if ($this->checkRunningFull("python /pineapple/modules/Recon/api/reconpp.py")) {
+        if ($this->checkRunningFull("python " . Recon::PATH_WS_SCRIPT)) {
            $this->response = array("success" => true);
            return;
         }
 
         $dbPath = $this->uciGet("pineap.@config[0].recon_db_path");
         $scanID = $this->getCurrentScanID();
-        $this->execBackground("python /pineapple/modules/Recon/api/reconpp.py {$dbPath} {$scanID}");
+        $this->execBackground("python " . Recon::PATH_WS_SCRIPT . " {$dbPath} {$scanID}");
 
         $this->response = array("success" => true);
     }
 
     private function startLiveScan()
     {
-        $scanDuration = $this->request->scanDuration;
-        $scanType = $this->request->scanType;
-        $scanID = 0;
-        $dbLocation = $this->uciGet("pineap.@config[0].recon_db_path");
-
         if ($this->checkPineAPDaemon()) {
+            $scanDuration = $this->request->scanDuration;
+            $scanType = $this->request->scanType;
+            $scanID = 0;
+            $dbLocation = $this->uciGet("pineap.@config[0].recon_db_path");
+
             // Check if a scan is already in progress
             if (!is_numeric($this->getCurrentScanID())) {
-                exec("pineap /tmp/pineap.conf run_scan {$scanDuration} {$scanType}");
+                exec(Recon::CLI_PINEAP . " run_scan {$scanDuration} {$scanType}");
                 $scanID = $this->getCurrentScanID();
-                $this->execBackground("python /pineapple/modules/Recon/api/reconpp.py {$dbLocation} {$scanID}");
+                $this->execBackground("python " . Recon::PATH_WS_SCRIPT . " {$dbLocation} {$scanID}");
             }
             $this->startReconPP();
             $this->response = array("success" => true, "scanID" => $scanID);
@@ -175,8 +172,8 @@ class Recon extends SystemModule
 
     private function stopScan()
     {
-        $this->execBackground("pineap /tmp/pineap.conf stop_scan");
-        $this->execBackground("pkill -9 -f /pineapple/modules/Recon/api/reconpp.py");
+        $this->execBackground(Recon::CLI_PINEAP . " stop_scan");
+        $this->execBackground("pkill -9 -f " . Recon::PATH_WS_SCRIPT);
         if (file_exists('/tmp/reconpp.lock')) {
             unlink('/tmp/reconpp.lock');
         }
@@ -185,58 +182,45 @@ class Recon extends SystemModule
 
     private function getCurrentScanID()
     {
-        exec("pineap /tmp/pineap.conf get_status", $status_output);
+        exec(Recon::CLI_PINEAP . " get_status", $status_output);
         if ($status_output[0] === "PineAP is not running") {
             $this->stopScan();
             $this->response = array("completed" => true, "error" => "The PineAP Daemon must be running.");
             return null;
         }
 
-        $status_output = implode("\n", $status_output);
-        $status_output = json_decode($status_output, true);
-        $scanID = $status_output['scanID'];
+        $status_output = json_decode(implode("\n", $status_output), true);
 
-        return $scanID;
+        return $status_output['scanID'];
     }
 
     private function wsRunning()
     {
-        return $this->checkRunningFull('python /pineapple/modules/Recon/api/reconpp.py');
+        return $this->checkRunningFull("python " . Recon::PATH_WS_SCRIPT);
     }
 
     private function checkScanStatus()
     {
-        exec("pineap /tmp/pineap.conf get_status", $status_output);
+        exec(Recon::CLI_PINEAP . " get_status", $status_output);
         if ($status_output[0] === "PineAP is not running") {
             $this->stopScan();
             $this->response = array("completed" => true, "error" => "The PineAP Daemon must be running.");
             return;
         }
 
-        $status_output = implode("\n", $status_output);
-        $status_output = json_decode($status_output, true);
-
+        $status_output = json_decode(implode("\n", $status_output), true);
         if ($status_output['scanRunning'] === false) {
             $this->stopScan();
             $this->response = array("completed" => true);
         } else if ($status_output['scanRunning'] === true) {
-            if ($status_output['captureRunning'] === true) {
-                $resp = array("completed" => false,
-                    "scanID" => $status_output['scanID'],
-                    "scanPercent" => $status_output['scanPercent'],
-                    "continuous" => $status_output['continuous'],
-                    "live" => $this->wsRunning(),
-                    "captureRunning" => true);
-            } else {
-                $resp = array("completed" => false,
-                    "scanID" => $status_output['scanID'],
-                    "scanPercent" => $status_output['scanPercent'],
-                    "continuous" => $status_output['continuous'],
-                    "live" => $this->wsRunning(),
-                    "captureRunning" => false);
-            }
-
-            $this->response = $resp;
+            $this->response = array(
+                "completed" => false,
+                "scanID" => $status_output['scanID'],
+                "scanPercent" => $status_output['scanPercent'],
+                "continuous" => $status_output['continuous'],
+                "live" => $this->wsRunning(),
+                "captureRunning" => $status_output['captureRunning'] === true
+            );
         } else {
             $this->stopScan();
             $this->response = array("completed" => true, "debug" => $status_output);
@@ -251,16 +235,16 @@ class Recon extends SystemModule
 
         $rows = $this->dbConnection->query("SELECT * FROM aps WHERE scan_id = '%s';", $scanID);
         foreach ($rows as $row) {
-            $ap = array();
-            $ap['ssid'] = $row['ssid'];
-            $ap['bssid'] = $row['bssid'];
-            $ap['encryption'] = $this->printEncryption($row['encryption']);
-            $ap['channel'] = $row['channel'];
-            $ap['power'] = $row['signal'];
-            $ap['lastSeen'] = $row['last_seen'];
-            $ap['wps'] = $row['wps'];
-            $ap['clients'] = array();
-            $accessPoints[$row['bssid']] = $ap;
+            $accessPoints[ $row['bssid'] ] = array(
+                'ssid' => $row['ssid'],
+                'bssid' => $row['bssid'],
+                'encryption' => $this->printEncryption($row['encryption']),
+                'channel' => $row['channel'],
+                'power' => $row['signal'],
+                'lastSeen' => $row['last_seen'],
+                'wps' => $row['wps'],
+                'clients' => array()
+            );
         }
 
         $rows = $this->dbConnection->query("SELECT * FROM clients WHERE scan_id = '%s';", $scanID);
@@ -268,11 +252,11 @@ class Recon extends SystemModule
             $bssid = $row['bssid'];
             $mac   = $row['mac'];
             $lastSeen = $row['last_seen'];
-            $ap   = $accessPoints[$bssid];
+
             if ($bssid == "FF:FF:FF:FF:FF:FF") {
-                array_push($unassociatedClients, array('mac' => $mac, 'lastSeen' => $lastSeen));
-            } else if ($ap != null && in_array($bssid, $ap)) {
-                array_push($accessPoints[$bssid]['clients'], array('mac' => $mac, 'lastSeen' => $lastSeen));
+                $unassociatedClients[] = array('mac' => $mac, 'lastSeen' => $lastSeen);
+            } else if ($accessPoints[ $bssid ] != null && in_array($bssid, $accessPoints[ $bssid ])) {
+                $accessPoints[$bssid]['clients'][] = array('mac' => $mac, 'lastSeen' => $lastSeen);
             } else {
                 $outOfRangeClients[$mac] = array('bssid' => $bssid, 'lastSeen' => $lastSeen);
             }
@@ -280,12 +264,14 @@ class Recon extends SystemModule
 
         $realAPs = array();
         foreach ($accessPoints as $key => $value) {
-            array_push($realAPs, $value);
+            $realAPs[] = $value;
         }
 
-        $returnArray['ap_list'] = $realAPs;
-        $returnArray['unassociated_clients'] = $unassociatedClients;
-        $returnArray['out_of_range_clients'] = $outOfRangeClients;
+        $returnArray = array(
+            'ap_list' => $realAPs,
+            'unassociated_clients' => $unassociatedClients,
+            'out_of_range_clients' => $outOfRangeClients,
+        );
 
         $this->response = array("results" => $returnArray);
         return $returnArray;
@@ -293,10 +279,11 @@ class Recon extends SystemModule
 
     private function printEncryption($encryptionType)
     {
-        $retStr = '';
         if ($encryptionType === 0) {
             return 'Open';
         }
+
+        $retStr = '';
         if ($encryptionType & EncryptionFields::WEP) {
             return 'WEP';
         } else if (($encryptionType & EncryptionFields::WPA) && ($encryptionType & EncryptionFields::WPA2)) {
@@ -306,6 +293,7 @@ class Recon extends SystemModule
         } else if ($encryptionType & EncryptionFields::WPA2) {
             $retStr .= 'WPA2 ';
         }
+
         if (($encryptionType & EncryptionFields::WPA2_AKM_PSK) || ($encryptionType & EncryptionFields::WPA_AKM_PSK)) {
             $retStr .= 'PSK ';
         } else if (($encryptionType & EncryptionFields::WPA2_AKM_ENTERPRISE) || ($encryptionType & EncryptionFields::WPA_AKM_ENTERPRISE)) {
@@ -313,6 +301,7 @@ class Recon extends SystemModule
         } else if (($encryptionType & EncryptionFields::WPA2_AKM_ENTERPRISE_FT) || ($encryptionType & EncryptionFields::WPA_AKM_ENTERPRISE_FT)) {
             $retStr .= 'Enterprise FT ';
         }
+
         $retStr .= '(';
         if (($encryptionType & EncryptionFields::WPA2_PAIRWISE_CCMP) || ($encryptionType & EncryptionFields::WPA_PAIRWISE_CCMP)) {
             $retStr .= 'CCMP ';
@@ -327,9 +316,8 @@ class Recon extends SystemModule
         if (($encryptionType & EncryptionFields::WPA2_PAIRWISE_WEP104) || ($encryptionType & EncryptionFields::WPA_PAIRWISE_WEP104)) {
             $retStr .= 'WEP104 ';
         }
-        $retStr = substr($retStr, 0, -1);
-        $retStr .= ')';
-        return $retStr;
+
+        return substr($retStr, 0, -1) . ')';
     }
 
     private function utcToPineapple($timeStr) {
@@ -343,27 +331,35 @@ class Recon extends SystemModule
 
     private function getScanObject($scanID)
     {
-        $data = array();
-        $data[$scanID] = array();
+        $data = array(
+            $scanID => array(
+                'outOfRangeClients' => array(),
+                'unassociatedClients' => array()
+            )
+        );
+
         $aps = $this->dbConnection->query("SELECT scan_id, ssid, bssid, encryption, hidden, channel, signal, wps, last_seen FROM aps WHERE scan_id='%d';", $scanID);
         foreach ($aps as $ap_row) {
-            $data[$scanID]['aps'][$ap_row['bssid']] = array();
-            $data[$scanID]['aps'][$ap_row['bssid']]['ssid'] = $ap_row['ssid'];
-            $data[$scanID]['aps'][$ap_row['bssid']]['encryption'] = $this->printEncryption($ap_row['encryption']);
-            $data[$scanID]['aps'][$ap_row['bssid']]['hidden'] = $ap_row['hidden'];
-            $data[$scanID]['aps'][$ap_row['bssid']]['channel'] = $ap_row['channel'];
-            $data[$scanID]['aps'][$ap_row['bssid']]['signal'] = $ap_row['signal'];
-            $data[$scanID]['aps'][$ap_row['bssid']]['wps'] = $ap_row['wps'];
-            $data[$scanID]['aps'][$ap_row['bssid']]['last_seen'] = $ap_row['last_seen'];
-            $data[$scanID]['aps'][$ap_row['bssid']]['clients'] = array();
+            $data[$scanID]['aps'][$ap_row['bssid']] = array(
+                'ssid' => $ap_row['ssid'],
+                'encryption' => $this->printEncryption($ap_row['encryption']),
+                'hidden' => $ap_row['hidden'],
+                'channel' => $ap_row['channel'],
+                'signal' => $ap_row['signal'],
+                'wps' => $ap_row['wps'],
+                'last_seen' => $ap_row['last_seen'],
+                'clients' => array()
+            );
+
             $clients = $this->dbConnection->query("SELECT scan_id, mac, bssid, last_seen FROM clients WHERE scan_id='%d' AND bssid='%s';", $ap_row['scan_id'], $ap_row['bssid']);
             foreach ($clients as $client_row) {
-                $data[$scanID]['aps'][$ap_row['bssid']]['clients'][$client_row['mac']] = array();
-                $data[$scanID]['aps'][$ap_row['bssid']]['clients'][$client_row['mac']]['bssid'] = $client_row['bssid'];
-                $data[$scanID]['aps'][$ap_row['bssid']]['clients'][$client_row['mac']]['last_seen'] = $client_row['last_seen'];
+                $data[$scanID]['aps'][$ap_row['bssid']]['clients'][$client_row['mac']] = array(
+                    'bssid' => $client_row['bssid'],
+                    'last_seen' => $client_row['last_seen']
+                );
             }
         }
-        $data[$scanID]['outOfRangeClients'] = array();
+
         $clients = $this->dbConnection->query("
             SELECT t1.mac, t1.bssid, t1.last_seen FROM clients t1
             LEFT JOIN aps t2 ON
@@ -371,14 +367,16 @@ class Recon extends SystemModule
             t1.bssid != 'FF:FF:FF:FF:FF:FF' COLLATE NOCASE AND t1.scan_id='%d';
             ", $ap_row['scan_id']);
         foreach ($clients as $client_row) {
-            $data[$scanID]['outOfRangeClients'][$client_row['mac']] = array();
-            $data[$scanID]['outOfRangeClients'][$client_row['mac']] = $client_row['bssid'];
+            $data[$scanID]['outOfRangeClients'][$client_row['mac']] = array(
+                $client_row['bssid']
+            );
         }
-        $data[$scanID]['unassociatedClients'] = array();
+
         $clients = $this->dbConnection->query("SELECT mac FROM clients WHERE bssid='FF:FF:FF:FF:FF:FF' COLLATE NOCASE;");
         foreach ($clients as $client_row) {
-            array_push($data[$scanID]['unassociatedClients'], $client_row['mac']);
+            $data[$scanID]['unassociatedClients'][] = $client_row['mac'];
         }
+
         return $data;
     }
 
@@ -404,7 +402,7 @@ class Recon extends SystemModule
 
     private function getScanLocation()
     {
-        $scanLocation = $dbBasePath = dirname($this->uciGet("pineap.@config[0].recon_db_path"));
+        $scanLocation = dirname($this->uciGet("pineap.@config[0].recon_db_path"));
         $this->response = array("success" => true, "scanLocation" => $scanLocation . "/");
     }
 
@@ -412,7 +410,7 @@ class Recon extends SystemModule
     {
         $scanLocation = $this->request->scanLocation;
         if (!empty($scanLocation)) {
-            $dbLocation = dirname($this->request->scanLocation . '/fake_file');
+            $dbLocation = dirname($scanLocation . '/fake_file');
             $this->uciSet("pineap.@config[0].recon_db_path", $dbLocation . '/recon.db');
             if ($this->checkPineAPDaemon()) {
                 exec("/etc/init.d/pineapd stop");
