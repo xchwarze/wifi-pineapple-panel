@@ -233,7 +233,7 @@ class Recon extends SystemModule
         $unassociatedClients = array();
         $outOfRangeClients = array();
 
-        $rows = $this->dbConnection->query("SELECT * FROM aps WHERE scan_id = '%s';", $scanID);
+        $rows = $this->dbConnection->query("SELECT ssid, bssid, encryption, channel, signal, last_seen, wps FROM aps WHERE scan_id = '%s';", $scanID);
         foreach ($rows as $row) {
             $accessPoints[ $row['bssid'] ] = array(
                 'ssid' => $row['ssid'],
@@ -247,7 +247,7 @@ class Recon extends SystemModule
             );
         }
 
-        $rows = $this->dbConnection->query("SELECT * FROM clients WHERE scan_id = '%s';", $scanID);
+        $rows = $this->dbConnection->query("SELECT bssid, mac, last_seen FROM clients WHERE scan_id = '%s';", $scanID);
         foreach ($rows as $row) {
             $bssid = $row['bssid'];
             $mac   = $row['mac'];
@@ -403,15 +403,15 @@ class Recon extends SystemModule
     private function getScanLocation()
     {
         $scanLocation = dirname($this->uciGet("pineap.@config[0].recon_db_path"));
-        $this->response = array("success" => true, "scanLocation" => $scanLocation . "/");
+        $this->response = array("success" => true, "scanLocation" => "{$scanLocation}/");
     }
 
     private function setScanLocation()
     {
         $scanLocation = $this->request->scanLocation;
         if (!empty($scanLocation)) {
-            $dbLocation = dirname($scanLocation . '/fake_file');
-            $this->uciSet("pineap.@config[0].recon_db_path", $dbLocation . '/recon.db');
+            $dbLocation = dirname("{$scanLocation}/fake_file");
+            $this->uciSet("pineap.@config[0].recon_db_path", "{$dbLocation}/recon.db");
             if ($this->checkPineAPDaemon()) {
                 exec("/etc/init.d/pineapd stop");
                 $this->startPineAPDaemon();
