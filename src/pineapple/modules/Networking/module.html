@@ -346,6 +346,9 @@
                 </h3>
             </div>
             <div class="panel-body">
+                <div class="alert well-sm alert-success" ng-show="wirelessReset">
+                    The Wireless Configuration has been reset. The Network will now restart.
+                </div>
                 <p>
                     <textarea class="form-control" rows="12" ng-model="data['wireless']"></textarea>
                 </p>
@@ -361,7 +364,6 @@
                 <h3 class="panel-title">Advanced</h3>
             </div>
             <div class="panel-body">
-                <div class="alert well-sm alert-success" ng-show="wirelessReset">The Wireless Configuration has been reset. The Network will now restart.</div>
                 <div class="alert well-sm alert-success" ng-show="hostnameUpdated">The hostname has been updated successfully.</div>
                 <div class="col-md-12">
                     <div class="row">

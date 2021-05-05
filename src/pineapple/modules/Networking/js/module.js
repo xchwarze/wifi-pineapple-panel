@@ -330,6 +330,8 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
     };
 
     $scope.reloadData = (function() {
+        $scope.data['ifconfig'] = 'Loading...';
+        $scope.data['wireless'] = 'Loading...';
         $api.request({
             module: 'Networking',
             action: 'getAdvancedData'
@@ -350,7 +352,7 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
                 $scope.hostnameUpdated = true;
                 $timeout(function(){
                     $scope.hostnameUpdated = false;
-                }, 2000);
+                }, 3000);
             }
         });
     });
@@ -363,8 +365,9 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
             if (response.error === undefined) {
                 $scope.wirelessReset = true;
                 $timeout(function(){
+                    $scope.reloadData();
                     $scope.wirelessReset = false;
-                }, 5000);
+                }, 3000);
             }
         });
     });
@@ -378,8 +381,9 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
             if (response.success === true) {
                 $scope.wirelessUpdated = true;
                 $timeout(function(){
+                    $scope.reloadData();
                     $scope.wirelessUpdated = false;
-                }, 5000);
+                }, 3000);
             }
         });
     });
