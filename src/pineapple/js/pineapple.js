@@ -17,7 +17,6 @@
             },
             controller: function() {
                 resizeModuleContent();
-                collapseNavBar();
             },
             resolve: {
                 jsLoader: ['$route', function($route) {
