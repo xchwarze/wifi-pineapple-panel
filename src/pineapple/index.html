@@ -131,10 +131,12 @@
 </div>
 
 <script type="text/javascript">
-    $('div.sidebar').click(function(event) {
-        if (!$(event.target).attr("data-ignore")) {
-            $('div.sidebar').removeClass('sidebar-toggle');
-        }
+    $(function() {
+        $('div.sidebar').click(function(event) {
+            if (!$(event.target).attr("data-ignore")) {
+                $('div.sidebar').removeClass('sidebar-toggle');
+            }
+        });
     });
 </script>
 </body>
