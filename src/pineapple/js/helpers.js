@@ -12,15 +12,6 @@ function resizeModuleContent() {
     }
 }
 
-function collapseNavBar() {
-    var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-    if (width < 768) {
-        $('div.navbar-collapse').removeClass('in');
-    } else {
-        $('div.navbar-collapse').addClass('in');
-    }
-}
-
 function convertMACAddress(mac) {
     var pattern = /([-: ])/igm;
     return mac.replace(pattern, ":");
