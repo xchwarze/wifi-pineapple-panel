@@ -174,7 +174,7 @@ body {
     }
 }
 
-@media (min-width: 1330px) {
+@media (min-width: 1200px) {
     .module-content {
         width: calc(100% - 200px);
         margin-left: 200px;
