@@ -1,4 +1,4 @@
-registerController('PineAPLogController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+registerController('PineAPLogController', ['$api', '$scope', '$timeout', '$cookies', function($api, $scope, $timeout, $cookies) {
     $scope.log = [];
     $scope.mac = '';
     $scope.ssid = '';
@@ -9,9 +9,9 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
     $scope.loadingPineapLog = false;
 
     $scope.checkboxOptions = {
-        probes: true,
-        associations: true,
-        removeDuplicates: false
+        probes: $cookies.get('probesLog') !== undefined ? $cookies.get('probesLog') === 'true' : true,
+        associations: $cookies.get('associationsLog') !== undefined ? $cookies.get('associationsLog') === 'true' : true,
+        removeDuplicates: $cookies.get('removeDuplicatesLog') !== undefined ? $cookies.get('removeDuplicatesLog') === 'true' : false
     };
 
     $scope.refreshLog = (function() {
@@ -85,6 +85,10 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
     });
 
     $scope.applyFilter = (function() {
+        $cookies.put('probesLog', $scope.checkboxOptions.probes);
+        $cookies.put('associationsLog', $scope.checkboxOptions.associations);
+        $cookies.put('removeDuplicatesLog', $scope.checkboxOptions.removeDuplicates);
+
         var hashArray = [];
         $.each($scope.log, function(i, value){
             if (value.log_time !== '') {
@@ -99,15 +103,12 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
                     }
                 }
 
-                if (!$scope.checkboxOptions.probes) {
-                    if (value.log_type === 0) {
-                        value.hidden = true;
-                    }
+                if (!$scope.checkboxOptions.probes && value.log_type === 0) {
+                    value.hidden = true;
                 }
-                if (!$scope.checkboxOptions.associations) {
-                    if (value.log_type === 1 || value.log_type === 2) {
-                        value.hidden = true;
-                    }
+
+                if (!$scope.checkboxOptions.associations && (value.log_type === 1 || value.log_type === 2)) {
+                    value.hidden = true;
                 }
 
                 if (!$scope.checkMatch(value.mac, $scope.mac)) {
@@ -120,10 +121,13 @@ registerController('PineAPLogController', ['$api', '$scope', '$timeout', functio
     });
 
     $scope.clearFilter = (function() {
+        $scope.checkboxOptions = {
+            probes: true,
+            associations: true,
+            removeDuplicates: false
+        };
         $scope.mac = '';
         $scope.ssid = '';
-        $scope.checkboxOptions.probes = true;
-        $scope.checkboxOptions.associations = true;
 
         $scope.applyFilter();
     });
