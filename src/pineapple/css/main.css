@@ -296,3 +296,12 @@ body {
 .menu-toggle-icon {
     transform: rotate(-90deg);
 }
+
+/* Use this for menu auto open on hover
+    .sidebar:hover {
+        margin-left: 0;
+    }
+    .menu-toggle {
+        display: none !important;
+    }
+*/
