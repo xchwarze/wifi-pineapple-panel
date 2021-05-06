@@ -38,8 +38,8 @@ start() {
     gen_config
     
     #ifconfig wlan1mon &>/dev/null || airmon-ng start wlan1 &>/dev/null
-    ifconfig interface_mon &>/dev/null || airmon-ng start interface &>/dev/null
-    /usr/sbin/pineapd /tmp/pineap.conf &>/dev/null &
+    ifconfig ${interface_mon} &>/dev/null || airmon-ng start ${interface} &>/dev/null
+    /usr/sbin/pineapd /tmp/pineap.conf &>/dev/null & 
     sleep 1
 }
 
