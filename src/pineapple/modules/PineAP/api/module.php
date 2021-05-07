@@ -436,15 +436,15 @@ class PineAP extends SystemModule
     {
         $sourceMAC = $this->pineAPHelper->getSource();
         $sourceMAC = $sourceMAC === false ? '00:00:00:00:00:00' : $sourceMAC;
-        $sourceMAC = strtoupper($sourceMAC);
+
         $targetMAC = $this->pineAPHelper->getTarget();
         $targetMAC = $targetMAC === false ? 'FF:FF:FF:FF:FF:FF' : $targetMAC;
-        $targetMAC = strtoupper($targetMAC);
+
         $settings = array(
-            'allowAssociations' => $this->pineAPHelper->getSetting("karma"),
-            'logEvents' => $this->pineAPHelper->getSetting("logging"),
             'pineAPDaemon' => $this->checkRunning("pineapd"),
             'autostartPineAP' => $this->uciGet("pineap.@config[0].autostart"),
+            'allowAssociations' => $this->pineAPHelper->getSetting("karma"),
+            'logEvents' => $this->pineAPHelper->getSetting("logging"),
             'beaconResponses' => $this->pineAPHelper->getSetting("beacon_responses"),
             'captureSSIDs' => $this->pineAPHelper->getSetting("capture_ssids"),
             'broadcastSSIDs' => $this->pineAPHelper->getSetting("broadcast_ssid_pool"),
@@ -452,10 +452,12 @@ class PineAP extends SystemModule
             'disconnectNotifications' => $this->pineAPHelper->getSetting("disconnect_notifications"),
             'broadcastInterval' => $this->pineAPHelper->getSetting("beacon_interval"),
             'responseInterval' => $this->pineAPHelper->getSetting("beacon_response_interval"),
-            'sourceMAC' => $sourceMAC,
-            'targetMAC' => $targetMAC,
-            'interface' => $this->pineAPHelper->getSetting("pineap_interface"),
+            'monitorInterface' => $this->pineAPHelper->getSetting("pineap_interface"),
+            'sourceInterface' => $this->uciGet("pineap.@config[0].pineap_source_interface"),
+            'sourceMAC' => strtoupper($sourceMAC),
+            'targetMAC' => strtoupper($targetMAC),
         );
+
         $this->response = array('settings' => $settings, 'success' => true);
         return $settings;
     }
@@ -520,8 +522,9 @@ class PineAP extends SystemModule
         $this->uciSet("pineap.@config[0].target_mac", $settings->targetMAC);
         $this->pineAPHelper->setSource($settings->sourceMAC);
         $this->uciSet("pineap.@config[0].pineap_mac", $settings->sourceMAC);
-        $this->pineAPHelper->setPineapInterface($settings->interface);
-        $this->uciSet("pineap.@config[0].pineap_interface", $settings->interface);
+        $this->uciSet("pineap.@config[0].pineap_source_interface", $settings->sourceInterface);
+        $this->pineAPHelper->setPineapInterface($settings->monitorInterface);
+        $this->uciSet("pineap.@config[0].pineap_interface", $settings->monitorInterface);
 
         $this->response = array("success" => true);
     }

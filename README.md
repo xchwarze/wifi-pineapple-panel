@@ -1,7 +1,7 @@
 # Wifi Pineapple Panel
 
-The idea of this project is to have a **better panel** for the pineapple NANO/TETRA  
-To install it, you just have to copy the src folder to / of the pineapple.
+The idea of this project is to have a better panel for the pineapple NANO/TETRA  
+To install it, you just have to copy the src folder to / of the pineapple and reboot.
 
 
 # Changes
@@ -27,7 +27,8 @@ The following functionalities are modified looking for a better user experience
  - Change default text logic
 
 ## PineAP:
- - Configure used interface
+ - Configure used monitor interface (pineapd pineap_interface)
+ - Configure used source interface (pineapd source_mac grabber)
  - Show pineapd service errors
 
 ## Logging:

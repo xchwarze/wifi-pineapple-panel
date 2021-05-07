@@ -153,13 +153,13 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
         disconnectNotifications: false,
         broadcastInterval: 'NORMAL',
         responseInterval: 'NORMAL',
+        monitorInterface: 'wlan1mon',
+        sourceInterface: 'wlan0',
         sourceMAC: '00:00:00:00:00:00',
-        targetMAC: 'FF:FF:FF:FF:FF:FF',
-        interface: 'wlan1mon'
+        targetMAC: 'FF:FF:FF:FF:FF:FF'
     };
-    $scope.interfaces = [];
 
-    $scope.togglePineAP = (function() {
+    $scope.togglePineAP = function() {
         $scope.pineAPenabling = true;
         var actionString = $scope.settings.pineAPDaemon ? "disable" : "enable";
         $api.request({
@@ -171,9 +171,9 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
                 $scope.getSettings();
             }
         });
-    });
+    };
 
-    $scope.toggleAutoStart = (function() {
+    $scope.toggleAutoStart = function() {
         var actionString = $scope.settings.autostartPineAP ? "disableAutoStart" : "enableAutoStart";
         $api.request({
             module: 'PineAP',
@@ -183,7 +183,7 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
                 $scope.getSettings();
             }
         });
-    });
+    };
 
     $scope.getSettings = function() {
         $api.request({

@@ -17,7 +17,7 @@ logging = $(uci get pineap.@config[0].logging)
 mac_filter = $(uci get pineap.@config[0].mac_filter)
 ssid_filter = $(uci get pineap.@config[0].ssid_filter)
 ap_channel = $(uci get pineap.@config[0].ap_channel)
-pineap_mac = $(ifconfig -a wlan0 | grep HWaddr | awk '{print $5}')
+pineap_mac = $(ifconfig -a $(uci get pineap.@config[0].pineap_source_interface) | grep HWaddr | awk '{print $5}')
 target_mac = $(uci get pineap.@config[0].target_mac)
 pineap_interface = $(uci get pineap.@config[0].pineap_interface)
 recon_db_path = $(uci get pineap.@config[0].recon_db_path)
@@ -31,21 +31,21 @@ EOF
 }
 
 start() {
-    interface_mon=$(uci get pineap.@config[0].pineap_interface)
-    interface=${interface_mon/mon/''}
-
     mkdir -p /tmp/handshakes
     gen_config
-    
-    #ifconfig wlan1mon &>/dev/null || airmon-ng start wlan1 &>/dev/null
-    ifconfig ${interface_mon} &>/dev/null || airmon-ng start ${interface} &>/dev/null
-    /usr/sbin/pineapd /tmp/pineap.conf &>/dev/null & 
-    sleep 1
 
+    pineap_interface=$(uci -q get pineap.@config[0].pineap_interface)
+    pineap_interface_original=${pineap_interface/mon/''}
+
+    #ifconfig wlan1mon &>/dev/null || airmon-ng start wlan1 &>/dev/null
+    ifconfig ${pineap_interface} &>/dev/null || airmon-ng start ${pineap_interface_original} &>/dev/null
+    /usr/sbin/pineapd /tmp/pineap.conf &>/dev/null & 
+
+    sleep 1
     if [[ $(/usr/bin/pgrep pineapd) ]]; then
         echo "Status: OK"
-    elif [[ ! $(ifconfig -a ${interface_mon} | grep HWaddr | awk '{print $5}') ]]; then
-        echo "Status: Monitor interface won't start! Try to run manually airmon-ng start ${interface}"
+    elif [[ ! $(ifconfig -a ${pineap_interface} | grep HWaddr | awk '{print $5}') ]]; then
+        echo "Status: Monitor interface won't start! Try to run manually airmon-ng start ${pineap_interface_original}"
     else
         echo "There is a problem with pineapd. Try to run it manually"
     fi
