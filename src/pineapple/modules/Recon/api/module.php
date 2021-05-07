@@ -110,10 +110,17 @@ class Recon extends SystemModule
 
     private function startPineAPDaemon()
     {
-        if(!$this->checkPineAPDaemon()) {
-            exec("/etc/init.d/pineapd start");
+        if ($this->checkPineAPDaemon()) {
+            $this->response = array("success" => true);
+            return;
         }
-        $this->response = array("success" => true);
+
+        exec("/etc/init.d/pineapd start", $status_output);
+        if ($status_output[0] === "Status: OK") {
+            $this->response = array("success" => true);
+        } else {
+            $this->response = array("message" => implode("\n", $status_output));
+        }
     }
 
     private function checkPineAPDaemon()

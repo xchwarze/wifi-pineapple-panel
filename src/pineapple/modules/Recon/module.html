@@ -49,13 +49,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-footer" ng-show="!pineAPDRunning">
-                    <div class="alert alert-info">
+                <div class="panel-footer" ng-show="!pineAPDRunning || pineAPDStatus">
+                    <div class="alert alert-info" ng-show="!pineAPDRunning && !pineAPDStatus">
                         <strong>Notice:</strong> In order to use Recon, PineAP must first be enabled.<br/>
                         <button class="btn btn-default" ng-click="startPineAP()" ng-disabled="pineAPDStarting">
                             <span ng-hide="pineAPDStarting">Start PineAP</span>
                             <img class="button-throbber" ng-show="pineAPDStarting" src="img/throbber.gif">
                         </button>
+                    </div>
+                    <div class="alert alert-danger" ng-show="pineAPDStatus">
+                        <strong>{{ pineAPDStatus }}</strong>
                     </div>
                 </div>
             </div>

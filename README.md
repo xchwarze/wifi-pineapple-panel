@@ -28,6 +28,7 @@ The following functionalities are modified looking for a better user experience
 
 ## PineAP:
  - Configure used interface
+ - Show pineapd service errors
 
 ## Logging:
  - Fire data loading on open accordion
