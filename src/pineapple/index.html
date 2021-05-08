@@ -64,7 +64,7 @@
     <div class="sidebar-nav navbar-collapse collapse">
         <ul class="nav sidebar-nav">
             <li ng-repeat-start="systemModule in systemModules" ng-class="getClass(systemModule.name)" module="{{ systemModule.name }}">
-                <a href="#!/modules/{{ systemModule.name }}">
+                <a href="#!/modules/{{ systemModule.name }}" title="{{ systemModule.title }}">
                     <img class="module-icon pull-right" ng-src="{{ systemModule.icon }}" ng-if="systemModule.icon != null"/>
                     {{ systemModule.title }}
                 </a>
@@ -76,7 +76,7 @@
                 </a>
                 <ul class="nav module-nav collapse">
                     <li ng-class="getClass('ModuleManager')" module="ModuleManager">
-                        <a href="#!/modules/ModuleManager">Manage Modules</a>
+                        <a href="#!/modules/ModuleManager" title="Manage Modules">Manage Modules</a>
                     </li>
                     <li ng-class="getClass(userModule.name)" ng-repeat="userModule in userModules" module="{{ userModule.name }}">
                         <a href="#!/modules/{{ userModule.name }}">
