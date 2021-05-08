@@ -9,21 +9,13 @@ function execBackground($command)
 function checkDependency($dependencyName)
 {
     exec("/usr/bin/which $dependencyName", $output);
-    if (trim($output[0]) == "") {
-        return false;
-    } else {
-        return true;
-    }
+    return !(trim($output[0]) === "");
 }
 
 function isSDAvailable()
 {
     $output = exec('/bin/mount | /bin/grep "on /sd" -c');
-    if ($output >= 1) {
-        return true;
-    } else {
-        return false;
-    }
+    return $output >= 1;
 }
 
 function sdReaderPresent() {
@@ -58,8 +50,7 @@ function udsSend($path, $message)
 function dgramUdsSend($path, $message)
 {
 	$sock = NULL;
-	if(!($sock = socket_create(AF_UNIX, SOCK_DGRAM, 0)))
-	{
+	if(!($sock = socket_create(AF_UNIX, SOCK_DGRAM, 0))) {
 	    return false;
 	}
 	socket_sendto($sock, $message, strlen($message), 0, $path);
@@ -70,9 +61,9 @@ function uciGet($uciString)
 {
 	$uciString = escapeshellarg($uciString);
 	$result = exec("uci get {$uciString}");
-
-	$result = ($result === "1") ? true : $result;
-	$result = ($result === "0") ? false : $result;
+	if ($result === "0" || $value === "1") {
+		return $result === "1";
+	}
 
 	return $result;
 }
