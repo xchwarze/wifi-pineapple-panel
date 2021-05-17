@@ -61,7 +61,7 @@ function uciGet($uciString)
 {
 	$uciString = escapeshellarg($uciString);
 	$result = exec("uci get {$uciString}");
-	if ($result === "0" || $value === "1") {
+	if ($result === "0" || $result === "1") {
 		return $result === "1";
 	}
 
