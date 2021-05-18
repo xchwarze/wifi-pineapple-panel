@@ -49,7 +49,7 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Landing Page Browser Stats</h3>
             </div>
-            <table class="table" ng-hide="browsers.length == 0">
+            <table class="table table-hover" ng-hide="browsers.length == 0">
                 <tr>
                     <td>
                     <img src="img/browser_chrome.png" alt="chrome">
@@ -139,7 +139,7 @@
                     </span>
                 </h3>
             </div>
-            <table class="table" ng-show="notifications.length">
+            <table class="table table-hover" ng-show="notifications.length">
                 <tbody>
                     <tr ng-repeat="notification in notifications">
                         <td>{{ notification.message }}</td>

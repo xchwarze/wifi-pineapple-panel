@@ -329,7 +329,7 @@
                             <p class="text-center text-info" ng-show="chalrespdata.length == 0">No Challenge Response Data
                                 Available.</p>
                             <div class="table-responsive">
-                                <table ng-show="chalrespdata.length" class="table">
+                                <table class="table table-hover" ng-show="chalrespdata.length">
                                     <thead>
                                     <tr class="default-cursor">
                                         <th>Type</th>
@@ -353,7 +353,7 @@
                             <p class="text-center text-info" ng-show="basicdata.length == 0">No Basic Data
                                 Available.</p>
                             <div class="table-responsive">
-                                <table ng-show="basicdata.length" class="table">
+                                <table class="table table-hover" ng-show="basicdata.length">
                                     <thead>
                                     <tr class="default-cursor">
                                         <th>Type</th>
@@ -406,7 +406,7 @@
                     <br/>
                 </div>
                 <div class="table-responsive" ng-show="handshakes.length !== 0">
-                    <table class="table">
+                    <table class="table table-hover">
                         <thead>
                         <tr class="default-cursor">
                             <th>BSSID</th>
