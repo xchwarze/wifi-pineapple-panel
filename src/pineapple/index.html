@@ -135,6 +135,7 @@
         $('div.sidebar').click(function(event) {
             if (!$(event.target).attr("data-ignore")) {
                 $('div.sidebar').removeClass('sidebar-toggle');
+                $('div.sidebar-nav').collapse('hide');
             }
         });
     });
