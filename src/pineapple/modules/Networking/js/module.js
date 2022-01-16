@@ -50,6 +50,7 @@ registerController('NetworkingRouteController', ['$api', '$scope', '$timeout', f
 }]);
 
 registerController('NetworkingAccessPointsController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+    $scope.loading = false;
     $scope.apConfigurationSaved = false;
     $scope.apConfigurationError = "";
     $scope.apAvailableChannels = [];
@@ -85,11 +86,13 @@ registerController('NetworkingAccessPointsController', ['$api', '$scope', '$time
     });
 
     $scope.reloadData = (function() {
+        $scope.loading = true;
         $api.request({
             module: "Networking",
             action: "getAPConfig"
         }, function(response) {
             if (response.error === undefined) {
+                $scope.loading = false;
                 $scope.apConfig = response;
                 if ($scope.apConfig['selectedChannel'] === true) {
                     $scope.apConfig['selectedChannel'] = "1";
@@ -111,6 +114,7 @@ registerController('NetworkingClientModeController', ['$api', '$scope', '$timeou
     $scope.connected = true;
     $scope.connecting = false;
     $scope.noNetworkFound = false;
+    $scope.loading = false;
 
     $scope.getInterfaces = (function() {
         $api.request({
@@ -160,11 +164,13 @@ registerController('NetworkingClientModeController', ['$api', '$scope', '$timeou
     });
 
     $scope.reloadData = (function() {
+        $scope.loading = true;
         $api.request({
             module: 'Networking',
             action: 'checkConnection'
         }, function(response) {
             if (response.error === undefined) {
+                $scope.loading = false;
                 if (response.connected) {
                     $scope.connected = true;
                     $scope.connectedInterface = response.interface;
@@ -205,16 +211,6 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
     $scope.WANUIAccess = false;
     $scope.device = '';
 
-    $scope.getDevice = (function() {
-        $api.request({
-            module: 'Configuration',
-            action: 'getDevice'
-        }, function(response) {
-            $scope.device = response.device;
-        });
-    });
-    $scope.getDevice();
-
     $scope.reloadData = (function() {
         $api.request({
             module: 'Networking',
@@ -243,6 +239,10 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
         })
     });
 
+    $api.onDeviceIdentified(function(device, scope) {
+        scope.device = device;
+    }, $scope);
+
     //$scope.reloadData();
 }]);
 
@@ -252,13 +252,16 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
     $scope.newMac = "";
     $scope.modifyingMAC = false;
     $scope.forceReload = false;
+    $scope.loading = false;
 
     $scope.reloadData = (function() {
+        $scope.loading = true;
         $api.request({
             module: 'Networking',
             action: 'getMacData'
         }, function(response) {
             if (response.error === undefined) {
+                $scope.loading = false;
                 $scope.interfaces = response;
             }
         });
@@ -322,6 +325,7 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
 }]);
 
 registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+    $scope.loading = false;
     $scope.hostnameUpdated = false;
     $scope.wirelessReset = false;
     $scope.wirelessUpdated = false;
@@ -331,12 +335,14 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
     };
 
     $scope.reloadData = (function() {
+        $scope.loading = true;
         $scope.data['wireless'] = 'Loading...';
         $api.request({
             module: 'Networking',
             action: 'getAdvancedData'
         }, function(response) {
             if (response.error === undefined) {
+                $scope.loading = false;
                 $scope.data = response;
             }
         });
@@ -493,16 +499,19 @@ registerController("OUILookupController", ['$api', '$scope', '$timeout', '$http'
 }]);
 
 registerController('NetworkingInfoController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
-    $scope.info = '';
+    $scope.info = 'Use buttons for load info';
+    $scope.loading = false;
 
     $scope.getInfoData = (function(type) {
         $scope.info = 'Loading...';
+        $scope.loading = true;
         $api.request({
             module: 'Networking',
             action: 'getInfoData',
             type: type
         }, function(response) {
             if (response.error === undefined) {
+                $scope.loading = false;
                 $scope.info = response;
             }
         });

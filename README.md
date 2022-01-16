@@ -15,6 +15,8 @@ The following functionalities are modified looking for a better user experience
  - Fix mobile view
  - Add Chevron icon to accordions (size +1K)
  - Change notification time from 6000 to 20000 (decrease RPM from 10 to 3)
+ - Added more refresh buttons
+ - Fixed several bugs found in the panel
  - Project minification (Optional: use packer tools)
 
 ## Recon:
@@ -40,12 +42,12 @@ The following functionalities are modified looking for a better user experience
  - Add wireless config editor
  - Add tabs
  - Add Info block
- - Decrease initial requests (from 8 to 3)
+ - Decrease initial requests (from 8 to 2)
 
 ## Advanced:
  - Add Manual upgrade
  - Add tabs
- - Decrease initial requests (from 8 to 5)
+ - Decrease initial requests (from 8 to 3)
 
 ## Setup:
  - Fix character bad used

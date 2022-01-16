@@ -6,7 +6,6 @@
         this.deviceCallbacks = [];
 
         this.request = (function(data, callback, scope) {
-
             return $http.post('/api/', data).
             then(function(response){
                 if (response.data.error === "Not Authenticated") {
@@ -40,6 +39,7 @@
                 callback(data);
             }, this);
         });
+
         this.logout = (function(callback){
             return this.request({system: 'authentication', action: 'logout'}, callback);
         });
@@ -52,7 +52,6 @@
         this.reloadNavbar = (function() {
             this.navbarReloader();
         });
-
 
         this.checkAuth = (function(callback){
             return this.request({system: 'authentication', action: 'checkAuth'}, function(data){
@@ -70,12 +69,14 @@
                 callback(data);
             });
         };
+
         this.clearNotifications = function(){
             this.request({
                 system: 'notifications',
                 action: 'clearNotifications'
             });
         };
+
         this.addNotification = function(notificationMessage){
             this.request({
                 system: 'notifications',

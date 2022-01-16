@@ -31,16 +31,6 @@ registerController("AdvancedResourcesController", ['$api', '$scope', '$timeout',
         });
     });
 
-    $scope.getDevice = (function() {
-        $api.request({
-            module: 'Configuration',
-            action: 'getDevice'
-        }, function(response) {
-            $scope.device = response.device;
-        });
-    });
-
-    $scope.getDevice();
     $scope.reloadData();
 
     $api.onDeviceIdentified(function(device, scope) {
@@ -54,16 +44,6 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
     $scope.fstab = "";
     $scope.fstabSaved = false;
     $scope.device = "";
-
-    $scope.getDevice = (function() {
-        $scope.device = "";
-        $api.request({
-            module: 'Configuration',
-            action: 'getDevice'
-        }, function(response) {
-            $scope.device = response.device;
-        });
-    });
 
     $scope.formatSDCard = (function() {
         $api.request({
@@ -128,8 +108,12 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
         });
     });
 
-    $scope.getDevice();
     $scope.reloadData();
+    
+    $api.onDeviceIdentified(function(device, scope) {
+        scope.device = device;
+    }, $scope);
+
 
     $scope.$on('$destroy', function() {
         $interval.cancel($scope.SDCardInterval);

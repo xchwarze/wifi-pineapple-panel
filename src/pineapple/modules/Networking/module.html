@@ -67,6 +67,11 @@
                                     <li ng-disabled="waiting" ng-click="resetMac()"><a>Restore Default MAC Address</a></li>
                                 </ul>
                             </span>
+                            <span class="pull-right">
+                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
+                                    Refresh
+                                </button>
+                            </span>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -109,7 +114,14 @@
                 <div class="controller" ng-controller="NetworkingClientModeController">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">WiFi Client Mode</h3>
+                            <h3 class="panel-title">
+                                WiFi Client Mode
+                                <span class="pull-right">
+                                    <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
+                                        Refresh
+                                    </button>
+                                </span>
+                            </h3>
                         </div>
                         <div class="panel-body">
                             <div class="col-md-12" ng-show="connected">
@@ -219,9 +231,10 @@
                     <div class="panel-body">
                         <div class="col-md-12">
                             <div class="row">
-                                <button class="btn btn-default" ng-click="getInfoData(1)">ifconfig</button>
-                                <button class="btn btn-default" ng-click="getInfoData(2)">iw dev</button>
-                                <button class="btn btn-default" ng-click="getInfoData(3)">airmon-ng</button>
+                                <button class="btn btn-default" ng-click="getInfoData(1)" ng-disabled="loading">ifconfig</button>
+                                <button class="btn btn-default" ng-click="getInfoData(2)" ng-disabled="loading">iw dev</button>
+                                <button class="btn btn-default" ng-click="getInfoData(3)" ng-disabled="loading">airmon-ng</button>
+                                <img src="img/throbber.gif" ng-hide="!loading">
                             </div>
                             <br/>
                             <div class="row">
@@ -288,7 +301,14 @@
             <div class="col-md-6 controller" ng-controller="NetworkingAccessPointsController">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Access Points</h3>
+                        <h3 class="panel-title">
+                            Access Points
+                            <span class="pull-right">
+                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
+                                    Refresh
+                                </button>
+                            </span>
+                        </h3>
                     </div>
                     <div class="panel-body">
                         <div class="col-md-12">
@@ -411,6 +431,11 @@
                                 <ul class="dropdown-menu" aria-labelledby="NetworkingAdvancedDropdown">
                                     <li ng-click="resetWirelessConfig()"><a>Reset WiFi Config to Defaults</a></li>
                                 </ul>
+                            </span>
+                            <span class="pull-right">
+                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
+                                    Refresh
+                                </button>
                             </span>
                         </h3>
                     </div>

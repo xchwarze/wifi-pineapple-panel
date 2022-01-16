@@ -11,13 +11,6 @@ registerController("ConfigurationGeneralController", ['$api', '$scope', '$timeou
 	$scope.device = "";
 	$scope.resetMessage = "";
 
-    $api.request({
-        module: 'Configuration',
-        action: 'getDevice'
-    }, function(response){
-        $scope.device = response.device;
-    });
-
 	$scope.haltPineapple = (function() {
 		if (confirm("Are you sure you want to shutdown your WiFi Pineapple?")) {
 			$api.request({
@@ -157,6 +150,10 @@ registerController("ConfigurationGeneralController", ['$api', '$scope', '$timeou
 	});
 
 	$scope.getCurrentTimeZone();
+
+	$api.onDeviceIdentified(function(device, scope) {
+		scope.device = device;
+	}, $scope);
 }]);
 
 registerController('ConfigurationLandingPageController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
