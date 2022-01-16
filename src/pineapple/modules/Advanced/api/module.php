@@ -220,8 +220,11 @@ class Advanced extends SystemModule
     private function performUpgrade()
     {
         if (file_exists('/tmp/upgrade.bin')) {
-            $size = escapeshellarg(filesize('/tmp/upgrade.bin') - 33);
-            exec("dd if=/dev/null of=/tmp/upgrade.bin bs=1 seek={$size}");
+            if ($this->request->skipMetadata) {
+                $size = escapeshellarg(filesize('/tmp/upgrade.bin') - 33);
+                exec("dd if=/dev/null of=/tmp/upgrade.bin bs=1 seek={$size}");
+            }
+
             $this->execBackground("sysupgrade -n /tmp/upgrade.bin");
             $this->response = array("success" => true);
         } else {

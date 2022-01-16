@@ -270,7 +270,7 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
                 if (isManuelUpdate) {
                     $scope.upgradeData = response;
                 } else {
-                    $scope.performUpgrade();
+                    $scope.performUpgrade(true);
                 }
             } else if (response.error) {
                 $scope.error = response.error;
@@ -280,14 +280,14 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
         });
     });
 
-    $scope.performUpgrade = (function() {
-        $scope.performUpgradeStart = true;
+    $scope.performUpgrade = (function(skipMetadata) {
         $api.request({
             module: 'Advanced',
-            action: 'performUpgrade'
+            action: 'performUpgrade',
+            skipMetadata: skipMetadata
         }, function(response) {
             if (response.success === true) {
-                $scope.performUpgradeStart = false;
+                $scope.performUpgradeStart = true;
             }
         });
     });
