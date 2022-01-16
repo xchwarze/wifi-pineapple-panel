@@ -57,11 +57,11 @@ function dgramUdsSend($path, $message)
 	return true;
 }
 
-function uciGet($uciString)
+function uciGet($uciString, $autoBool = true)
 {
 	$uciString = escapeshellarg($uciString);
 	$result = exec("uci get {$uciString}");
-	if ($result === "0" || $result === "1") {
+	if ($autoBool && ($result === "0" || $result === "1")) {
 		return $result === "1";
 	}
 

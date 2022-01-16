@@ -100,6 +100,10 @@ class Networking extends SystemModule
             case 'getInfoData':
                 $this->getInfoData();
                 break;
+
+            case 'interfaceActions':
+                $this->interfaceActions();
+                break;
         }
     }
 
@@ -274,9 +278,7 @@ class Networking extends SystemModule
 
     private function getInfoData()
     {
-        $type = (int)$this->request->type;
-        $command = '';
-        switch ($type) {
+        switch ((int)$this->request->type) {
             case 2:
                 $command = 'iw dev';
                 break;
@@ -285,6 +287,27 @@ class Networking extends SystemModule
                 break;
             default:
                 $command = 'ifconfig -a';
+        }
+
+        exec($command, $info);
+        $this->response = implode("\n", $info);
+    }
+
+    private function interfaceActions()
+    {
+        $interface = escapeshellarg($this->request->interface);
+        switch ((int)$this->request->type) {
+            case 2:
+                $command = "ifconfig {$interface} down";
+                break;
+            case 3:
+                $command = "airmon-ng start {$interface}";
+                break;
+            case 4:
+                $command = "airmon-ng stop {$interface}";
+                break;
+            default:
+                $command = "ifconfig {$interface} up";
         }
 
         exec($command, $info);

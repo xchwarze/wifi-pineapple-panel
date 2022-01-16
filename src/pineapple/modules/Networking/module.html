@@ -226,18 +226,52 @@
             <div class="col-md-6 controller" ng-controller="NetworkingInfoController">
                 <div class="panel panel-default">
                     <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Interface actions
+                            <span class="pull-right">
+                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="getInterfaces();">
+                                    Refresh
+                                </button>
+                            </span>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group" ng-repeat="interface in interfaces">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">{{ interface }}</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(1, interface)" ng-disabled="actions == 'loading'">Up</button>
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(2, interface)" ng-disabled="actions == 'loading'">Down</button>
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(3, interface)" ng-disabled="actions == 'loading'">Monitor ON</button>
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(4, interface)" ng-disabled="actions == 'loading'">Monitor OFF</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <img src="img/throbber.gif" ng-show="actions == 'loading'">
+                            </div>
+                            <div class="row" ng-hide="actions == '' || actions == 'loading'">
+                                <br/>
+                                <pre class="scrollable-pre">{{ actions }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
                         <h3 class="panel-title">Info</h3>
                     </div>
                     <div class="panel-body">
                         <div class="col-md-12">
                             <div class="row">
-                                <button class="btn btn-default" ng-click="getInfoData(1)" ng-disabled="loading">ifconfig</button>
-                                <button class="btn btn-default" ng-click="getInfoData(2)" ng-disabled="loading">iw dev</button>
-                                <button class="btn btn-default" ng-click="getInfoData(3)" ng-disabled="loading">airmon-ng</button>
-                                <img src="img/throbber.gif" ng-hide="!loading">
+                                <button class="btn btn-default" ng-click="getInfoData(1)" ng-disabled="info == 'loading'">ifconfig</button>
+                                <button class="btn btn-default" ng-click="getInfoData(2)" ng-disabled="info == 'loading'">iw dev</button>
+                                <button class="btn btn-default" ng-click="getInfoData(3)" ng-disabled="info == 'loading'">airmon-ng</button>
+                                <img src="img/throbber.gif" ng-show="info == 'loading'">
                             </div>
-                            <br/>
-                            <div class="row">
+                            <div class="row" ng-hide="info == '' || info == 'loading'">
+                                <br/>
                                 <pre class="scrollable-pre">{{ info }}</pre>
                             </div>
                         </div>
@@ -356,9 +390,14 @@
                                 </div>
                                 <br/>
                                 <div class="input-group">
-                                    <div class="col-md-12">
+                                    <div class="col-md-5">
                                        <div class="checkbox">
                                             <label for="hideOpenAP"><input id="hideOpenAP" type="checkbox" value="" ng-model="apConfig['hideOpenAP']">Hide Open SSID</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="checkbox">
+                                            <label for="disableOpenAP"><input id="disableOpenAP" type="checkbox" value="" ng-model="apConfig['disableOpenAP']">Disable Open SSID</label>
                                         </div>
                                     </div>
                                 </div>

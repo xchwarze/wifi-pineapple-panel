@@ -59,6 +59,7 @@ registerController('NetworkingAccessPointsController', ['$api', '$scope', '$time
         selectedChannel: "1",
         openSSID: "",
         hideOpenAP: false,
+        disableOpenAP: false,
         managementSSID: "",
         managementKey: "",
         disableManagementAP: false,
@@ -248,7 +249,7 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
 
 registerController('NetworkingMACAddressesController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
     $scope.interfaces = [];
-    $scope.selectedInterface = "wlan0";
+    $scope.selectedInterface = "";
     $scope.newMac = "";
     $scope.modifyingMAC = false;
     $scope.forceReload = false;
@@ -263,6 +264,7 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
             if (response.error === undefined) {
                 $scope.loading = false;
                 $scope.interfaces = response;
+                $scope.selectedInterface = Object.keys(response)[0];
             }
         });
     });
@@ -499,21 +501,55 @@ registerController("OUILookupController", ['$api', '$scope', '$timeout', '$http'
 }]);
 
 registerController('NetworkingInfoController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
-    $scope.info = 'Use buttons for load info';
-    $scope.loading = false;
+    $scope.interfaces = [];
+    $scope.info = '';
+    $scope.actions = '';
+
+    $scope.getInterfaces = (function() {
+        $scope.interfaces = [];
+        $scope.actions = 'loading';
+        $api.request({
+            module: 'Networking',
+            action: 'getClientInterfaces'
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.actions = '';
+                $scope.interfaces = response;
+            }
+        });
+    });
+
+    $scope.interfaceActions = (function(type, wlan) {
+        $scope.actions = 'loading';
+        $api.request({
+            module: 'Networking',
+            action: 'interfaceActions',
+            type: type,
+            interface: wlan
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.actions = response;
+
+                // reload interfaces in monitor command cases
+                if (type === 3 || type === 4) {
+                    $scope.getInterfaces();
+                }
+            }
+        });
+    });
 
     $scope.getInfoData = (function(type) {
-        $scope.info = 'Loading...';
-        $scope.loading = true;
+        $scope.info = 'loading';
         $api.request({
             module: 'Networking',
             action: 'getInfoData',
             type: type
         }, function(response) {
             if (response.error === undefined) {
-                $scope.loading = false;
                 $scope.info = response;
             }
         });
     });
+
+    $scope.getInterfaces();
 }]);

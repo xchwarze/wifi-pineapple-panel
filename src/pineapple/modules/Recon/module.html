@@ -42,10 +42,11 @@
                         <div class="row">
                             <br/>
                             <div class="progress" ng-show="running && scanSettings.scanDuration > 0">
-                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%">{{ percent | roundCeil }}%
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%">
+                                    {{ percent | roundCeil }}%
                                 </div>
-                                <div class="alert well-sm alert-danger" ng-show="error">{{ error }}</div>
                             </div>
+                            <div class="alert well-sm alert-danger" ng-show="pineAPDRunning && pineAPDStatus && error">{{ error }}</div>
                         </div>
                     </div>
                 </div>

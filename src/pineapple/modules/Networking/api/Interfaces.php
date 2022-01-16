@@ -97,6 +97,7 @@ class Interfaces
             array_push($clientInterfaces, $interface);
         }
 
-        return array_reverse($clientInterfaces);
+        //return array_reverse($clientInterfaces);
+        return $clientInterfaces;
     }
 }
