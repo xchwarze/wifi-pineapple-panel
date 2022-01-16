@@ -5,7 +5,7 @@ registerController('NetworkingRouteController', ['$api', '$scope', '$timeout', f
     $scope.routeInterfaces = [];
 
 
-    $scope.getRoute = (function(){
+    $scope.reloadData = (function(){
         $api.request({
             module: 'Networking',
             action: 'getRoutingTable'
@@ -37,7 +37,7 @@ registerController('NetworkingRouteController', ['$api', '$scope', '$timeout', f
             routeInterface: $scope.routeInterface
         }, function(response) {
             if (response.success === true) {
-                $scope.getRoute();
+                $scope.reloadData();
                 $scope.updatedRoute = true;
                 $timeout(function(){
                     $scope.updatedRoute = false;
@@ -46,8 +46,7 @@ registerController('NetworkingRouteController', ['$api', '$scope', '$timeout', f
         });
     });
 
-    $scope.getRoute();
-
+    //$scope.reloadData();
 }]);
 
 registerController('NetworkingAccessPointsController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
@@ -85,7 +84,7 @@ registerController('NetworkingAccessPointsController', ['$api', '$scope', '$time
         })
     });
 
-    $scope.getAPConfiguration = (function() {
+    $scope.reloadData = (function() {
         $api.request({
             module: "Networking",
             action: "getAPConfig"
@@ -99,7 +98,7 @@ registerController('NetworkingAccessPointsController', ['$api', '$scope', '$time
         })
     });
 
-    $scope.getAPConfiguration();
+    //$scope.reloadData();
 }]);
 
 registerController('NetworkingClientModeController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
@@ -154,13 +153,13 @@ registerController('NetworkingClientModeController', ['$api', '$scope', '$timeou
         }, function() {
             $scope.key = "";
             $timeout(function() {
-                $scope.checkConnection();
+                $scope.reloadData();
                 $scope.connecting = false;
             }, 10000);
         });
     });
 
-    $scope.checkConnection = (function() {
+    $scope.reloadData = (function() {
         $api.request({
             module: 'Networking',
             action: 'checkConnection'
@@ -197,7 +196,7 @@ registerController('NetworkingClientModeController', ['$api', '$scope', '$timeou
         });
     });
 
-    $scope.checkConnection();
+    $scope.reloadData();
 }]);
 
 registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
@@ -216,7 +215,7 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
     });
     $scope.getDevice();
 
-    $scope.getFirewallConfig = (function() {
+    $scope.reloadData = (function() {
         $api.request({
             module: 'Networking',
             action: 'getFirewallConfig'
@@ -244,7 +243,7 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
         })
     });
 
-    $scope.getFirewallConfig();
+    //$scope.reloadData();
 }]);
 
 registerController('NetworkingMACAddressesController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
@@ -252,8 +251,9 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
     $scope.selectedInterface = "wlan0";
     $scope.newMac = "";
     $scope.modifyingMAC = false;
+    $scope.forceReload = false;
 
-    $scope.getMacData = (function() {
+    $scope.reloadData = (function() {
         $api.request({
             module: 'Networking',
             action: 'getMacData'
@@ -270,13 +270,14 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
             module: 'Networking',
             action: 'setMac',
             interface: $scope.selectedInterface,
-            mac: $scope.newMac
+            mac: $scope.newMac,
+            forceReload: $scope.forceReload
         }, function(response) {
             if (response.error === undefined) {
                 $scope.newMac = "";
                 $timeout(function(){
                     $scope.modifyingMAC = false;
-                    $scope.getMacData();
+                    $scope.reloadData();
                 }, 6000);
             }
         });
@@ -287,13 +288,14 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
         $api.request({
             module: 'Networking',
             action: 'setRandomMac',
-            interface: $scope.selectedInterface
+            interface: $scope.selectedInterface,
+            forceReload: $scope.forceReload
         }, function(response) {
             if (response.error === undefined) {
                 $scope.newMac = "";
                 $timeout(function(){
                     $scope.modifyingMAC = false;
-                    $scope.getMacData();
+                    $scope.reloadData();
                 }, 6000);
             }
         });
@@ -310,13 +312,13 @@ registerController('NetworkingMACAddressesController', ['$api', '$scope', '$time
                 $scope.newMac = "";
                 $timeout(function(){
                     $scope.modifyingMAC = false;
-                    $scope.getMacData();
+                    $scope.reloadData();
                 }, 6000);
             }
         });
     });
 
-    $scope.getMacData();
+    $scope.reloadData();
 }]);
 
 registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
@@ -325,12 +327,10 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
     $scope.wirelessUpdated = false;
     $scope.data = {
         hostname: "Pineapple",
-        ifconfig: "",
         wireless: ""
     };
 
     $scope.reloadData = (function() {
-        $scope.data['ifconfig'] = 'Loading...';
         $scope.data['wireless'] = 'Loading...';
         $api.request({
             module: 'Networking',
@@ -388,7 +388,7 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
         });
     });
 
-    $scope.reloadData();
+    //$scope.reloadData();
 }]);
 
 registerController("OUILookupController", ['$api', '$scope', '$timeout', '$http', function($api, $scope, $timeout, $http) {
@@ -490,5 +490,21 @@ registerController("OUILookupController", ['$api', '$scope', '$timeout', '$http'
             }, 2000);
         };
     };
+}]);
 
+registerController('NetworkingInfoController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+    $scope.info = '';
+
+    $scope.getInfoData = (function(type) {
+        $scope.info = 'Loading...';
+        $api.request({
+            module: 'Networking',
+            action: 'getInfoData',
+            type: type
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.info = response;
+            }
+        });
+    });
 }]);

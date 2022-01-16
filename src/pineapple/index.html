@@ -79,8 +79,9 @@
                         <a href="#!/modules/ModuleManager" title="Manage Modules">Manage Modules</a>
                     </li>
                     <li ng-class="getClass(userModule.name)" ng-repeat="userModule in userModules" module="{{ userModule.name }}">
-                        <a href="#!/modules/{{ userModule.name }}">
+                        <a href="#!/modules/{{ userModule.name }}" title="{{ userModule.title }}">
                             <img class="module-icon pull-right" ng-src="{{ userModule.icon }}" ng-if="userModule.icon != null"/>
+                            <span class="module-icon module-text pull-right" ng-if="userModule.icon == null">{{ getAlias(userModule.title) }}</span>
                             {{ userModule.title }}
                         </a>
                     </li>

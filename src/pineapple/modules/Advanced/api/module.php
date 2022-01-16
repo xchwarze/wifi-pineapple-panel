@@ -89,6 +89,10 @@ class Advanced extends SystemModule
             case 'revokeApiToken':
                 $this->revokeApiToken();
                 break;
+
+            case 'downloadManualUpgrade':
+                $this->downloadManualUpgrade();
+                break;
         }
     }
 
@@ -174,6 +178,7 @@ class Advanced extends SystemModule
         if (file_exists('/tmp/hotpatch.patch')) {
             exec("cd / && patch < /tmp/hotpatch.patch");
         }
+
         $version = $this->request->version;
         $device = $this->getDevice();
         @unlink("/tmp/upgrade.bin");
@@ -184,14 +189,31 @@ class Advanced extends SystemModule
 
     private function getDownloadStatus()
     {
+        $uploadPath = '/tmp/upgrade.bin';
+        //if (!\helper\checkRunningFull("/usr/sbin/wget")) {
+        //    $this->error = "Download error";
         if (file_exists("/tmp/upgradeDownloaded")) {
-            if (hash_file('sha256', '/tmp/upgrade.bin') == $this->request->checksum) {
+            $fileHash = hash_file('sha256', $uploadPath);
+            if ((bool)$this->request->isManuelUpdate) {
+                $bytes = filesize($uploadPath);
+                $sz = 'BKMGTP';
+                $factor = floor((strlen($bytes) - 1) / 3);
+  
+                $this->response = array(
+                    "completed" => true,
+                    "sha256" => $fileHash,
+                    "downloaded" => sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor]
+                );
+            } else if ($fileHash == $this->request->checksum) {
                 $this->response = array("completed" => true);
             } else {
                 $this->error = "Checksum mismatch";
             }
         } else {
-            $this->response = array("completed" => false, "downloaded" => filesize('/tmp/upgrade.bin'));
+            $this->response = array(
+                "completed" => false,
+                "downloaded" => filesize($uploadPath)
+            );
         }
     }
 
@@ -272,5 +294,17 @@ class Advanced extends SystemModule
         } else {
             $this->error = "The revokeApiToken API call requires either a 'id', 'token', or 'name' parameter";
         }
+    }
+
+    private function downloadManualUpgrade()
+    {
+        $uploadPath = '/tmp/upgrade.bin';
+        @unlink($uploadPath);
+        @unlink("/tmp/upgradeDownloaded");
+
+        $url = escapeshellarg($this->request->manualUpgradeUrl);
+        $this->execBackground("wget '{$url}' -O {$uploadPath} && touch /tmp/upgradeDownloaded");
+
+        $this->response = array('success' => true);
     }
 }

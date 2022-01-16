@@ -2,14 +2,19 @@ registerController("AdvancedResourcesController", ['$api', '$scope', '$timeout',
     $scope.freeDisk = "";
     $scope.freeMem = "";
     $scope.droppedCaches = false;
-    $scope.device = undefined;
+    $scope.device = "";
 
-    $api.request({
-        module: 'Advanced',
-        action: 'getResources'
-    }, function(response){
-        $scope.freeDisk = response.freeDisk;
-        $scope.freeMem = response.freeMem;
+    $scope.reloadData = (function() {
+        $scope.freeDisk = "";
+        $scope.freeMem = "";
+
+        $api.request({
+            module: 'Advanced',
+            action: 'getResources'
+        }, function(response){
+            $scope.freeDisk = response.freeDisk;
+            $scope.freeMem = response.freeMem;
+        });
     });
 
     $scope.dropCaches = (function() {
@@ -34,7 +39,9 @@ registerController("AdvancedResourcesController", ['$api', '$scope', '$timeout',
             $scope.device = response.device;
         });
     });
+
     $scope.getDevice();
+    $scope.reloadData();
 
     $api.onDeviceIdentified(function(device, scope) {
         scope.device = device;
@@ -49,6 +56,7 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
     $scope.device = "";
 
     $scope.getDevice = (function() {
+        $scope.device = "";
         $api.request({
             module: 'Configuration',
             action: 'getDevice'
@@ -56,7 +64,6 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
             $scope.device = response.device;
         });
     });
-    $scope.getDevice();
 
     $scope.formatSDCard = (function() {
         $api.request({
@@ -85,20 +92,25 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
         });
     });
 
-    $api.request({
-        module: 'Advanced',
-        action: 'getUSB'
-    }, function(response){
-        $scope.lsusb = response.lsusb;
-    });
+    $scope.reloadData = (function() {
+        $scope.lsusb = "";
+        $scope.fstab = "";
 
-    $api.request({
-        module: 'Advanced',
-        action: 'getFstab'
-    }, function(response) {
-        if (response.error === undefined) {
-            $scope.fstab = response.fstab;
-        }
+        $api.request({
+            module: 'Advanced',
+            action: 'getUSB'
+        }, function(response){
+            $scope.lsusb = response.lsusb;
+        });
+
+        $api.request({
+            module: 'Advanced',
+            action: 'getFstab'
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.fstab = response.fstab;
+            }
+        });
     });
 
     $scope.saveFstab = (function() {
@@ -116,6 +128,9 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
         });
     });
 
+    $scope.getDevice();
+    $scope.reloadData();
+
     $scope.$on('$destroy', function() {
         $interval.cancel($scope.SDCardInterval);
     });
@@ -125,13 +140,15 @@ registerController("AdvancedCSSController", ['$api', '$scope', '$timeout', funct
     $scope.css = "";
     $scope.cssSaved = false;
 
-    $api.request({
-        module: 'Advanced',
-        action: 'getCSS'
-    }, function(response) {
-        if (response.error === undefined) {
-            $scope.css = response.css;
-        }
+    $scope.reloadData = (function() {
+        $api.request({
+            module: 'Advanced',
+            action: 'getCSS'
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.css = response.css;
+            }
+        });
     });
 
     $scope.saveCSS = (function() {
@@ -160,14 +177,20 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
     $scope.upgradeData = {};
     $scope.downloadPercentage = 0;
     $scope.firmwareVersion = "";
+    $scope.performUpgradeStart = false;
+    $scope.isManualUpgrade = false;
+    $scope.manualUpgradeUrl = "";
+    $scope.showManualUpgradeUrlError = false;
 
-    $api.request({
-        module: 'Advanced',
-        action: 'getCurrentVersion'
-    }, function(response) {
-        if (response.error === undefined) {
-            $scope.firmwareVersion = response.firmwareVersion;
-        }
+    $scope.reloadData = (function() {
+        $api.request({
+            module: 'Advanced',
+            action: 'getCurrentVersion'
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.firmwareVersion = response.firmwareVersion;
+            }
+        });
     });
 
     $scope.checkForUpgrade = (function() {
@@ -196,24 +219,59 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
             if (response.success === true) {
                 $scope.downloading = true;
                 $scope.downloadInterval = $interval(function() {
-                    $scope.getDownloadStatus();
+                    $scope.getDownloadStatus($scope.upgradeData['checksum'], false);
                 }, 1000);
             }
         });
     });
 
-    $scope.getDownloadStatus = (function() {
+    $scope.downloadManualUpgrade = (function() {
+        var isValid = $scope.manualUpgradeUrl.match(
+            /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+        );
+        if (isValid === null) {
+            $scope.showManualUpgradeUrlError = true;
+            $timeout(function(){
+                $scope.showManualUpgradeUrlError = false;
+            }, 2000);
+            return;
+        }
+
+        $scope.isManualUpgrade = true;
+        $api.request({
+            module: 'Advanced',
+            action: 'downloadManualUpgrade',
+            manualUpgradeUrl: $scope.manualUpgradeUrl
+        }, function(response) {
+            if (response.success === true) {
+                $scope.downloading = true;
+                $scope.downloadInterval = $interval(function() {
+                    $scope.getDownloadStatus('', true);
+                }, 1000);
+            }
+        });
+    });
+
+    $scope.getDownloadStatus = (function(checksum, isManuelUpdate) {
         $api.request({
             module: 'Advanced',
             action: 'getDownloadStatus',
-            checksum: $scope.upgradeData['checksum']
+            checksum: checksum,
+            isManuelUpdate: isManuelUpdate
         }, function(response) {
-            if ($scope.downloaded) return;
+            if ($scope.downloaded) {
+                return;
+            }
+
             if (response.completed === true) {
                 $scope.downloading = false;
                 $scope.downloaded = true;
                 $interval.cancel($scope.downloadInterval);
-                $scope.performUpgrade();
+                if (isManuelUpdate) {
+                    $scope.upgradeData = response;
+                } else {
+                    $scope.performUpgrade();
+                }
             } else if (response.error) {
                 $scope.error = response.error;
             } else {
@@ -223,11 +281,13 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
     });
 
     $scope.performUpgrade = (function() {
+        $scope.performUpgradeStart = true;
         $api.request({
             module: 'Advanced',
             action: 'performUpgrade'
         }, function(response) {
             if (response.success === true) {
+                $scope.performUpgradeStart = false;
             }
         });
     });
@@ -244,7 +304,7 @@ registerController("APITokenController", ['$api', '$scope', function($api, $scop
         token: ""
     };
 
-    $scope.getApiTokens = function(){
+    $scope.reloadData = function(){
         $api.request({
             module: 'Advanced',
             action: 'getApiTokens'
@@ -261,7 +321,7 @@ registerController("APITokenController", ['$api', '$scope', function($api, $scop
         }, function(response){
             $scope.newToken.name = "";
             $scope.newToken.token = response.token;
-            $scope.getApiTokens();
+            $scope.reloadData();
         });
     };
 
@@ -272,7 +332,7 @@ registerController("APITokenController", ['$api', '$scope', function($api, $scop
             action: 'revokeApiToken',
             id: id
         }, function(){
-            $scope.getApiTokens();
+            $scope.reloadData();
         });
     };
 
@@ -288,6 +348,4 @@ registerController("APITokenController", ['$api', '$scope', function($api, $scop
         var elem = $event.target;
         $scope.selectElem(elem);
     };
-
-    $scope.getApiTokens();
 }]);

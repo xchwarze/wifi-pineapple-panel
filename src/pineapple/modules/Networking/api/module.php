@@ -96,6 +96,10 @@ class Networking extends SystemModule
             case 'saveWirelessConfig':
                 $this->saveWirelessConfig();
                 break;
+
+            case 'getInfoData':
+                $this->getInfoData();
+                break;
         }
     }
 
@@ -124,10 +128,8 @@ class Networking extends SystemModule
 
     private function getAdvancedData()
     {
-        exec("ifconfig -a", $ifconfig);
         $this->response = array(
             "hostname" => gethostname(),
-            "ifconfig" => implode("\n", $ifconfig),
             "wireless" => file_get_contents('/etc/config/wireless')
         );
     }
@@ -179,10 +181,10 @@ class Networking extends SystemModule
         $this->response = $interfaceHelper->getMacData();
     }
 
-    private function setMac($random)
+    private function setMac($force_random)
     {
         $interfaceHelper = new \helper\Interfaces();
-        $this->response = $interfaceHelper->setMac($random, $this->request->interface, $this->request->mac);
+        $this->response = $interfaceHelper->setMac($force_random, $this->request->interface, $this->request->mac, $this->request->forceReload);
     }
 
     private function resetMac()
@@ -268,5 +270,24 @@ class Networking extends SystemModule
             $this->execBackground('wifi');
             $this->response = array("success" => true);
         }
+    }
+
+    private function getInfoData()
+    {
+        $type = (int)$this->request->type;
+        $command = '';
+        switch ($type) {
+            case 2:
+                $command = 'iw dev';
+                break;
+            case 3:
+                $command = 'airmon-ng';
+                break;
+            default:
+                $command = 'ifconfig -a';
+        }
+
+        exec($command, $info);
+        $this->response = implode("\n", $info);
     }
 }

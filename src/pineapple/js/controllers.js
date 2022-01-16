@@ -33,6 +33,10 @@
             });
         });
 
+        $scope.getAlias = function(moduleName) {
+            return moduleName.match(/(\b\S)?/g).join('').match(/(^\S|\S$)?/g).join('').toUpperCase();
+        };
+
         $api.registerNavbar($scope.getModuleList);
         $scope.getModuleList();
     }])

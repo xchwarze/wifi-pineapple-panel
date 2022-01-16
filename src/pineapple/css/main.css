@@ -129,6 +129,11 @@ body {
     background-color: #eee;
 }
 
+.sidebar .active a {
+    color: #555;
+    font-weight: bold;
+}
+
 .sidebar, .module-content {
     -webkit-transition: margin 200ms ease-out;
     -moz-transition: margin 200ms ease-out;
@@ -183,6 +188,10 @@ body {
     .sidebar {
         margin-left: 0;
         float: left;
+    }
+
+    .sidebar-nav .module-text {
+        visibility: hidden !important;
     }
 }
 
@@ -239,6 +248,7 @@ body {
         width: 300px !important;
         max-width: 300px !important;
     }
+
     .dropdown-menu-top li a {
         white-space: normal !important;
     }
@@ -260,6 +270,10 @@ body {
     .module-icon.pull-right {
         float: left !important;
         margin-right: 10px;
+    }
+
+    .tab-pane {
+        padding: 15px !important;
     }
 }
 
@@ -295,6 +309,27 @@ body {
 
 .menu-toggle-icon {
     transform: rotate(-90deg);
+}
+
+.tab-pane {
+    padding: 25px;
+    border: 1px solid #ddd;
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+.nav-tabs > li.active > a {
+    font-weight: bold;
+}
+
+.nav-tabs > li > a {
+    border-color: #eee #eee #ddd;
+    background-color: #eeeeee78;
+}
+
+.sidebar-nav .module-text {
+    text-align: center;
+    visibility: visible;
 }
 
 /* Use this for menu auto open on hover

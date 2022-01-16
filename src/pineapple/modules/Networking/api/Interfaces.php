@@ -43,7 +43,7 @@ class Interfaces
         return false;
     }
 
-    public function setMac($random, $interface, $newMac)
+    public function setMac($random, $interface, $newMac, $forceReload)
     {
         $uciID = $this->getUciID($interface);
         $interface = escapeshellarg($interface);
@@ -56,7 +56,12 @@ class Interfaces
         }
 
         uciSet("wireless.@wifi-iface[{$uciID}].macaddr", $mac);
-        exec("wifi");
+        if ($forceReload) {
+            exec("wifi");
+        } else {
+            exec("ifconfig {$interface} up");
+        }
+
         return array("success" => true, "uci" => $uciID);
     }
 
@@ -86,11 +91,12 @@ class Interfaces
         exec("ifconfig -a | grep wlan | awk '{print \$1}'", $interfaceArray);
 
         foreach ($interfaceArray as $interface) {
-            if (substr($interface, 0, 5) === "wlan0") {
-                continue;
-            }
+            //if (substr($interface, 0, 5) === "wlan0") {
+            //    continue;
+            //}
             array_push($clientInterfaces, $interface);
         }
+
         return array_reverse($clientInterfaces);
     }
 }
