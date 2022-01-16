@@ -39,14 +39,15 @@ The following functionalities are modified looking for a better user experience
  - Save filters in cookies
 
 ## Network:
- - Add wireless config editor
  - Add tabs
- - Add Info block
- - Decrease initial requests (from 8 to 2)
+ - Add "Wireless raw config editor" section
+ - Add "Info" section
+ - Add "Interface actions" section
+ - Decrease initial requests (from 8 to 3)
 
 ## Advanced:
- - Add Manual upgrade
  - Add tabs
+ - Add "Manual upgrade" section
  - Decrease initial requests (from 8 to 3)
 
 ## Setup:

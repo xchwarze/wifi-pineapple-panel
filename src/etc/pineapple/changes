@@ -42,16 +42,17 @@
 
     <li>Network</li>
     <ul>
-        <li>Add wireless config editor</li>
         <li>Add tabs</li>
-        <li>Add Info block</li>
-        <li>Decrease initial requests (from 8 to 2)</li>
+        <li>Add "Wireless raw config editor" section</li>
+        <li>Add "Info" section</li>
+        <li>Add "Interface actions" section</li>
+        <li>Decrease initial requests (from 8 to 3)</li>
     </ul>
 
     <li>Advanced</li>
     <ul>
-        <li>Add Manual upgrade</li>
         <li>Add tabs</li>
+        <li>Add "Manual upgrade" section</li>
         <li>Decrease initial requests (from 8 to 3)</li>
     </ul>
 
