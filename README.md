@@ -38,6 +38,14 @@ The following functionalities are modified looking for a better user experience
 
 ## Network:
  - Add wireless config editor
+ - Add tabs
+ - Add Info block
+ - Decrease initial requests (from 8 to 3)
+
+## Advanced:
+ - Add Manual upgrade
+ - Add tabs
+ - Decrease initial requests (from 8 to 5)
 
 ## Setup:
  - Fix character bad used
