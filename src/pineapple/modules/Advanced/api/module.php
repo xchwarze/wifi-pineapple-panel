@@ -306,7 +306,7 @@ class Advanced extends SystemModule
         @unlink("/tmp/upgradeDownloaded");
 
         $url = escapeshellarg($this->request->manualUpgradeUrl);
-        $this->execBackground("wget '{$url}' -O {$uploadPath} && touch /tmp/upgradeDownloaded");
+        $this->execBackground("wget {$url} -O {$uploadPath} && touch /tmp/upgradeDownloaded");
 
         $this->response = array('success' => true);
     }

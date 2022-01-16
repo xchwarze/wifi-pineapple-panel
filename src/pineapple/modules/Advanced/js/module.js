@@ -231,13 +231,16 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
         );
         if (isValid === null) {
             $scope.showManualUpgradeUrlError = true;
-            $timeout(function(){
+            $interval(function(){
                 $scope.showManualUpgradeUrlError = false;
             }, 2000);
             return;
         }
 
+        $scope.downloading = false;
+        $scope.downloaded = false;
         $scope.isManualUpgrade = true;
+
         $api.request({
             module: 'Advanced',
             action: 'downloadManualUpgrade',
