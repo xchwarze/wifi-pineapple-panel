@@ -1,0 +1,66 @@
+<h3>Changelog for 2.7.0+:</h3>
+<ul>
+    <li>General</li>
+    <ul>
+        <li>Compress PNG images (size -55K)</li>
+        <li>Compress SVG images (size -7K)</li>
+        <li>Update Bootstrap to 3.4.1 (size +2K)</li>
+        <li>Fix mobile view</li>
+        <li>Add Chevron icon to accordions (size +1K)</li>
+        <li>Change notification time from 6000 to 20000 (decrease RPM from 10 to 3)</li>
+        <li>Added more refresh buttons</li>
+        <li>Fixed several bugs found in the panel</li>
+        <li>Project minification (Optional: use packer tools)</li>
+    </ul>
+
+    <li>Recon</li>
+    <ul>
+        <li>Code refactor in module.php</li>
+        <li>Add results counter in titles with badges</li>
+        <li>Fix column alignment</li>
+    </ul>
+
+    <li>Clients</li>
+    <ul>
+        <li>Add loading indicator</li>
+        <li>Change default text logic</li>
+    </ul>
+
+    <li>PineAP</li>
+    <ul>
+        <li>Configure used monitor interface (pineapd pineap_interface)</li>
+        <li>Configure used source interface (pineapd source_mac grabber)</li>
+        <li>Show pineapd service errors</li>
+    </ul>
+
+    <li>Logging</li>
+    <ul>
+        <li>Fire data loading on open accordion</li>
+        <li>Add PineAP Logs loading indicator</li>
+        <li>Save filters in cookies</li>
+    </ul>
+
+    <li>Network</li>
+    <ul>
+        <li>Add wireless config editor</li>
+        <li>Add tabs</li>
+        <li>Add Info block</li>
+        <li>Decrease initial requests (from 8 to 2)</li>
+    </ul>
+
+    <li>Advanced</li>
+    <ul>
+        <li>Add Manual upgrade</li>
+        <li>Add tabs</li>
+        <li>Decrease initial requests (from 8 to 3)</li>
+    </ul>
+
+    <li>Setup</li>
+    <ul>
+        <li>Fix character bad used</li>
+    </ul>
+</ul>
+
+<p>
+    <span style="color: red">Mod by DSR!</span> - https://github.com/xchwarze/wifi-pineapple-panel<br/>
+</p>
