@@ -7,7 +7,10 @@ class Modules extends APIModule
     public function __construct($request)
     {
         Parent::__construct($request);
-        $this->modules = array('systemModules' => array(), 'userModules' => array());
+        $this->modules = [
+            'systemModules' => [],
+            'userModules'   => []
+        ];
     }
 
     public function getModules()
@@ -21,40 +24,36 @@ class Modules extends APIModule
         }
 
         natcasesort($dir);
-
         foreach ($dir as $moduleFolder) {
-            if ($moduleFolder[0] === '.') {
-                continue;
-            }
-
             $modulePath = "../modules/{$moduleFolder}";
-
-            if (!file_exists("{$modulePath}/module.info")) {
+            if ($moduleFolder[0] === '.' || !file_exists("{$modulePath}/module.info")) {
                 continue;
             }
 
             $moduleInfo = @json_decode(file_get_contents("{$modulePath}/module.info"));
-            if (json_last_error() !== JSON_ERROR_NONE) {
+            if (json_last_error() !== JSON_ERROR_NONE || isset($moduleInfo->cliOnly)) {
                 continue;
             }
 
-            $moduleTitle = (isset($moduleInfo->title)) ? $moduleInfo->title : $moduleFolder;
+
+            $jsonModulePath = "/modules/${moduleFolder}";
+            $module = [
+                "name"     => $moduleFolder,
+                "title"    => isset($moduleInfo->title) ? $moduleInfo->title : $moduleFolder,
+                "icon"     => null,
+                "injectJS" => isset($moduleInfo->injectJS) ? "${jsonModulePath}/{$moduleInfo->injectJS}" : null,
+            ];
 
             if (file_exists("$modulePath/module_icon.svg")) {
-                $module = array("name" => $moduleFolder, "title" => $moduleTitle, "icon" => "/modules/${moduleFolder}/module_icon.svg");
+                $module["icon"] = "${jsonModulePath}/module_icon.svg";
             } elseif (file_exists("$modulePath/module_icon.png")) {
-                $module = array("name" => $moduleFolder, "title" => $moduleTitle, "icon" => "/modules/${moduleFolder}/module_icon.png");
-            } else {
-                $module = array("name" => $moduleFolder, "title" => $moduleTitle, "icon" => null);
+                $module["icon"] = "${jsonModulePath}/module_icon.png";
             }
 
             if (isset($moduleInfo->system)) {
-                if (!isset($moduleInfo->index)) {
-                    continue;
+                if (isset($moduleInfo->index)) {
+                    $this->modules['systemModules'][$moduleInfo->index] = $module;
                 }
-                $this->modules['systemModules'][$moduleInfo->index] = $module;
-            } elseif (isset($moduleInfo->cliOnly)) {
-                continue;
             } else {
                 array_push($this->modules['userModules'], $module);
             }
@@ -68,7 +67,7 @@ class Modules extends APIModule
         switch ($this->request->action) {
             case "getModuleList":
                 $this->getModules();
-                $this->response = array('modules' => $this->modules);
+                $this->response = ['modules' => $this->modules];
                 break;
             default:
                 $this->error = "Unknown action: " . $this->request->action;

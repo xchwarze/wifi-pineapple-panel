@@ -6,19 +6,12 @@
         $scope.selectedIndex = -1;
 
         $scope.getClass = function(moduleName) {
-            if ($routeParams.moduleName === $(".sidebar-nav li[module="+ moduleName +"]").attr("module")) {
-                return 'active';
-            } else {
-                return '';
-            }
+            var status = ($routeParams.moduleName === $(".sidebar-nav li[module="+ moduleName +"]").attr("module"));
+            return status ? 'active' : '';
         };
 
         $scope.getModuleClass = function() {
-            if ($(".module-nav li.active").length) {
-                return 'active';
-            } else {
-                return '';
-            }
+            return $(".module-nav li.active").length ? 'active' : '';
         };
 
         $scope.getModuleList = (function () {
@@ -29,6 +22,15 @@
                 if (data.error === undefined){
                     $scope.systemModules = data.modules.systemModules;
                     $scope.userModules = data.modules.userModules;
+                    $scope.processModulesExtras();
+                }
+            });
+        });
+
+        $scope.processModulesExtras = (function () {
+            angular.forEach($scope.userModules, function(value) {
+                if (value.injectJS) {
+                    $('head').append( $('<script src="' + value.injectJS + '"></script>') );
                 }
             });
         });
@@ -58,7 +60,7 @@
             $api.getNotifications(function(data){
                 $scope.notifications = data;
             });
-        }, 20000);
+        }, 30000);
 
         $scope.$on('$destroy', function() {
             $interval.cancel($scope.notificationInterval);
@@ -70,7 +72,6 @@
         $scope.username = "root";
         $scope.password = "";
         $scope.message = "";
-
 
         $scope.login = function(){
             $api.login($scope.username, $scope.password, function(data){
@@ -113,6 +114,5 @@
                 });
             }
         });
-
     }]);
 })();
