@@ -47,10 +47,10 @@ class API
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             if (isset($_SERVER['HTTP_X_XSRF_TOKEN']) && $_SERVER['HTTP_X_XSRF_TOKEN'] === $_SESSION['XSRF-TOKEN']) {
                 return true;
-            } else {
-                $this->error = "Invalid CSRF token";
-                return false;
             }
+
+            $this->error = "Invalid CSRF token";
+            return false;
         } elseif (isset($this->request->system) && $this->request->system === 'authentication') {
             if (isset($this->request->action) && $this->request->action === 'login') {
                 return true;
@@ -66,11 +66,13 @@ class API
                 return true;
             }
         }
+
         if (file_exists('/etc/pineapple/setupRequired')) {
             $this->response = array('error' => 'Not Authenticated', 'setupRequired' => true);
         } else {
             $this->error = "Not Authenticated";
         }
+
         return false;
     }
 
@@ -115,7 +117,6 @@ class API
 
         $found = false;
         $moduleClass = "";
-
         foreach (glob('/pineapple/modules/*') as $moduleFolder) {
             if (str_replace('/pineapple/modules/', '', $moduleFolder) === $moduleName) {
                 $found = true;
@@ -128,6 +129,7 @@ class API
             $this->error = "Module {$moduleName} does not exist or is defined incorrectly";
             return null;
         }
+
         if (!class_exists($moduleClass)) {
             $this->error = "The class {$moduleClass} does not exist in {$moduleFolder}";
             return null;

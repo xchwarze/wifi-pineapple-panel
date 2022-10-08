@@ -117,11 +117,11 @@ abstract class Module
 
         $destination = $installToSD ? '--dest sd' : '';
         $dependencyName = escapeshellarg($dependencyName);
-
         if (!$this->checkDependency($dependencyName)) {
             exec("opkg update");
             exec("opkg install {$dependencyName} {$destination}");
         }
+
         return $this->checkDependency($dependencyName);
     }
 

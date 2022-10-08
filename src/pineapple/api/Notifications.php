@@ -4,7 +4,6 @@ require_once('DatabaseConnection.php');
 
 class Notifications extends APIModule
 {
-
     private $notifications;
     private $dbConnection;
     const DATABASE = "/etc/pineapple/pineapple.db";

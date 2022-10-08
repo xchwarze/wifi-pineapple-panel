@@ -25,7 +25,7 @@ registerController("DashboardOverviewController", ['$api', '$scope', '$interval'
 
 	$scope.populateInterval = $interval(function(){
 		$scope.populateDashboard();
-	}, 5000);
+	}, 10000);
 
 	$scope.populateDashboard();
 	$scope.$on('$destroy', function() {

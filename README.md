@@ -14,10 +14,14 @@ The following functionalities are modified looking for a better user experience
  - Update Bootstrap to 3.4.1 (size +2K)
  - Fix mobile view
  - Add Chevron icon to accordions (size +1K)
- - Change notification time from 6000 to 20000 (decrease RPM from 10 to 3)
+ - Change notification time from 6000 to 30000 (decrease RPM from 10 to 2)
  - Added more refresh buttons
  - Fixed several bugs found in the panel
+ - Expose AngularJS Pineapple API in JS window
  - Project minification (Optional: use packer tools)
+
+## Dashboard
+ - Change update time from 5000 to 10000 (decrease RPM from 12 to 6)
 
 ## Recon:
  - Code refactor in module.php
@@ -53,13 +57,17 @@ The following functionalities are modified looking for a better user experience
 ## Setup:
  - Fix character bad used
 
+## Modules:
+ - Refactor in Modules.php
+ - Add support for injectJS in modules manifest
+
 
 # Notes
 
  1. For edit notification timer you can use this
  ```bash
  # sed -i 's/OLD-VALUE/NEW-VALUE/' FILE
- sed -i 's/20000/30000/' src/pineapple/js/controllers.js
+ sed -i 's/30000/60000/' src/pineapple/js/controllers.js
 ```
 
  2. To open the menu on hover uncomment this in src/pineapple/main.css
