@@ -19,6 +19,7 @@ The following functionalities are modified looking for a better user experience
  - Fixed several bugs found in the panel
  - Expose AngularJS Pineapple API in JS window
  - Add timeout and prevent duplicated request in API service
+ - Refactor all indexedDB code
  - Project minification (Optional: use packer tools)
 
 ## Dashboard
