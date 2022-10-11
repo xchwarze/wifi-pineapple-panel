@@ -1,12 +1,37 @@
 (function(){
     angular.module('pineapple')
+
+    .config(function ($provide, $httpProvider) {
+        $httpProvider.interceptors.push(['$injector', '$q', function interceptors($injector, $q) {
+            return {
+                request: function request(config) {
+                    var $http = $injector.get('$http');
+                    var _config = angular.copy(config);
+                    delete _config.headers;
+
+                    function isConfigEqual(pendingRequestConfig) {
+                        var _pendingRequestConfig = angular.copy(pendingRequestConfig);
+                        delete _pendingRequestConfig.headers;
+                        return angular.equals(_config, _pendingRequestConfig);
+                    }
+
+                    if ($http.pendingRequests.some(isConfigEqual)) {
+                        return $q.reject(request);
+                    }
+
+                    return config;
+                }
+            };
+        }]);
+    })
+
     .service('$api', ['$http', function($http){
         this.navbarReloader = false;
         this.device = undefined;
         this.deviceCallbacks = [];
 
         this.request = (function(data, callback, scope) {
-            return $http.post('/api/', data).
+            return $http.post('/api/', data, { timeout: 30000 }).
             then(function(response){
                 if (response.data.error === "Not Authenticated") {
                     if (response.data.setupRequired === true) {

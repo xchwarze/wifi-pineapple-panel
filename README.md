@@ -18,6 +18,7 @@ The following functionalities are modified looking for a better user experience
  - Added more refresh buttons
  - Fixed several bugs found in the panel
  - Expose AngularJS Pineapple API in JS window
+ - Add timeout and prevent duplicated request in API service
  - Project minification (Optional: use packer tools)
 
 ## Dashboard
