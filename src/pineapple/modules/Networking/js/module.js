@@ -402,101 +402,35 @@ registerController('NetworkingAdvancedController', ['$api', '$scope', '$timeout'
 registerController("OUILookupController", ['$api', '$scope', '$timeout', '$http', function($api, $scope, $timeout, $http) {
     $scope.macAddress = "";
     $scope.vendor = "";
-    $scope.OUIDBPresent = false;
 
-    $scope.isOUIPresent = function () {
-        return localStorage.getItem("ouiText") !== null;
-    };
+    $scope.isOUIPresent = $api.ouiPresent;
 
     $scope.downloadOUIDatabase = function () {
-        if (typeof(Storage) === "undefined") {
-            return false;
-        }
-        var ouiText = localStorage.getItem("ouiText");
-        if (ouiText === null) {
-            $scope.gettingOUI = true;
-            $http.get('https://www.wifipineapple.com/oui.txt').then(
-                function (response) {
-                    localStorage.setItem("ouiText", response.data);
-                    $scope.populateDB();
-                },
-                function () {
-                    $api.request({
-                        module: "Networking",
-                        action: "getOUI"
-                    }, function (response) {
-                        if (response.error === undefined) {
-                            localStorage.setItem("ouiText", response.ouiText);
-                            $scope.populateDB();
-                        } else {
-                            return false;
-                        }
-                    });
-                });
-        }
-        return true;
-    };
-
-    $scope.populateDB = function () {
+        $scope.gettingOUI = true;
         $scope.ouiLoading = true;
-        var request = window.indexedDB.open("pineapple", 1);
-
-        request.onupgradeneeded = function (event) {
-            var db = event.target.result;
-            var objectStore = db.createObjectStore("oui", {keyPath: "macPrefix"});
-            var text = localStorage.getItem("ouiText");
-            var pos = 0;
-            do {
-                var line = text.substring(pos, text.indexOf("\n", pos + 1)).replace('\n', '');
-                var arr = [line.substring(0, 6), line.substring(6)];
-                objectStore.add({
-                    macPrefix: arr[0],
-                    name: arr[1]
-                });
-                pos += line.length + 1;
-            } while (text.indexOf("\n", pos + 1) !== -1);
-        };
-        $scope.ouiLoading = false;
+        $api.loadOUIFile((function() {
+            $scope.ouiLoading = false;
+        }));
     };
 
     $scope.lookupMACAddress = function() {
-        $scope.ouiLoading = true;
-        if (!$scope.isOUIPresent()) {
+        if (!$api.ouiPresent()) {
             return;
         }
-        var request = window.indexedDB.open("pineapple", 1);
-        request.onsuccess = function() {
-            var db = request.result;
-            var mac = convertMACAddress($scope.macAddress);
-            var prefix = mac.substring(0, 8).replace(/:/g, '');
-            var transaction = db.transaction("oui");
-            var objectStore = transaction.objectStore("oui");
-            var lookupReq = objectStore.get(prefix);
-            lookupReq.onerror = function () {
-                window.indexedDB.deleteDatabase("pineapple");
-                $scope.vendor = "Error retrieving OUI";
-            };
-            lookupReq.onsuccess = function () {
-                if (lookupReq.result) {
-                    $scope.vendor = lookupReq.result.name;
-                } else {
-                    $scope.vendor = "Unknown MAC prefix";
-                }
-            };
+
+        $scope.ouiLoading = true;
+        var mac = convertMACAddress($scope.macAddress.trim());
+        $api.lookupOUI(mac, (function(text) {
+            $scope.vendor = text;
             $scope.ouiLoading = false;
-        }
+        }));
     };
 
     $scope.removeOUIDatabase = function() {
-        localStorage.removeItem('ouiText');
-        window.indexedDB.deleteDatabase('pineapple').onsuccess = function() {
-            $scope.success = true;
+        $api.deleteOUI((function() {
             $scope.ouiLoading = false;
             $scope.gettingOUI = false;
-            $timeout(function() {
-                $scope.success = false;
-            }, 2000);
-        };
+        }));
     };
 }]);
 

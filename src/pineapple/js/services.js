@@ -33,19 +33,19 @@
         this.request = (function(data, callback, scope) {
             return $http.post('/api/', data, { timeout: 30000 }).
             then(function(response){
-                if (response.data.error === "Not Authenticated") {
+                if (response.data.error === 'Not Authenticated') {
                     if (response.data.setupRequired === true) {
-                        if (window.location.hash !== "#!/modules/Setup") {
-                            window.location.hash = "#!/modules/Setup";
+                        if (window.location.hash !== '#!/modules/Setup') {
+                            window.location.hash = '#!/modules/Setup';
                         }
                     } else {
-                        $("#loginModal").modal({
+                        $('#loginModal').modal({
                             show: true,
                             keyboard: false,
                             backdrop: 'static'
                         });
                     }
-                    $(".logout").hide();
+                    $('.logout').hide();
                 }
                 if (callback !== undefined) {
                     if (scope !== undefined) {
@@ -119,12 +119,95 @@
             }
         };
 
+        this.ouiPresent = function() {
+            return localStorage.getItem('ouiText') !== null;
+        };
+
+        this.loadOUIFile = function(callback) {
+            $http.get('https://www.wifipineapple.com/oui.txt').then(
+                function(response) {
+                    window.pineapple.populateDB(response.data, callback);
+                },
+                function() {
+                    $api.request({
+                        module: 'Networking',
+                        action: 'getOUI'
+                    }, function(response) {
+                        if (response.error === undefined) {
+                            window.pineapple.populateDB(response.ouiText, callback);
+                        }
+                    }
+                );
+            });
+        };
+
+        this.populateDB = function(text, callback) {
+            var request = window.indexedDB.open('pineapple', 1);
+
+            request.onsuccess = function() {
+                localStorage.setItem('ouiText', true);
+                if (callback) {
+                    callback();
+                }
+            };
+
+            request.onupgradeneeded = function(event) {
+                var db = event.target.result;
+                var objectStore = db.createObjectStore('oui', { keyPath: 'macPrefix' });
+                var pos = 0;
+                var totalLines = 0;
+                do {
+                    var line = text.substring(pos, text.indexOf('\n', pos + 1)).replace('\n', '');
+                    objectStore.add({
+                        macPrefix: line.substring(0, 6),
+                        name: line.substring(6)
+                    });
+                    pos += line.length + 1;
+                    totalLines++;
+                } while (text.indexOf('\n', pos + 1) !== -1);
+
+                console.log('[*] Lines inserted: ' + totalLines)
+            };
+        };
+
+        this.deleteOUI = function(callback) {
+            localStorage.removeItem('ouiText');
+            window.indexedDB.deleteDatabase('pineapple').onsuccess = function() {
+                if (callback) {
+                    callback();
+                }
+            };
+        };
+
+        this.lookupOUI = function(mac, callback) {
+            var request = window.indexedDB.open('pineapple', 1);
+            request.onsuccess = function() {
+                var db = request.result;
+                var transaction = db.transaction(['oui'], 'readwrite');
+                transaction.onerror = function() {
+                    callback('Error retrieving OUI. Please clear your browser cache.');
+                };
+                
+                var prefix = mac.substring(0, 8).replace(/:/g,'');
+                console.log({ mac, prefix });
+                var lookupReq = transaction.objectStore('oui').get(prefix);
+                lookupReq.onerror = function() {
+                    window.indexedDB.deleteDatabase('pineapple');
+                    callback('Error retrieving OUI');
+                };
+                
+                lookupReq.onsuccess = function() {
+                    callback(lookupReq.result ? lookupReq.result.name : 'Unknown MAC prefix');
+                };
+            }
+        };
+
         this.request({
             module: 'Configuration',
             action: 'getDevice'
         }, function(response, scope){
             scope.device = response.device;
-            for (var i = scope.deviceCallbacks.length-1; i >=0; --i) {
+            for (var i = scope.deviceCallbacks.length - 1; i >= 0; --i) {
                 var callbackObj = scope.deviceCallbacks[i];
                 callbackObj.callback(scope.device, callbackObj.scope);
             }

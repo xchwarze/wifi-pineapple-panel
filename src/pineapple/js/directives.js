@@ -179,107 +179,39 @@
                     });
                 };
 
-                $scope.loadOUIFile = (function() {
-                    if (typeof(Storage) === "undefined") {
-                        return false;
-                    }
-                    var ouiText = localStorage.getItem("ouiText");
-                    if (ouiText === null) {
-                            $scope.gettingOUI = true;
-                            $http.get('https://www.wifipineapple.com/oui.txt').then(
-                            function(response) {
-                                localStorage.setItem("ouiText", response.data);
-                                $scope.populateDB();
-                            },
-                            function() {
-                                $api.request({
-                                    module: "Networking",
-                                    action: "getOUI"
-                                }, function(response) {
-                                    if (response.error === undefined) {
-                                        localStorage.setItem("ouiText", response.ouiText);
-                                        $scope.populateDB();
-                                    } else {
-                                        return false;
-                                    }
-                                });
-                            });
-                    }
-                    return true;
-                });
+                $scope.ouiPresent = $api.ouiPresent;
+
+                $scope.loadOUIFile = function() {
+                    $scope.gettingOUI = true;
+                    $api.loadOUIFile((function() {
+                        $scope.ouiLoading = true;
+                        $scope.lookupOUI();
+                    }));
+                };
 
                 $scope.lookupOUI = function() {
-                    $scope.ouiLoading = true;
                     if (!$scope.ouiPresent()) {
                         return;
                     }
 
-                    var request = window.indexedDB.open("pineapple", 1);
-                    request.onsuccess = function() {
-                        var db = request.result;
-                        var prefix = $scope.content.substring(0,8).replace(/:/g,'');
-                        var transaction = db.transaction(["oui"], 'readwrite');
-                        transaction.onerror = function() {
-                            $scope.oui = "Error retrieving OUI. Please clear your browsers cache."
-                        };
-                        var objectStore = transaction.objectStore("oui");
-                        var lookupReq = objectStore.get(prefix);
-                        lookupReq.onerror = function() {
-                            window.indexedDB.deleteDatabase("pineapple");
-                            $scope.oui = "Error retrieving OUI";
-                        };
-                        lookupReq.onsuccess = function() {
-                            if (lookupReq.result) {
-                                $scope.oui = lookupReq.result.name;
-                            } else {
-                                $scope.oui = "Unknown MAC prefix";
-                            }
-                        };
-                        $scope.ouiLoading = false;
-                    }
-                };
-
-                $scope.ouiPresent = function() {
-                    return localStorage.getItem("ouiText") !== null;
-                };
-
-                $scope.populateDB = function() {
                     $scope.ouiLoading = true;
-                    var request = window.indexedDB.open("pineapple", 1);
-
-                    request.onsuccess = function() {
-                        $scope.lookupOUI();
-                    };
-
-                    request.onerror = function(event) {};
-
-                    request.onupgradeneeded = function(event) {
-                        var db = event.target.result;
-                        var objectStore = db.createObjectStore("oui", { keyPath: "macPrefix"});
-                        var text = localStorage.getItem("ouiText");
-                        var pos = 0;
-                        do {
-                            var line = text.substring(pos, text.indexOf("\n", pos + 1)).replace('\n', '');
-                            var arr = [line.substring(0, 6), line.substring(6)];
-                            objectStore.add({
-                                macPrefix: arr[0],
-                                name: arr[1]
-                            });
-                            pos += line.length + 1;
-                        } while (text.indexOf("\n", pos + 1) !== -1);
-                    };
+                    $api.lookupOUI($scope.content, (function(text) {
+                        $scope.oui = text;
+                        $scope.ouiLoading = false;
+                    }));
                 };
+
                 $scope.deleteOUI = function() {
-                    localStorage.removeItem('ouiText');
-                    window.indexedDB.deleteDatabase('pineapple').onsuccess = function() {
+                    $api.deleteOUI((function() {
                         $scope.success = true;
                         $scope.ouiLoading = false;
                         $scope.gettingOUI = false;
                         $timeout(function() {
                             $scope.success = false;
                         }, 2000);
-                    };
+                    }));
                 };
+
                 $scope.getNoteData = function() {
                     $api.request({
                         module: "Notes",
@@ -583,104 +515,37 @@
                     });
                 };
 
-                $scope.loadOUIFile = (function() {
-                    if (typeof(Storage) === "undefined") {
-                        return false;
-                    }
-                    var ouiText = localStorage.getItem("ouiText");
-                    if (ouiText === null) {
-                        $scope.gettingOUI = true;
-                        $http.get('https://www.wifipineapple.com/oui.txt').then(
-                            function(response) {
-                                localStorage.setItem("ouiText", response.data);
-                                $scope.populateDB();
-                            },
-                            function() {
-                                $api.request({
-                                    module: "Networking",
-                                    action: "getOUI"
-                                }, function(response) {
-                                    if (response.error === undefined) {
-                                        localStorage.setItem("ouiText", response.ouiText);
-                                        $scope.populateDB();
-                                    } else {
-                                        return false;
-                                    }
-                                });
-                            });
-                    }
-                    return true;
-                });
+                $scope.ouiPresent = $api.ouiPresent;
+
+                $scope.loadOUIFile = function() {
+                    $scope.gettingOUI = true;
+                    $api.loadOUIFile((function() {
+                        $scope.ouiLoading = true;
+                        $scope.lookupOUI();
+                    }));
+                };
 
                 $scope.lookupOUI = function() {
-                    $scope.ouiLoading = true;
                     if (!$scope.ouiPresent()) {
                         return;
                     }
 
-                    var request = window.indexedDB.open("pineapple", 1);
-                    request.onsuccess = function() {
-                        var db = request.result;
-                        var prefix = $scope.content.bssid.substring(0,8).replace(/:/g,'');
-                        var transaction = db.transaction("oui");
-                        var objectStore = transaction.objectStore("oui");
-                        var lookupReq = objectStore.get(prefix);
-                        lookupReq.onerror = function() {
-                            window.indexedDB.deleteDatabase("pineapple");
-                            $scope.oui = "Error retrieving OUI";
-                        };
-                        lookupReq.onsuccess = function() {
-                            if (lookupReq.result) {
-                                $scope.oui = lookupReq.result.name;
-                            } else {
-                                $scope.oui = "Unknown MAC prefix";
-                            }
-                        };
-                        $scope.ouiLoading = false;
-                    }
-                };
-
-                $scope.ouiPresent = function() {
-                    return localStorage.getItem("ouiText") !== null;
-                };
-
-                $scope.populateDB = function() {
                     $scope.ouiLoading = true;
-                    var request = window.indexedDB.open("pineapple", 1);
-
-                    request.onsuccess = function() {
-                        $scope.lookupOUI();
-                    };
-
-                    request.onerror = function(event) {
-                    };
-
-                    request.onupgradeneeded = function(event) {
-                        var db = event.target.result;
-                        var objectStore = db.createObjectStore("oui", { keyPath: "macPrefix"});
-                        var text = localStorage.getItem("ouiText");
-                        var pos = 0;
-                        do {
-                            var line = text.substring(pos, text.indexOf("\n", pos + 1)).replace('\n', '');
-                            var arr = [line.substring(0, 6), line.substring(6)];
-                            objectStore.add({
-                                macPrefix: arr[0],
-                                name: arr[1]
-                            });
-                            pos += line.length + 1;
-                        } while (text.indexOf("\n", pos + 1) !== -1);
-                    };
+                    $api.lookupOUI($scope.content.bssid, (function(text) {
+                        $scope.oui = text;
+                        $scope.ouiLoading = false;
+                    }));
                 };
+
                 $scope.deleteOUI = function() {
-                    localStorage.removeItem('ouiText');
-                    window.indexedDB.deleteDatabase('pineapple').onsuccess = function() {
+                    $api.deleteOUI((function() {
                         $scope.success = true;
                         $scope.ouiLoading = false;
                         $scope.gettingOUI = false;
                         $timeout(function() {
                             $scope.success = false;
                         }, 2000);
-                    };
+                    }));
                 };
 
                 $scope.lookupOUI();
