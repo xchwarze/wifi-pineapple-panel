@@ -69,7 +69,6 @@
             return this.request({system: 'authentication', action: 'logout'}, callback);
         });
 
-
         this.registerNavbar = (function(reloader) {
             this.navbarReloader = reloader;
         });
@@ -151,6 +150,11 @@
                 }
             };
 
+            request.onerror = function(event) {
+                console.error(event);
+                console.error('Database error: ' + event.target.error.message);
+            };
+
             request.onupgradeneeded = function(event) {
                 var db = event.target.result;
                 var objectStore = db.createObjectStore('oui', { keyPath: 'macPrefix' });
@@ -158,15 +162,15 @@
                 var totalLines = 0;
                 do {
                     var line = text.substring(pos, text.indexOf('\n', pos + 1)).replace('\n', '');
+
                     objectStore.add({
                         macPrefix: line.substring(0, 6),
                         name: line.substring(6)
                     });
+                    
                     pos += line.length + 1;
                     totalLines++;
                 } while (text.indexOf('\n', pos + 1) !== -1);
-
-                console.log('[*] Lines inserted: ' + totalLines)
             };
         };
 
@@ -189,7 +193,6 @@
                 };
                 
                 var prefix = mac.substring(0, 8).replace(/:/g,'');
-                console.log({ mac, prefix });
                 var lookupReq = transaction.objectStore('oui').get(prefix);
                 lookupReq.onerror = function() {
                     window.indexedDB.deleteDatabase('pineapple');
