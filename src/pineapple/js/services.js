@@ -16,6 +16,7 @@
                     }
 
                     if ($http.pendingRequests.some(isConfigEqual)) {
+                        console.log('[DUPLICATE]', config.data);
                         return $q.reject(request);
                     }
 
@@ -54,36 +55,39 @@
                         callback(response.data);
                     }
                 }
-            }, function(response) {
-                callback({error: 'HTTP Error', HTTPError: response.statusText, HTTPCode: response.status});
+            }, function(response) {     
+                callback(
+                    (response.statusText || response.status) ?
+                        { error: 'HTTP Error', HTTPError: response.statusText, HTTPCode: response.status } : {}
+                );
             });
         });
 
-        this.login = (function(user, pass, callback){
+        this.login = function(user, pass, callback){
             return this.request({system: 'authentication', action: 'login', username: user, password: pass, time: Math.floor((new Date).getTime()/1000)}, function(data){
                 callback(data);
             }, this);
-        });
+        };
 
-        this.logout = (function(callback){
+        this.logout = function(callback){
             return this.request({system: 'authentication', action: 'logout'}, callback);
-        });
+        };
 
-        this.registerNavbar = (function(reloader) {
+        this.registerNavbar = function(reloader) {
             this.navbarReloader = reloader;
-        });
+        };
 
-        this.reloadNavbar = (function() {
+        this.reloadNavbar = function() {
             this.navbarReloader();
-        });
+        };
 
-        this.checkAuth = (function(callback){
+        this.checkAuth = function(callback){
             return this.request({system: 'authentication', action: 'checkAuth'}, function(data){
                 if (callback !== undefined) {
                     callback(data);
                 }
             });
-        });
+        };
 
         this.getNotifications = function(callback){
             this.request({
