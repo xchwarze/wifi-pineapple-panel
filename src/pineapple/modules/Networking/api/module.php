@@ -241,11 +241,11 @@ class Networking extends SystemModule
 
     private function getOUI()
     {
-        $data = file_get_contents("https://www.wifipineapple.com/oui.txt");
+        $data = file_get_contents(self::REMOTE_URL . "/oui.txt");
         if ($data !== null) {
             $this->response = array("ouiText" => implode("\n", $data));
         } else {
-            $this->error = "Failed to download OUI file from WiFiPineapple.com";
+            $this->error = "Failed to download OUI file from " . self::REMOTE_NAME;
         }
     }
 

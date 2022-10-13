@@ -48,7 +48,7 @@ class ModuleManager extends SystemModule
     private function getAvailableModules()
     {
         $device = $this->getDevice();
-        $moduleData = @file_get_contents("https://www.wifipineapple.com/{$device}/modules");
+        $moduleData = @file_get_contents(self::REMOTE_URL . "/{$device}/modules");
 
         if ($moduleData !== false) {
             $moduleData = json_decode($moduleData);
@@ -56,7 +56,7 @@ class ModuleManager extends SystemModule
                 $this->response = array('availableModules' => $moduleData);
             }
         } else {
-            $this->error = 'Error connecting to WiFiPineapple.com. Please check your connection.';
+            $this->error = 'Error connecting to ' . self::REMOTE_NAME . '. Please check your connection.';
         }
     }
 
@@ -109,7 +109,7 @@ class ModuleManager extends SystemModule
         }
 
         $device = $this->getDevice();
-        $this->execBackground("wget 'https://www.wifipineapple.com/{$device}/modules/{$this->request->moduleName}' -O {$dest}{$this->request->moduleName}.tar.gz && touch /tmp/moduleDownloaded");
+        $this->execBackground("wget '" . self::REMOTE_URL . "/{$device}/modules/{$this->request->moduleName}' -O {$dest}{$this->request->moduleName}.tar.gz && touch /tmp/moduleDownloaded");
         $this->response = array('success' => true);
     }
 

@@ -12,6 +12,8 @@ abstract class Module
     protected $moduleClass;
     protected $error;
     protected $streamFunction;
+    const REMOTE_NAME = "WiFiPineapple.com";
+    const REMOTE_URL = "https://www.wifipineapple.com";
 
     abstract public function route();
 

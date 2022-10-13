@@ -152,7 +152,7 @@ class Advanced extends SystemModule
     private function checkForUpgrade()
     {
         $device = $this->getDevice();
-        $upgradeData = @file_get_contents("https://www.wifipineapple.com/{$device}/upgrades");
+        $upgradeData = @file_get_contents(self::REMOTE_URL . "/{$device}/upgrades");
 
         if ($upgradeData !== false) {
             $upgradeData = json_decode($upgradeData);
@@ -168,7 +168,7 @@ class Advanced extends SystemModule
                 }
             }
         } else {
-            $this->error = "Error connecting to WiFiPineapple.com. Please check your connection.";
+            $this->error = "Error connecting to " . self::REMOTE_NAME . ". Please check your connection.";
         }
 
     }
@@ -183,7 +183,7 @@ class Advanced extends SystemModule
         $device = $this->getDevice();
         @unlink("/tmp/upgrade.bin");
         @unlink("/tmp/upgradeDownloaded");
-        $this->execBackground("wget 'https://www.wifipineapple.com/{$device}/upgrades/{$version}' -O /tmp/upgrade.bin && touch /tmp/upgradeDownloaded");
+        $this->execBackground("wget '" . self::REMOTE_URL . "/{$device}/upgrades/{$version}' -O /tmp/upgrade.bin && touch /tmp/upgradeDownloaded");
         $this->response = array("success" => true);
     }
 

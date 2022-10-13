@@ -91,7 +91,7 @@ class Dashboard extends SystemModule
     {
 
         $device = $this->getDevice();
-        $bulletinData = @file_get_contents("https://www.wifipineapple.com/{$device}/bulletin");
+        $bulletinData = @file_get_contents(self::REMOTE_URL . "/{$device}/bulletin");
 
         if ($bulletinData !== false) {
             $this->response = json_decode($bulletinData);
@@ -100,6 +100,6 @@ class Dashboard extends SystemModule
             }
         }
         
-        $this->error = "Error connecting to WiFiPineapple.com. Please check your connection.";
+        $this->error = "Error connecting to " . self::REMOTE_NAME . ". Please check your connection.";
     }
 }
