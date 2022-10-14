@@ -7,6 +7,7 @@ class Advanced extends SystemModule
     const DATABASE = "/etc/pineapple/pineapple.db";
     const UP_PATH = "/tmp/upgrade.bin";
     const UP_FLAG = "/tmp/upgradeDownloaded";
+    const UP_PATCH = "/tmp/hotpatch.patch";
 
     public function __construct($request)
     {
@@ -156,7 +157,7 @@ class Advanced extends SystemModule
                     $board = $this->getBoard();
                     if ($upgradeData->hotpatch != null) {
                         $hotpatch = base64_decode($upgradeData->hotpatch);
-                        file_put_contents($hotpatch, "/tmp/hotpatch.patch");
+                        file_put_contents($hotpatch, self::UP_PATCH);
                     } else if (isset($upgradeData->{$board})) {
                         $upgradeData = $upgradeData->{$board};
                     }
@@ -173,13 +174,13 @@ class Advanced extends SystemModule
 
     private function downloadUpgrade()
     {
-        if (file_exists('/tmp/hotpatch.patch')) {
-            exec("cd / && patch < /tmp/hotpatch.patch");
+        if (file_exists(self::UP_PATCH)) {
+            exec("cd / && patch < " . self::UP_PATCH);
         }
 
-        $url = escapeshellarg($this->request->upgradeUrl);
         @unlink(self::UP_PATH);
         @unlink(self::UP_FLAG);
+        $url = escapeshellarg($this->request->upgradeUrl);
         $this->execBackground("wget {$url} -O " . self::UP_PATH . " && touch " . self::UP_FLAG);
         $this->response = array("success" => true);
     }
