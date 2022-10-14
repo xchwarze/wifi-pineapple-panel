@@ -89,12 +89,12 @@ class Dashboard extends SystemModule
 
     private function getBulletins()
     {
-        $bulletinData = @file_get_contents(self::REMOTE_URL . "/json/bulletin.json");
+        $bulletinData = @file_get_contents(self::REMOTE_URL . "/json/news.json");
         if ($bulletinData !== false) {
-            $this->response = json_decode($bulletinData);
             if (json_last_error() === JSON_ERROR_NONE) {
                 return;
             }
+            $this->response = json_decode($bulletinData);
         }
         
         $this->error = "Error connecting to " . self::REMOTE_NAME . ". Please check your connection.";
