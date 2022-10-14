@@ -151,26 +151,27 @@ class Advanced extends SystemModule
 
     private function checkForUpgrade()
     {
-        $device = $this->getDevice();
-        $upgradeData = @file_get_contents(self::REMOTE_URL . "/{$device}/upgrades");
-
+        $upgradeData = @file_get_contents(self::REMOTE_URL . "/json/upgrades.json");
         if ($upgradeData !== false) {
             $upgradeData = json_decode($upgradeData);
             if (json_last_error() === JSON_ERROR_NONE) {
                 if ($this->compareFirmwareVersion($upgradeData->version) === true) {
+                    $board = $this->getBoard();
                     if ($upgradeData->hotpatch != null) {
                         $hotpatch = base64_decode($upgradeData->hotpatch);
                         file_put_contents($hotpatch, "/tmp/hotpatch.patch");
+                    } else if (isset($upgradeData->{$board})) {
+                        $upgradeData = $upgradeData->{$board};
                     }
+
                     $this->response = array("upgrade" => true, "upgradeData" => $upgradeData);
                 } else {
                     $this->error = "No upgrade found.";
                 }
             }
         } else {
-            $this->error = "Error connecting to WiFiPineapple.com. Please check your connection.";
+            $this->error = "Error connecting to " . self::REMOTE_NAME . ". Please check your connection.";
         }
-
     }
 
     private function downloadUpgrade()
@@ -179,11 +180,10 @@ class Advanced extends SystemModule
             exec("cd / && patch < /tmp/hotpatch.patch");
         }
 
-        $version = $this->request->version;
-        $device = $this->getDevice();
+        $version = escapeshellarg($this->request->version);
         @unlink("/tmp/upgrade.bin");
         @unlink("/tmp/upgradeDownloaded");
-        $this->execBackground("wget '" . self::REMOTE_URL . "/{$device}/upgrades/{$version}' -O /tmp/upgrade.bin && touch /tmp/upgradeDownloaded");
+        $this->execBackground("wget '{$version}' -O /tmp/upgrade.bin && touch /tmp/upgradeDownloaded");
         $this->response = array("success" => true);
     }
 
@@ -220,11 +220,6 @@ class Advanced extends SystemModule
     private function performUpgrade()
     {
         if (file_exists('/tmp/upgrade.bin')) {
-            if ($this->request->skipMetadata) {
-                $size = escapeshellarg(filesize('/tmp/upgrade.bin') - 33);
-                exec("dd if=/dev/null of=/tmp/upgrade.bin bs=1 seek={$size}");
-            }
-
             $this->execBackground("sysupgrade -n /tmp/upgrade.bin");
             $this->response = array("success" => true);
         } else {
@@ -271,6 +266,7 @@ class Advanced extends SystemModule
                 $this->response = array("valid" => true);
             }
         }
+
         $this->response = array("valid" => false);
     }
 

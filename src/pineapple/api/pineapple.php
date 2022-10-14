@@ -131,3 +131,15 @@ function getMacFromInterface($interface)
 	$interface = escapeshellarg($interface);
 	return trim(exec("ifconfig {$interface} | grep HWaddr | awk '{print $5}'"));
 }
+
+function getBoard()
+{
+	$data = @file_get_contents('/tmp/sysinfo/board_name');
+	if (!empty($data)) {
+		$parts = explode(',', $data);
+
+		return isset($parts[1]) ? $parts[1] : $parts[0];
+	}
+
+	return false;
+}
