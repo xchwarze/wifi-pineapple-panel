@@ -127,7 +127,7 @@
         };
 
         this.loadOUIFile = function(callback) {
-            $http.get('https://www.wifipineapple.com/oui.txt').then(
+            $http.get('https://raw.githubusercontent.com/xchwarze/wifi-pineapple-community/main/oui/oui.txt').then(
                 function(response) {
                     window.pineapple.populateDB(response.data, callback);
                 },
