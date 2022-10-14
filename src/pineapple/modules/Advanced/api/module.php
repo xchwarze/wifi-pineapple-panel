@@ -5,6 +5,8 @@ class Advanced extends SystemModule
     private $dbConnection;
 
     const DATABASE = "/etc/pineapple/pineapple.db";
+    const UP_PATH = "/tmp/upgrade.bin";
+    const UP_FLAG = "/tmp/upgradeDownloaded";
 
     public function __construct($request)
     {
@@ -89,10 +91,6 @@ class Advanced extends SystemModule
             case 'revokeApiToken':
                 $this->revokeApiToken();
                 break;
-
-            case 'downloadManualUpgrade':
-                $this->downloadManualUpgrade();
-                break;
         }
     }
 
@@ -117,7 +115,6 @@ class Advanced extends SystemModule
     {
         exec('lsusb', $lsusb);
         $lsusb = implode("\n", $lsusb);
-
         $this->response = array('lsusb' => $lsusb);
     }
 
@@ -180,22 +177,19 @@ class Advanced extends SystemModule
             exec("cd / && patch < /tmp/hotpatch.patch");
         }
 
-        $version = escapeshellarg($this->request->version);
-        @unlink("/tmp/upgrade.bin");
-        @unlink("/tmp/upgradeDownloaded");
-        $this->execBackground("wget '{$version}' -O /tmp/upgrade.bin && touch /tmp/upgradeDownloaded");
+        $url = escapeshellarg($this->request->upgradeUrl);
+        @unlink(self::UP_PATH);
+        @unlink(self::UP_FLAG);
+        $this->execBackground("wget {$url} -O " . self::UP_PATH . " && touch " . self::UP_FLAG);
         $this->response = array("success" => true);
     }
 
     private function getDownloadStatus()
     {
-        $uploadPath = '/tmp/upgrade.bin';
-        //if (!\helper\checkRunningFull("/usr/sbin/wget")) {
-        //    $this->error = "Download error";
-        if (file_exists("/tmp/upgradeDownloaded")) {
-            $fileHash = hash_file('sha256', $uploadPath);
+        if (file_exists(self::UP_FLAG)) {
+            $fileHash = hash_file('sha256', self::UP_PATH);
             if ((bool)$this->request->isManuelUpdate) {
-                $bytes = filesize($uploadPath);
+                $bytes = filesize(self::UP_PATH);
                 $sz = 'BKMGTP';
                 $factor = floor((strlen($bytes) - 1) / 3);
   
@@ -212,15 +206,15 @@ class Advanced extends SystemModule
         } else {
             $this->response = array(
                 "completed" => false,
-                "downloaded" => filesize($uploadPath)
+                "downloaded" => filesize(self::UP_PATH)
             );
         }
     }
 
     private function performUpgrade()
     {
-        if (file_exists('/tmp/upgrade.bin')) {
-            $this->execBackground("sysupgrade -n /tmp/upgrade.bin");
+        if (file_exists(self::UP_PATH)) {
+            $this->execBackground("sysupgrade -n " . self::UP_PATH);
             $this->response = array("success" => true);
         } else {
             $this->error = "Upgrade failed.";
@@ -293,17 +287,5 @@ class Advanced extends SystemModule
         } else {
             $this->error = "The revokeApiToken API call requires either a 'id', 'token', or 'name' parameter";
         }
-    }
-
-    private function downloadManualUpgrade()
-    {
-        $uploadPath = '/tmp/upgrade.bin';
-        @unlink($uploadPath);
-        @unlink("/tmp/upgradeDownloaded");
-
-        $url = escapeshellarg($this->request->manualUpgradeUrl);
-        $this->execBackground("wget {$url} -O {$uploadPath} && touch /tmp/upgradeDownloaded");
-
-        $this->response = array('success' => true);
     }
 }

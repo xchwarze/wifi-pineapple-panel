@@ -198,7 +198,7 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
         $api.request({
             module: 'Advanced',
             action: 'downloadUpgrade',
-            version: $scope.upgradeData['version']
+            upgradeUrl: $scope.upgradeData['upgradeUrl']
         }, function(response) {
             if (response.success === true) {
                 $scope.downloading = true;
@@ -227,8 +227,8 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
 
         $api.request({
             module: 'Advanced',
-            action: 'downloadManualUpgrade',
-            manualUpgradeUrl: $scope.manualUpgradeUrl
+            action: 'downloadUpgrade',
+            upgradeUrl: $scope.manualUpgradeUrl
         }, function(response) {
             if (response.success === true) {
                 $scope.downloading = true;
