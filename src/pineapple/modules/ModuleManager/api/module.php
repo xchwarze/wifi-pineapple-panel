@@ -47,8 +47,7 @@ class ModuleManager extends SystemModule
 
     private function getAvailableModules()
     {
-        $device = $this->getDevice();
-        $moduleData = @file_get_contents(self::REMOTE_URL . "/{$device}/modules");
+        $moduleData = @file_get_contents(self::REMOTE_URL . "/modules/build/modules.json");
 
         if ($moduleData !== false) {
             $moduleData = json_decode($moduleData);
@@ -108,8 +107,7 @@ class ModuleManager extends SystemModule
             $dest = '/tmp/';
         }
 
-        $device = $this->getDevice();
-        $this->execBackground("wget '" . self::REMOTE_URL . "/{$device}/modules/{$this->request->moduleName}' -O {$dest}{$this->request->moduleName}.tar.gz && touch /tmp/moduleDownloaded");
+        $this->execBackground("wget '" . self::REMOTE_URL . "/modules/{$this->request->moduleName}.tar.gz' -O {$dest}{$this->request->moduleName}.tar.gz && touch /tmp/moduleDownloaded");
         $this->response = array('success' => true);
     }
 

@@ -89,10 +89,7 @@ class Dashboard extends SystemModule
 
     private function getBulletins()
     {
-
-        $device = $this->getDevice();
-        $bulletinData = @file_get_contents(self::REMOTE_URL . "/{$device}/bulletin");
-
+        $bulletinData = @file_get_contents(self::REMOTE_URL . "/json/bulletin.json");
         if ($bulletinData !== false) {
             $this->response = json_decode($bulletinData);
             if (json_last_error() === JSON_ERROR_NONE) {

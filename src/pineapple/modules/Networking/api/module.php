@@ -241,7 +241,7 @@ class Networking extends SystemModule
 
     private function getOUI()
     {
-        $data = file_get_contents(self::REMOTE_URL . "/oui.txt");
+        $data = file_get_contents(self::REMOTE_URL . "/oui/oui.txt");
         if ($data !== null) {
             $this->response = array("ouiText" => implode("\n", $data));
         } else {

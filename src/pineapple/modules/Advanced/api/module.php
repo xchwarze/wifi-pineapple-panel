@@ -168,7 +168,7 @@ class Advanced extends SystemModule
                 }
             }
         } else {
-            $this->error = "Error connecting to " . self::REMOTE_NAME . ". Please check your connection.";
+            $this->error = "Error connecting to WiFiPineapple.com. Please check your connection.";
         }
 
     }

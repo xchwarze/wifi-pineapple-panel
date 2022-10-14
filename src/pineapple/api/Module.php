@@ -12,8 +12,8 @@ abstract class Module
     protected $moduleClass;
     protected $error;
     protected $streamFunction;
-    const REMOTE_NAME = "WiFiPineapple.com";
-    const REMOTE_URL = "https://www.wifipineapple.com";
+    const REMOTE_NAME = "GitHub.com";
+    const REMOTE_URL = "https://raw.githubusercontent.com/xchwarze/wifi-pineapple-community/main";
 
     abstract public function route();
 
