@@ -9,6 +9,7 @@
         <li>Decrease requests for less cpu usage</li>
         <li>Add timeout and prevent duplicated request in API service</li>
         <li>Refactor all indexedDB code</li>
+        <li>Use <a href="https://github.com/xchwarze/wifi-pineapple-community/tree/main/modules" target="_blank">new modules feed</a></li>
     </ul>
 
     <li>Recon</li>
@@ -31,15 +32,17 @@
         <li>Add "Wireless raw config editor" section</li>
         <li>Add "Info" section</li>
         <li>Add "Interface actions" section</li>
+        <li>Use new feed for out.txt updates</li>
     </ul>
 
     <li>Advanced</li>
     <ul>
         <li>Add tabs</li>
         <li>Add "Manual upgrade" section</li>
+        <li>Use Universal Wifi pineapple hardware cloner downloads as update feed</li>
     </ul>
 </ul>
 
 <p>
-    🚀 <a href="https://github.com/xchwarze/wifi-pineapple-panel">wifi-pineapple-panel by DSR!</a> - Full changelog in GitHub!<br/>
+    🚀<a href="https://github.com/xchwarze/wifi-pineapple-panel" target="_blank">Wifi Pineapple Panel</a> by DSR!- Full changelog in GitHub! 🚀<br/>
 </p>

@@ -50,18 +50,18 @@ The following functionalities are modified looking for a better user experience
  - Add "Info" section
  - Add "Interface actions" section
  - Decrease initial requests (from 8 to 3)
+ - Use new feed for out.txt updates
 
 ## Advanced:
  - Add tabs
  - Add "Manual upgrade" section
  - Decrease initial requests (from 8 to 3)
-
-## Setup:
- - Fix character bad used
+ - Use Universal Wifi pineapple hardware cloner downloads as update feed
 
 ## Modules:
  - Refactor in Modules.php
  - Add support for injectJS in modules manifest
+ - Use new modules feed: https://github.com/xchwarze/wifi-pineapple-community/tree/main/modules
 
 
 # Notes
