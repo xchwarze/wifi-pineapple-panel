@@ -151,17 +151,19 @@ class Advanced extends SystemModule
     {
         $upgradeData = @file_get_contents(self::REMOTE_URL . "/json/upgrades.json");
         if ($upgradeData !== false) {
-            $upgradeData = json_decode($upgradeData);
+            $upgradeData = json_decode($upgradeData, true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                if ($this->compareFirmwareVersion($upgradeData->version) === true) {
+                if ($this->compareFirmwareVersion($upgradeData['version']) === true) {
                     $board = $this->getBoard();
-                    if ($upgradeData->hotpatch != null) {
-                        $hotpatch = base64_decode($upgradeData->hotpatch);
+                    if ($upgradeData['hotpatch'] != null) {
+                        $hotpatch = base64_decode($upgradeData['hotpatch']);
                         file_put_contents($hotpatch, self::UP_PATCH);
-                    } else if (isset($upgradeData->{$board})) {
-                        $upgradeData = $upgradeData->{$board};
+                    } else if ($board && isset($upgradeData['updates'][ $board ])) {
+                        $download = $upgradeData['updates'][ $board ];
+                        $upgradeData = array_merge($upgradeData, $download);
                     }
 
+                    unset($upgradeData['updates']);
                     $this->response = array("upgrade" => true, "upgradeData" => $upgradeData);
                 } else {
                     $this->error = "No upgrade found.";

@@ -14,15 +14,13 @@
 
     <li>Recon</li>
     <ul>
-        <li>Code refactor in module.php</li>
         <li>Add results counter in titles with badges</li>
         <li>Fix column alignment</li>
     </ul>
 
     <li>PineAP</li>
     <ul>
-        <li>Configure used monitor interface (pineapd pineap_interface)</li>
-        <li>Configure used source interface (pineapd source_mac grabber)</li>
+        <li>Configure used monitor and source interfaces</li>
         <li>Show pineapd service errors</li>
     </ul>
 

@@ -96,6 +96,11 @@ abstract class Module
         return \helper\getDevice();
     }
 
+    protected function getBoard()
+    {
+        return \helper\getBoard();
+    }
+
     protected function getMacFromInterface($interface)
     {
         return \helper\getMacFromInterface($interface);

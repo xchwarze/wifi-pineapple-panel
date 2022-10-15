@@ -184,7 +184,7 @@
                             <p ng-bind-html="upgradeData['changelog'] | rawHTML">
                                 Changelog:
                             </p>
-                            <p>
+                            <p ng-if="upgradeData['upgradeUrl']">
                                 <button class="btn btn-default center-block" ng-click="downloadUpgrade()">Perform Upgrade</button>
                             </p>
                         </div>
@@ -211,8 +211,7 @@
                         <h3 class="panel-title">Manual upgrade</h3>
                     </div>
                     <div class="panel-body">
-                        <div ng-hide="upgradeFound">
-                            <p class="alert well-sm alert-success" ng-show="showPasswordSuccess">Password changed successfully.</p>
+                        <div ng-hide="isManualUpgrade && upgradeFound">
                             <p class="alert well-sm alert-danger" ng-show="showManualUpgradeUrlError">Please check the url entered are correct.</p>
                             <div class="input-group">
                                 <span class="input-group-addon">Firmware URL</span>

@@ -33,11 +33,11 @@ class Dashboard extends SystemModule
 
     private function getOverviewData()
     {
-        $this->response = array(
+        $this->response = [
             "cpu" => $this->getCpu(),
             "uptime" => $this->getUptime(),
             "clients" => $this->getClients()
-        );
+        ];
     }
 
     private function getCpu()
@@ -73,7 +73,7 @@ class Dashboard extends SystemModule
     private function getLandingPageData()
     {
         if ($this->dbConnection !== false) {
-            $stats = array();
+            $stats = [];
             $stats['Chrome'] = count($this->dbConnection->query('SELECT browser FROM user_agents WHERE browser=\'chrome\';'));
             $stats['Safari'] = count($this->dbConnection->query('SELECT browser FROM user_agents WHERE browser=\'safari\';'));
             $stats['Firefox'] = count($this->dbConnection->query('SELECT browser FROM user_agents WHERE browser=\'firefox\';'));
@@ -91,10 +91,10 @@ class Dashboard extends SystemModule
     {
         $bulletinData = @file_get_contents(self::REMOTE_URL . "/json/news.json");
         if ($bulletinData !== false) {
+            $this->response = json_decode($bulletinData);
             if (json_last_error() === JSON_ERROR_NONE) {
                 return;
             }
-            $this->response = json_decode($bulletinData);
         }
         
         $this->error = "Error connecting to " . self::REMOTE_NAME . ". Please check your connection.";
