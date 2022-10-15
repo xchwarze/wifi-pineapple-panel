@@ -81,12 +81,8 @@ class Networking extends SystemModule
                 $this->disconnect();
                 break;
 
-            case 'getOUI':
-                $this->getOUI();
-                break;
-
-            case 'genNewOUI':
-                $this->genNewOUI();
+            case 'genOUIProcess':
+                $this->genOUIProcess();
                 break;
 
             case 'getFirewallConfig':
@@ -251,42 +247,6 @@ class Networking extends SystemModule
         } else {
             $this->error = "Failed to download OUI file from " . self::REMOTE_NAME;
         }
-    }
-
-    private function genNewOUI()
-    {
-        $data = @file_get_contents("https://standards-oui.ieee.org/oui/oui.txt");
-        if (!$data) {
-            $this->error = "Failed to download OUI file from standards-oui.ieee.org.";
-            return;
-        }
-
-        $lines = explode("\n", $data);
-        unset($data);
-
-        $flag   = "(base 16)";
-        $total  = 0;
-        $output = [];
-        $index  = [];
-        foreach ($lines as $line) {
-            if (strpos($line, $flag) !== false){
-                $parts = explode($flag, $line);
-                $id    = mb_strtoupper(trim($parts[0]));
-                if (!in_array($id, $index, true)) {
-                    $total++;
-                    $index[] = $id;
-                    $text = ucwords(mb_strtolower($parts[1]));
-                    $text = str_replace([".", ","], "", $text);
-                    $output[] = $id . trim($text);
-                }
-            }
-        }
-
-        unset($index);
-        sort($output);
-        $output[] = "";
-
-        $this->response = ["ouiText" => implode("\n", $output), "entries" => $total];
     }
 
     private function getFirewallConfig()
