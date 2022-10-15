@@ -164,8 +164,8 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
     $scope.performUpgradeStart = false;
     $scope.isManualUpgrade = false;
     $scope.manualUpgradeUrl = "";
-    $scope.showManualUpgradeUrlError = false;
-    $scope.keepSettings = false;
+    $scope.showManualUpgradeError = false;
+    $scope.keepSettings = true;
 
     $scope.reloadData = (function() {
         $api.request({
@@ -215,9 +215,9 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
             /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
         );
         if (isValid === null) {
-            $scope.showManualUpgradeUrlError = true;
+            $scope.showManualUpgradeError = true;
             $interval(function(){
-                $scope.showManualUpgradeUrlError = false;
+                $scope.showManualUpgradeError = false;
             }, 2000);
             return;
         }

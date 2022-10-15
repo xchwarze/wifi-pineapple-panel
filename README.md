@@ -57,6 +57,7 @@ The following functionalities are modified looking for a better user experience
  - Add "Manual upgrade" section
  - Decrease initial requests (from 8 to 3)
  - Use Universal Wifi pineapple hardware cloner downloads as update feed
+ - Add "Keep settings and retain the current configuration" checkbox
 
 ## Modules:
  - Refactor in Modules.php
