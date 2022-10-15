@@ -217,7 +217,12 @@ class Advanced extends SystemModule
     private function performUpgrade()
     {
         if (file_exists(self::UP_PATH)) {
-            $this->execBackground("sysupgrade -n " . self::UP_PATH);
+            $params = "";
+            if ($this->request->keepSettings) {
+                $params = "-n";
+            }
+
+            $this->execBackground("sysupgrade {$params} " . self::UP_PATH);
             $this->response = array("success" => true);
         } else {
             $this->error = "Upgrade failed.";

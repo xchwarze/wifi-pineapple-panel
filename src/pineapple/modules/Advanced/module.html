@@ -184,8 +184,14 @@
                             <p ng-bind-html="upgradeData['changelog'] | rawHTML">
                                 Changelog:
                             </p>
-                            <p ng-if="upgradeData['upgradeUrl']">
+                            <div class="input-group" ng-if="upgradeData['upgradeUrl']">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" ng-model="keepSettings">Keep settings and retain the current configuration</label><
+                                </div>
+                                <br/>
                                 <button class="btn btn-default center-block" ng-click="downloadUpgrade()">Perform Upgrade</button>
+                            </div>
+                            <p ng-if="upgradeData['upgradeUrl']">
                             </p>
                         </div>
                         <div class="text-center" ng-show="!isManualUpgrade && downloading">
@@ -219,13 +225,17 @@
                             </div>
                             <br/>
                             <div class="input-group">
+                                <div class="checkbox">
+                                    <label><input type="checkbox" ng-model="keepSettings">Keep settings and retain the current configuration</label><
+                                </div>
+                                <br/>
                                 <button class="btn btn-default" ng-click="downloadManualUpgrade()" ng-disabled="isManualUpgrade && downloading">
                                     <span ng-hide="isManualUpgrade && downloading">Download</span>
                                     <img class="image-small-18" src="img/throbber.gif" ng-show="isManualUpgrade && downloading">
                                 </button>
                             </div>
                         </div>
-                        <div class="text-center" ng-show="isManualUpgrade && downloaded">
+                        <div class="" ng-show="isManualUpgrade && downloaded">
                             <p><hr></p>
                             <p>Download completed. If the data is correct continue with the installation.</p>
                             <p>Downloaded: {{ upgradeData['downloaded'] }}</p>

@@ -165,6 +165,7 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
     $scope.isManualUpgrade = false;
     $scope.manualUpgradeUrl = "";
     $scope.showManualUpgradeUrlError = false;
+    $scope.keepSettings = false;
 
     $scope.reloadData = (function() {
         $api.request({
@@ -267,11 +268,11 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
         });
     });
 
-    $scope.performUpgrade = (function(skipMetadata) {
+    $scope.performUpgrade = (function() {
         $api.request({
             module: 'Advanced',
             action: 'performUpgrade',
-            skipMetadata: skipMetadata
+            keepSettings: $scope.keepSettings
         }, function(response) {
             if (response.success === true) {
                 $scope.performUpgradeStart = true;
