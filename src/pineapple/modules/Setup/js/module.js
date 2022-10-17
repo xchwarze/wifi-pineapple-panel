@@ -132,15 +132,20 @@ registerController('SetupController', ['$api', '$scope', '$interval', '$timeout'
         { value: 'VN', country: "Vietnam" }
     ];
 
-    $scope.getDeviceName = function(){
+    $scope.getDeviceData = function(){
         $api.request({
             system: 'setup',
-            action: 'getDeviceName'
+            action: 'getDeviceData'
         }, function(response) {
             $scope.device = response.device;
+            if (response.complete) {
+                $scope.complete = true;
+                $("#loginModal").remove();
+                window.location = '/';
+            }
         });
     };
-    $scope.getDeviceName();
+    $scope.getDeviceData();
 
     $scope.doSetup = function(){
         $scope.error = '';

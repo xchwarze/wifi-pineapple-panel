@@ -2,14 +2,27 @@
 
 class Setup extends APIModule
 {
-    public function __construct($request)
+    public function route()
     {
-        Parent::__construct($request);
-
-        # Disable setup in "keep settings" scenario
-        $count = explode("\n", exec('ls "/etc/pineapple" | wc -l'))[0];
-        if (intval($count) > 13) {
-            exec('/bin/rm -rf /pineapple/modules/Setup /pineapple/api/Setup.php /etc/pineapple/setupRequired');
+        @session_write_close();
+        if (file_exists('/etc/pineapple/setupRequired')) {
+            switch ($this->request->action) {
+                case 'checkButtonStatus':
+                    $this->checkButtonStatus();
+                    break;
+                case 'getChanges':
+                    $this->getChanges();
+                    break;
+                case 'getDeviceData':
+                    $this->getDeviceData();
+                    break;
+                case 'populateFields':
+                    $this->populateFields();
+                    break;
+                case 'performSetup':
+                    $this->performSetup();
+                    break;
+            }
         }
     }
 
@@ -35,15 +48,10 @@ class Setup extends APIModule
 
     private function checkButtonStatus()
     {
-        $buttonPressed = false;
-        $bootStatus = false;
-        if (file_exists('/tmp/button_setup')) {
-            $buttonPressed = true;
-        }
-        if (!file_exists('/etc/pineapple/init')) {
-            $bootStatus = true;
-        }
+        $buttonPressed = file_exists('/tmp/button_setup');
+        $bootStatus = !file_exists('/etc/pineapple/init');
         $this->response = array('buttonPressed' => $buttonPressed, 'booted' => $bootStatus);
+
         return $buttonPressed;
     }
 
@@ -59,15 +67,18 @@ class Setup extends APIModule
         return true;
     }
 
-    private function getDeviceName()
+    private function getDeviceData()
     {
-        $device = \helper\getDevice();
-        if ($device == 'tetra') {
-            $this->response = array('device' => "tetra");
-        } elseif ($device == 'nano') {
-            $this->response = array('device' => "nano");
+        # Disable setup in "keep settings" scenario
+        $complete = file_exists('/etc/pineapple/setup_complete');
+        if ($complete) {
+            exec('/bin/rm -rf /pineapple/modules/Setup /pineapple/api/Setup.php /etc/pineapple/setupRequired /etc/pineapple/init');
         }
-        return true;
+
+        $this->response = array(
+            'complete' => $complete,
+            'device'   => \helper\getDevice(),
+        );
     }
 
     private function populateFields()
@@ -189,6 +200,7 @@ class Setup extends APIModule
         exec('killall blink');
         exec('led reset');
         exec('/bin/rm -rf /pineapple/modules/Setup');
+        exec('/bin/touch /etc/pineapple/setup_complete');
     }
 
     public function performSetup()
@@ -221,29 +233,5 @@ class Setup extends APIModule
         }
 
         return true;
-    }
-
-    public function route()
-    {
-        @session_write_close();
-        if (file_exists('/etc/pineapple/setupRequired')) {
-            switch ($this->request->action) {
-                case 'checkButtonStatus':
-                    $this->checkButtonStatus();
-                    break;
-                case 'getChanges':
-                    $this->getChanges();
-                    break;
-                case 'getDeviceName':
-                    $this->getDeviceName();
-                    break;
-                case 'populateFields':
-                    $this->populateFields();
-                    break;
-                case 'performSetup':
-                    $this->performSetup();
-                    break;
-            }
-        }
     }
 }
