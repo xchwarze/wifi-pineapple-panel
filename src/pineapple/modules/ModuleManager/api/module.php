@@ -48,7 +48,6 @@ class ModuleManager extends SystemModule
     private function getAvailableModules()
     {
         $moduleData = @file_get_contents(self::REMOTE_URL . "/modules/build/modules.json");
-
         if ($moduleData !== false) {
             $moduleData = json_decode($moduleData);
             if (json_last_error() === JSON_ERROR_NONE) {
@@ -68,9 +67,9 @@ class ModuleManager extends SystemModule
                 continue;
             }
 
-            if (file_exists("/pineapple/modules/{$moduleDirectory}/module.info")) {
-                $moduleData = json_decode(file_get_contents("/pineapple/modules/{$moduleDirectory}/module.info"));
-                
+            $path = "/pineapple/modules/{$moduleDirectory}/module.info";
+            if (file_exists($path)) {
+                $moduleData = json_decode(file_get_contents($path));
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     continue;
                 }
@@ -107,7 +106,8 @@ class ModuleManager extends SystemModule
             $dest = '/tmp/';
         }
 
-        $this->execBackground("wget '" . self::REMOTE_URL . "/modules/{$this->request->moduleName}.tar.gz' -O {$dest}{$this->request->moduleName}.tar.gz && touch /tmp/moduleDownloaded");
+        $module = "{$this->request->moduleName}.tar.gz";
+        $this->execBackground("wget '" . self::REMOTE_URL . "/modules/build/{$module}' -O {$dest}{$module} && touch /tmp/moduleDownloaded");
         $this->response = array('success' => true);
     }
 
@@ -143,7 +143,8 @@ class ModuleManager extends SystemModule
             $installDest = '/pineapple/modules/';
         }
 
-        $this->execBackground("tar -xzvC {$installDest} -f {$dest}{$this->request->moduleName}.tar.gz && rm {$dest}{$this->request->moduleName}.tar.gz && touch /tmp/moduleInstalled");
+        $module = "{$this->request->moduleName}.tar.gz";
+        $this->execBackground("tar -xzvC {$installDest} -f {$dest}{$module} && rm {$dest}{$module} && touch /tmp/moduleInstalled");
         $this->response = array('success' => true);
     }
 
@@ -169,11 +170,12 @@ class ModuleManager extends SystemModule
 
     private function removeModule()
     {
-        if (is_link("/pineapple/modules/{$this->request->moduleName}")) {
-            @unlink("/pineapple/modules/{$this->request->moduleName}");
+        $path = "/pineapple/modules/{$this->request->moduleName}";
+        if (is_link($path)) {
+            @unlink($path);
             exec("rm -rf /sd/modules/{$this->request->moduleName}");
         } else {
-            exec("rm -rf /pineapple/modules/{$this->request->moduleName}");
+            exec("rm -rf {$path}");
         }
 
         $this->response = array('success' => true);
