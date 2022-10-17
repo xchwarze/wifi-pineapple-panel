@@ -40,7 +40,10 @@
                                         <br/>
                                     </div>
                                     <div class="btn-group" role="group">
-                                        <button ng-click="lookupMACAddress();" ng-disabled="ouiLoading" class="btn btn-default"><span ng-hide="ouiLoading">Lookup</span><img class="center-block" ng-show="ouiLoading" src="img/throbber.gif" /></button>
+                                        <button ng-click="lookupMACAddress();" ng-disabled="ouiLoading" class="btn btn-default">
+                                            <span ng-hide="ouiLoading">Lookup</span>
+                                            <img class="image-small-18 center-block" ng-show="ouiLoading" src="img/throbber.gif" />
+                                        </button>
                                     </div>
                                     <br/>
                                 </form>
@@ -48,7 +51,10 @@
                                 <span ng-show="vendor">{{ vendor }}</span>
                             </div>
                             <div ng-if="!isOUIPresent()">
-                                <button ng-click="downloadOUIDatabase()" ng-disabled="gettingOUI" class="btn btn-default"><span ng-hide="gettingOUI">Download OUI Database</span><img class="center-block" ng-show="gettingOUI" src="img/throbber.gif" /></button>
+                                <button ng-click="downloadOUIDatabase()" ng-disabled="gettingOUI" class="btn btn-default">
+                                    <span ng-hide="gettingOUI">Download OUI Database</span>
+                                    <img class="image-small-18 center-block" ng-show="gettingOUI" src="img/throbber.gif" />
+                                </button>
                                 <br/>
                                 <span class="text-muted">Note: The OUI Database is downloaded from GitHub.com</span>
                             </div>
