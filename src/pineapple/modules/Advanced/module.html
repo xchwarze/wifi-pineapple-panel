@@ -186,7 +186,7 @@
                             </p>
                             <div class="input-group" ng-if="upgradeData['upgradeUrl']">
                                 <div class="checkbox">
-                                    <label><input type="checkbox" ng-model="keepSettings">Keep settings and retain the current configuration</label>
+                                    <label><input type="checkbox" id="keepSettings" ng-model="keepSettings">Keep settings and retain the current configuration</label>
                                 </div>
                                 <br/>
                                 <button class="btn btn-default" ng-click="downloadUpgrade()">Perform Upgrade</button>
@@ -240,10 +240,10 @@
                             </p>
                             <div class="input-group">
                                 <div class="checkbox">
-                                    <label><input type="checkbox" ng-model="keepSettings">Keep settings and retain the current configuration</label>
+                                    <label><input type="checkbox" id="manualKeepSettings" ng-model="manualKeepSettings">Keep settings and retain the current configuration</label>
                                 </div>
                                 <br/>
-                                <button class="btn btn-default" ng-click="performUpgrade()" ng-disabled="performUpgradeStart">
+                                <button class="btn btn-default" ng-click="performUpgrade(true)" ng-disabled="performUpgradeStart">
                                     <span ng-hide="performUpgradeStart">Install</span>
                                     <img class="image-small-18" src="img/throbber.gif" ng-show="performUpgradeStart">
                                 </button>

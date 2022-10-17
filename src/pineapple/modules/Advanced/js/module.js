@@ -166,6 +166,7 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
     $scope.manualUpgradeUrl = "";
     $scope.showManualUpgradeError = false;
     $scope.keepSettings = true;
+    $scope.manualKeepSettings = true;
 
     $scope.reloadData = (function() {
         $api.request({
@@ -258,7 +259,7 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
                 if (isManuelUpdate) {
                     $scope.upgradeData = response;
                 } else {
-                    $scope.performUpgrade(true);
+                    $scope.performUpgrade(isManuelUpdate);
                 }
             } else if (response.error) {
                 $scope.error = response.error;
@@ -268,11 +269,12 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
         });
     });
 
-    $scope.performUpgrade = (function() {
+    $scope.performUpgrade = (function(isManuelUpdate) {
+        console.log({isManuelUpdate});
         $api.request({
             module: 'Advanced',
             action: 'performUpgrade',
-            keepSettings: $scope.keepSettings
+            keepSettings: isManuelUpdate ? $('#manualKeepSettings').is(':checked') : $('#keepSettings').is(':checked'),
         }, function(response) {
             if (response.success === true) {
                 $scope.performUpgradeStart = true;
