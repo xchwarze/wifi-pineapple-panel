@@ -2,6 +2,17 @@
 
 class Setup extends APIModule
 {
+    public function __construct($request)
+    {
+        Parent::__construct($request);
+
+        # Disable setup in "keep settings" scenario
+        $count = explode("\n", exec('ls "/etc/pineapple" | wc -l'))[0];
+        if (intval($count) > 13) {
+            exec('/bin/rm -rf /pineapple/modules/Setup /pineapple/api/Setup.php /etc/pineapple/setupRequired');
+        }
+    }
+
     private function changePassword()
     {
         if ($this->request->rootPassword !== $this->request->confirmRootPassword) {

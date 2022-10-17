@@ -35,7 +35,6 @@ class Modules extends APIModule
                 continue;
             }
 
-
             $jsonModulePath = "/modules/${moduleFolder}";
             $module = [
                 "name"     => $moduleFolder,
