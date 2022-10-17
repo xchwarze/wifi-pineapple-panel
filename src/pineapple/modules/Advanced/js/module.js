@@ -165,8 +165,8 @@ registerController("AdvancedUpgradeController", ['$api', '$scope', '$interval', 
     $scope.isManualUpgrade = false;
     $scope.manualUpgradeUrl = "";
     $scope.showManualUpgradeError = false;
-    $scope.keepSettings = true;
-    $scope.manualKeepSettings = true;
+    $scope.keepSettings = false;
+    $scope.manualKeepSettings = false;
 
     $scope.reloadData = (function() {
         $api.request({
