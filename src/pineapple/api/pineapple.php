@@ -136,9 +136,7 @@ function getBoard()
 {
     $data = file_get_contents('/tmp/sysinfo/board_name');
     if (!empty($data)) {
-        $parts = explode(',', trim($data));
-
-        return isset($parts[1]) ? $parts[1] : $parts[0];
+        return str_replace(',', '_', trim($data));
     }
 
     return false;
