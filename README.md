@@ -1,7 +1,7 @@
 # Wifi Pineapple Panel
 
 The idea of this project is to have a better panel for the pineapple NANO/TETRA  
-To install it, you just have to copy the src folder to / of the pineapple and reboot.
+To install it, you just have to copy the contents of the src folder to / of the pineapple and reboot.
 
 
 # Changes
