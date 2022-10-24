@@ -152,7 +152,7 @@
                     <div class="panel-body">
                         <div ng-hide="upgradeFound">
                             <p class="text-center text-danger" ng-show="error">{{ error }}</p>
-                            <button class="btn btn-default center-block" ng-click="checkForUpgrade()" ng-hide="loading">Check for Upgrades</button>
+                            <button class="btn btn-default center-block" ng-click="checkForUpgrade()" ng-hide="performUpgradeStart || loading">Check for Upgrades</button>
                             <img class="center-block" src="img/throbber.gif" ng-show="loading">
                             <p>
                                 <hr>
@@ -215,7 +215,7 @@
                         <h3 class="panel-title">Manual upgrade</h3>
                     </div>
                     <div class="panel-body">
-                        <div ng-hide="isManualUpgrade && upgradeFound">
+                        <div ng-hide="performUpgradeStart || upgradeFound">
                             <p class="alert well-sm alert-danger" ng-show="showManualUpgradeError">Please check the url entered are correct.</p>
                             <div class="input-group">
                                 <span class="input-group-addon">Firmware URL</span>
@@ -229,7 +229,12 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="" ng-show="isManualUpgrade && downloaded">
+                        <div ng-show="performUpgradeStart">
+                            <p>
+                                Once the firmware upgrade has completed the WiFi Pineapple will reboot into an initial setup state. This process will take several minutes. Do not interrupt the upgrade process by unplugging power or closing the web interface as this may result in a soft-brick state.
+                            </p>
+                        </div>
+                        <div ng-show="isManualUpgrade && downloaded">
                             <p>
                                 <hr>
                             </p>
