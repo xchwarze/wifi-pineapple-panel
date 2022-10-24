@@ -77,6 +77,7 @@
             </div>
         </div>
     </div>
+
     <div class="tab-pane fade" id="advanced-extras">
         <div class="row">
             <div class="col-md-6 controller" ng-controller="APITokenController">
@@ -142,6 +143,7 @@
             </div>
         </div>
     </div>
+
     <div class="tab-pane fade" id="advanced-update">
         <div class="row controller" ng-controller="AdvancedUpgradeController">
             <div class="col-md-6">
@@ -228,11 +230,6 @@
                                     <img class="image-small-18" src="img/throbber.gif" ng-show="isManualUpgrade && downloading">
                                 </button>
                             </div>
-                        </div>
-                        <div ng-show="performUpgradeStart">
-                            <p>
-                                Once the firmware upgrade has completed the WiFi Pineapple will reboot into an initial setup state. This process will take several minutes. Do not interrupt the upgrade process by unplugging power or closing the web interface as this may result in a soft-brick state.
-                            </p>
                         </div>
                         <div ng-show="isManualUpgrade && downloaded">
                             <p>
