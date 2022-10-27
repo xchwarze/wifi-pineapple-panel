@@ -105,7 +105,7 @@ registerController('NetworkingAccessPointsController', ['$api', '$scope', '$time
     //$scope.reloadData();
 }]);
 
-registerController('NetworkingClientModeController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
+registerController('NetworkingModeController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
     $scope.interfaces = [];
     $scope.selectedInterface = "";
     $scope.accessPoints = [];
@@ -118,11 +118,14 @@ registerController('NetworkingClientModeController', ['$api', '$scope', '$timeou
     $scope.loading = false;
 
     $scope.getInterfaces = (function() {
+        $scope.interfaces = [];
+        $scope.actions = 'loading';
         $api.request({
             module: 'Networking',
             action: 'getClientInterfaces'
         }, function(response) {
             if (response.error === undefined) {
+                $scope.actions = '';
                 $scope.interfaces = response;
                 $scope.selectedInterface = $scope.interfaces[0];
             }
@@ -199,6 +202,42 @@ registerController('NetworkingClientModeController', ['$api', '$scope', '$timeou
                     $scope.disconnecting = false;
                     $scope.accessPoints = [];
                 }, 10000);
+            }
+        });
+    });
+
+    // from NetworkingInfoController
+    $scope.info = '';
+    $scope.actions = '';
+
+    $scope.interfaceActions = (function(type, wlan) {
+        $scope.actions = 'loading';
+        $api.request({
+            module: 'Networking',
+            action: 'interfaceActions',
+            type: type,
+            interface: wlan
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.actions = response;
+
+                // reload interfaces in monitor command cases
+                if (type === 3 || type === 4) {
+                    $scope.getInterfaces();
+                }
+            }
+        });
+    });
+
+    $scope.getInfoData = (function(type) {
+        $scope.info = 'loading';
+        $api.request({
+            module: 'Networking',
+            action: 'getInfoData',
+            type: type
+        }, function(response) {
+            if (response.error === undefined) {
+                $scope.info = response;
             }
         });
     });
@@ -432,58 +471,4 @@ registerController("OUILookupController", ['$api', '$scope', '$timeout', '$http'
             $scope.gettingOUI = false;
         }));
     };
-}]);
-
-registerController('NetworkingInfoController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {
-    $scope.interfaces = [];
-    $scope.info = '';
-    $scope.actions = '';
-
-    $scope.getInterfaces = (function() {
-        $scope.interfaces = [];
-        $scope.actions = 'loading';
-        $api.request({
-            module: 'Networking',
-            action: 'getClientInterfaces'
-        }, function(response) {
-            if (response.error === undefined) {
-                $scope.actions = '';
-                $scope.interfaces = response;
-            }
-        });
-    });
-
-    $scope.interfaceActions = (function(type, wlan) {
-        $scope.actions = 'loading';
-        $api.request({
-            module: 'Networking',
-            action: 'interfaceActions',
-            type: type,
-            interface: wlan
-        }, function(response) {
-            if (response.error === undefined) {
-                $scope.actions = response;
-
-                // reload interfaces in monitor command cases
-                if (type === 3 || type === 4) {
-                    $scope.getInterfaces();
-                }
-            }
-        });
-    });
-
-    $scope.getInfoData = (function(type) {
-        $scope.info = 'loading';
-        $api.request({
-            module: 'Networking',
-            action: 'getInfoData',
-            type: type
-        }, function(response) {
-            if (response.error === undefined) {
-                $scope.info = response;
-            }
-        });
-    });
-
-    $scope.getInterfaces();
 }]);

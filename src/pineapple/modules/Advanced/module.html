@@ -259,15 +259,6 @@
 </div>
 
 <script type="text/javascript">
-    function loadActiveTabData() {
-        $('.tab-pane.active .controller').each(function(index) {
-            var controller = angular.element( $(this)[0] ).scope();
-            if (typeof controller.reloadData === "function") { 
-                controller.reloadData();
-            }
-        });
-    }
-
     $(function() {
         $('.tabs-block a').click(function(event) {
             event.preventDefault();

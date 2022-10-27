@@ -327,7 +327,8 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         $scope.loadingScan = true;
         $api.request({
             module: 'Recon',
-            action: 'getScans'
+            action: 'getScans',
+            from: 'displayScan'
         }, function(response) {
             if(response.error === undefined) {
                 $scope.scans = response.scans;

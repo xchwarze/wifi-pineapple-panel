@@ -119,6 +119,7 @@
                 for (var i = this.deviceCallbacks.length-1; i >=0; --i) {
                     this.deviceCallbacks[i].callback(this.device, this.deviceCallbacks[i].scope);
                 }
+                this.deviceCallbacks = [];
             }
         };
 
@@ -218,6 +219,7 @@
                 var callbackObj = scope.deviceCallbacks[i];
                 callbackObj.callback(scope.device, callbackObj.scope);
             }
+            scope.deviceCallbacks = [];
         }, this);
 
         this.checkAuth();

@@ -50,6 +50,15 @@ function selectElement(elem) {
     selection.addRange(selectRange);
 }
 
+function loadActiveTabData() {
+    $('.tab-pane.active .controller').each(function(index) {
+        var controller = angular.element( $(this)[0] ).scope();
+        if (typeof controller.reloadData === "function") { 
+            controller.reloadData();
+        }
+    });
+}
+
 $('html').click(function(e){
     var elem = e.toElement;
     if (elem !== undefined && elem.classList.contains('autoselect')) {

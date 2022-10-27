@@ -14,50 +14,209 @@
 
     <div class="tab-pane fade active in" id="networking-main">
         <div class="row">
-            <div class="col-md-6">
-                <div class="controller" ng-controller="OUILookupController">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">OUI Lookup
-                                <span class="dropdown">
-                                <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="OUIDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
+            <div class="col-md-6" ng-controller="NetworkingModeController">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            WiFi Client Mode
+                            <span class="pull-right">
+                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
+                                    Refresh
                                 </button>
-                                <ul class="dropdown-menu" aria-labelledby="OUIDropdown">
-                                    <li ng-click="removeOUIDatabase()"><a>Remove OUI Database</a></li>
-                                </ul>
                             </span>
-                            </h3>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-12" ng-show="connected">
+                            <div class="row">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Interface</span>
+                                    <input type="text" class="form-control" ng-model="connectedInterface" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width input-group-addon">SSID</span>
+                                    <input type="text" class="form-control" ng-model="connectedSSID" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width input-group-addon">IP</span>
+                                    <input type="text" class="form-control" ng-model="connectedIP" disabled>
+                                </div>
+                                <br/>
+                                <button class="btn btn-default" ng-click="checkConnection()" ng-hide="disconnecting">Refresh</button>
+                                <button class="btn btn-default" ng-click="disconnect()" ng-hide="disconnecting">Disconnect</button>
+                                <img src="img/throbber.gif" ng-show="disconnecting">
+                            </div>
                         </div>
-                        <div class="panel-body">
-                            <div ng-if="isOUIPresent()">
-                                <form class="form-inline" role="form" novalidate>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <span class="input-group-addon">MAC Address</span>
-                                            <input name="macAddress" placeholder="00:11:22:33:44:55" type="text" class="form-control" id="macAddress" ng-model="$parent.macAddress">
-                                        </div>
-                                        <br/>
-                                    </div>
-                                    <div class="btn-group" role="group">
-                                        <button ng-click="lookupMACAddress();" ng-disabled="ouiLoading" class="btn btn-default">
-                                            <span ng-hide="ouiLoading">Lookup</span>
-                                            <img class="image-small-18 center-block" ng-show="ouiLoading" src="img/throbber.gif" />
+                        <div class="col-md-12" ng-hide="connected">
+                            <div class="row">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Interface</span>
+                                    <select class="form-control" ng-model="selectedInterface" ng-disabled="scanning">
+                                        <option ng-repeat="interface in interfaces">{{ interface }}</option>
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button ng-disabled="scanning" class="btn btn-default" type="button" ng-click="scanForNetworks()">
+                                            <span ng-hide="scanning">Scan</span>
+                                            <img class="image-small-18" src="img/throbber.gif" ng-show="scanning">
                                         </button>
+                                    </span>
+                                </div>
+                                <small class="text-muted" ng-hide="accessPoints.length !== 0" ng-show="selectedInterface === 'wlan1' || selectedInterface === 'wlan1mon'"> Note: Choosing wlan1 will interfere with PineAP.</small>
+                                <div class="alert well-sm alert-warning" role="alert" ng-show="noNetworkFound">
+                                    <span>No networks were found.</span>
+                                </div>
+                                <br/>
+                            </div>
+                            <div class="row" ng-show="accessPoints.length">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Access Point</span>
+                                    <select class="form-control" ng-options="ap.ssid for ap in accessPoints track by ap.mac" ng-model="selectedAP"></select>
+                                </div>
+                                <br/>
+                                <div class="input-group" ng-show="(selectedAP['security'] !== 'Open')">
+                                    <span class="input-group-addon">Password</span>
+                                    <input type="password" class="form-control" ng-model="key">
+                                </div>
+                                <br/>
+                            </div>
+                            <br/><br/>
+                            <div class="row" ng-show="accessPoints.length">
+                                <div class="input-group">
+                                    <span class="fixed-addon-width-2 input-group-addon">BSSID</span>
+                                    <input type="text" class="form-control" ng-model="selectedAP['mac']" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width-2 input-group-addon">SSID</span>
+                                    <input type="text" class="form-control" ng-model="selectedAP['ssid']" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width-2 input-group-addon">Channel</span>
+                                    <input type="text" class="form-control" ng-model="selectedAP['channel']" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width-2 input-group-addon">Signal</span>
+                                    <input type="text" class="form-control" ng-model="selectedAP['signal']" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width-2 input-group-addon">Quality</span>
+                                    <input type="text" class="form-control" ng-model="selectedAP['quality']" disabled>
+                                </div>
+                                <br/>
+                                <div class="input-group">
+                                    <span class="fixed-addon-width-2 input-group-addon">Security</span>
+                                    <input type="text" class="form-control" ng-model="selectedAP['security']" disabled>
+                                </div>
+                                <br/>
+                            </div>
+                            <div class="row">
+                                <button class="btn btn-default" ng-click="connectToAP()" ng-show="accessPoints.length" ng-disabled="connecting">
+                                    <span ng-hide="connecting">Connect</span>
+                                    <img class="image-small-18" src="img/throbber.gif" ng-show="connecting">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Interface actions
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group" ng-repeat="interface in interfaces">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">{{ interface }}</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(1, interface)" ng-disabled="actions == 'loading'">Up</button>
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(2, interface)" ng-disabled="actions == 'loading'">Down</button>
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(3, interface)" ng-disabled="actions == 'loading'">Monitor ON</button>
+                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(4, interface)" ng-disabled="actions == 'loading'">Monitor OFF</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <img src="img/throbber.gif" ng-show="actions == 'loading'">
+                            </div>
+                            <div class="row" ng-hide="actions == '' || actions == 'loading'">
+                                <br/>
+                                <pre class="scrollable-pre">{{ actions }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Info</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <button class="btn btn-default" ng-click="getInfoData(1)" ng-disabled="info == 'loading'">ifconfig</button>
+                                <button class="btn btn-default" ng-click="getInfoData(2)" ng-disabled="info == 'loading'">iw dev</button>
+                                <button class="btn btn-default" ng-click="getInfoData(3)" ng-disabled="info == 'loading'">airmon-ng</button>
+                                <img src="img/throbber.gif" ng-show="info == 'loading'">
+                            </div>
+                            <div class="row" ng-hide="info == '' || info == 'loading'">
+                                <br/>
+                                <pre class="scrollable-pre">{{ info }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="panel panel-default" ng-controller="OUILookupController">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">OUI Lookup
+                            <span class="dropdown">
+                            <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="OUIDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="OUIDropdown">
+                                <li ng-click="removeOUIDatabase()"><a>Remove OUI Database</a></li>
+                            </ul>
+                        </span>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div ng-if="isOUIPresent()">
+                            <form class="form-inline" role="form" novalidate>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">MAC Address</span>
+                                        <input name="macAddress" placeholder="00:11:22:33:44:55" type="text" class="form-control" id="macAddress" ng-model="$parent.macAddress">
                                     </div>
                                     <br/>
-                                </form>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button ng-click="lookupMACAddress();" ng-disabled="ouiLoading" class="btn btn-default">
+                                        <span ng-hide="ouiLoading">Lookup</span>
+                                        <img class="image-small-18 center-block" ng-show="ouiLoading" src="img/throbber.gif" />
+                                    </button>
+                                </div>
                                 <br/>
-                                <span ng-show="vendor">{{ vendor }}</span>
-                            </div>
-                            <div ng-if="!isOUIPresent()">
-                                <button ng-click="downloadOUIDatabase()" ng-disabled="gettingOUI" class="btn btn-default">
-                                    <span ng-hide="gettingOUI">Download OUI Database</span>
-                                    <img class="image-small-18 center-block" ng-show="gettingOUI" src="img/throbber.gif" />
-                                </button>
-                                <br/>
-                                <span class="text-muted">Note: The OUI Database is downloaded from GitHub.com</span>
-                            </div>
+                            </form>
+                            <br/>
+                            <span ng-show="vendor">{{ vendor }}</span>
+                        </div>
+                        <div ng-if="!isOUIPresent()">
+                            <button ng-click="downloadOUIDatabase()" ng-disabled="gettingOUI" class="btn btn-default">
+                                <span ng-hide="gettingOUI">Download OUI Database</span>
+                                <img class="image-small-18 center-block" ng-show="gettingOUI" src="img/throbber.gif" />
+                            </button>
+                            <br/>
+                            <span class="text-muted">Note: The OUI Database is downloaded from GitHub.com</span>
                         </div>
                     </div>
                 </div>
@@ -116,176 +275,8 @@
                         </div>
                     </div>
                 </div>
-            
-                <div class="controller" ng-controller="NetworkingClientModeController">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">
-                                WiFi Client Mode
-                                <span class="pull-right">
-                                    <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
-                                        Refresh
-                                    </button>
-                                </span>
-                            </h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="col-md-12" ng-show="connected">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">Interface</span>
-                                        <input type="text" class="form-control" ng-model="connectedInterface" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width input-group-addon">SSID</span>
-                                        <input type="text" class="form-control" ng-model="connectedSSID" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width input-group-addon">IP</span>
-                                        <input type="text" class="form-control" ng-model="connectedIP" disabled>
-                                    </div>
-                                    <br/>
-                                    <button class="btn btn-default" ng-click="checkConnection()" ng-hide="disconnecting">Refresh</button>
-                                    <button class="btn btn-default" ng-click="disconnect()" ng-hide="disconnecting">Disconnect</button>
-                                    <img src="img/throbber.gif" ng-show="disconnecting">
-                                </div>
-                            </div>
-                            <div class="col-md-12" ng-hide="connected">
-                                <div class="row">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">Interface</span>
-                                        <select class="form-control" ng-model="selectedInterface" ng-disabled="scanning">
-                                            <option ng-repeat="interface in interfaces">{{ interface }}</option>
-                                        </select>
-                                        <span class="input-group-btn">
-                                            <button ng-disabled="scanning" class="btn btn-default" type="button" ng-click="scanForNetworks()">
-                                                <span ng-hide="scanning">Scan</span>
-                                                <img class="image-small-18" src="img/throbber.gif" ng-show="scanning">
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <small class="text-muted" ng-hide="accessPoints.length !== 0" ng-show="selectedInterface === 'wlan1' || selectedInterface === 'wlan1mon'"> Note: Choosing wlan1 will interfere with PineAP.</small>
-                                    <div class="alert well-sm alert-warning" role="alert" ng-show="noNetworkFound">
-                                        <span>No networks were found.</span>
-                                    </div>
-                                    <br/>
-                                </div>
-                                <div class="row" ng-show="accessPoints.length">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">Access Point</span>
-                                        <select class="form-control" ng-options="ap.ssid for ap in accessPoints track by ap.mac" ng-model="selectedAP"></select>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group" ng-show="(selectedAP['security'] !== 'Open')">
-                                        <span class="input-group-addon">Password</span>
-                                        <input type="password" class="form-control" ng-model="key">
-                                    </div>
-                                    <br/>
-                                </div>
-                                <br/><br/>
-                                <div class="row" ng-show="accessPoints.length">
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width-2 input-group-addon">BSSID</span>
-                                        <input type="text" class="form-control" ng-model="selectedAP['mac']" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width-2 input-group-addon">SSID</span>
-                                        <input type="text" class="form-control" ng-model="selectedAP['ssid']" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width-2 input-group-addon">Channel</span>
-                                        <input type="text" class="form-control" ng-model="selectedAP['channel']" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width-2 input-group-addon">Signal</span>
-                                        <input type="text" class="form-control" ng-model="selectedAP['signal']" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width-2 input-group-addon">Quality</span>
-                                        <input type="text" class="form-control" ng-model="selectedAP['quality']" disabled>
-                                    </div>
-                                    <br/>
-                                    <div class="input-group">
-                                        <span class="fixed-addon-width-2 input-group-addon">Security</span>
-                                        <input type="text" class="form-control" ng-model="selectedAP['security']" disabled>
-                                    </div>
-                                    <br/>
-                                </div>
-                                <div class="row">
-                                    <button class="btn btn-default" ng-click="connectToAP()" ng-show="accessPoints.length" ng-disabled="connecting">
-                                        <span ng-hide="connecting">Connect</span>
-                                        <img class="image-small-18" src="img/throbber.gif" ng-show="connecting">
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 controller" ng-controller="NetworkingInfoController">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            Interface actions
-                            <span class="pull-right">
-                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="getInterfaces();">
-                                    Refresh
-                                </button>
-                            </span>
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="form-group" ng-repeat="interface in interfaces">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">{{ interface }}</span>
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(1, interface)" ng-disabled="actions == 'loading'">Up</button>
-                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(2, interface)" ng-disabled="actions == 'loading'">Down</button>
-                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(3, interface)" ng-disabled="actions == 'loading'">Monitor ON</button>
-                                            <button type="button" class="btn btn-default" ng-click="interfaceActions(4, interface)" ng-disabled="actions == 'loading'">Monitor OFF</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <img src="img/throbber.gif" ng-show="actions == 'loading'">
-                            </div>
-                            <div class="row" ng-hide="actions == '' || actions == 'loading'">
-                                <br/>
-                                <pre class="scrollable-pre">{{ actions }}</pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Info</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <button class="btn btn-default" ng-click="getInfoData(1)" ng-disabled="info == 'loading'">ifconfig</button>
-                                <button class="btn btn-default" ng-click="getInfoData(2)" ng-disabled="info == 'loading'">iw dev</button>
-                                <button class="btn btn-default" ng-click="getInfoData(3)" ng-disabled="info == 'loading'">airmon-ng</button>
-                                <img src="img/throbber.gif" ng-show="info == 'loading'">
-                            </div>
-                            <div class="row" ng-hide="info == '' || info == 'loading'">
-                                <br/>
-                                <pre class="scrollable-pre">{{ info }}</pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-
     </div>
     
     <div class="tab-pane fade" id="networking-config">
@@ -501,15 +492,6 @@
 </div>
 
 <script type="text/javascript">
-    function loadActiveTabData() {
-        $('.tab-pane.active .controller').each(function(index) {
-            var controller = angular.element( $(this)[0] ).scope();
-            if (typeof controller.reloadData === "function") { 
-                controller.reloadData();
-            }
-        });
-    }
-
     $(function() {
         $('.tabs-block a').click(function(event) {
             event.preventDefault();
