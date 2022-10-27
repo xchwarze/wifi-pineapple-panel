@@ -138,9 +138,11 @@ registerController('PineAPPoolController', ['$api', '$scope', '$timeout', functi
 }]);
 
 registerController('PineAPSettingsController', ['$api', '$scope', function($api, $scope) {
+    $scope.loading = true;
     $scope.disableButton = false;
-    $scope.saveAlert = false;
     $scope.pineAPenabling = false;
+    $scope.pineAPDaemonStatus = '';
+    $scope.autostartPineAPStatus = '';
     $scope.settings = {
         allowAssociations: false,
         logEvents: false,
@@ -151,20 +153,19 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
         broadcastSSIDs: false,
         connectNotifications: false,
         disconnectNotifications: false,
-        broadcastInterval: 'NORMAL',
-        responseInterval: 'NORMAL',
-        monitorInterface: 'wlan1mon',
-        sourceInterface: 'wlan0',
-        sourceMAC: '00:00:00:00:00:00',
-        targetMAC: 'FF:FF:FF:FF:FF:FF'
+        broadcastInterval: '',
+        responseInterval: '',
+        monitorInterface: '',
+        sourceInterface: '',
+        sourceMAC: '',
+        targetMAC: ''
     };
 
     $scope.togglePineAP = function() {
         $scope.pineAPenabling = true;
-        var actionString = $scope.settings.pineAPDaemon ? "disable" : "enable";
         $api.request({
             module: 'PineAP',
-            action: actionString
+            action: $scope.settings.pineAPDaemon ? "disable" : "enable"
         }, function(response) {
             if (response.error === undefined) {
                 $scope.pineAPenabling = false;
@@ -174,10 +175,9 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
     };
 
     $scope.toggleAutoStart = function() {
-        var actionString = $scope.settings.autostartPineAP ? "disableAutoStart" : "enableAutoStart";
         $api.request({
             module: 'PineAP',
-            action: actionString
+            action: $scope.settings.autostartPineAP ? "disableAutoStart" : "enableAutoStart"
         }, function(response) {
             if (response.error === undefined) {
                 $scope.getSettings();
@@ -191,7 +191,10 @@ registerController('PineAPSettingsController', ['$api', '$scope', function($api,
             action: 'getPineAPSettings'
         }, function(response) {
             if (response.success === true) {
+                $scope.loading = false;
                 $scope.settings = response.settings;
+                $scope.pineAPDaemonStatus = response.settings.pineAPDaemon ? 'Start' : 'Stop';
+                $scope.autostartPineAPStatus = response.settings.autostartPineAP ? 'Enabled' : 'Disabled';
             }
         });
     };
@@ -219,9 +222,9 @@ registerController("PineAPEnterpriseController", ['$api', '$scope', '$timeout', 
         encryptionType: "wpa2+ccmp"
     };
     $scope.certificateSettings = {
-        state: "California",
-        country: "US",
-        locality: "San Francisco",
+        state: "San Martin",
+        country: "AR",
+        locality: "Buenos Aires",
         organization: "YOUR ORG",
         email: "bounce@example.com",
         commonname: "YOUR CERTIFICATE AUTHORITY"

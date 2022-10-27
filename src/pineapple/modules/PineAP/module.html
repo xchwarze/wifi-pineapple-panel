@@ -6,34 +6,18 @@
                     Configuration
                 </h3>
             </div>
-            <div class="panel-body" ng-hide="notifications.length">
-                <div class="input-group margin-bottom">
+            <div class="panel-body">
+                <div class="alert alert-info" ng-hide="loading || settings.pineAPDaemon">
+                    <strong>Notice:</strong> In order to use some of these features, PineAP must first be enabled.
+                </div>
+                <img src="img/throbber.gif" alt="throbber.gif" ng-show="loading">
+
+                <div class="input-group">
                     <div class="checkbox">
                         <label><input type="checkbox" value="" ng-model="settings.allowAssociations">
                             Allow Associations
                         </label>
-                    </div>
-                </div>
-                <div class="input-group margin-bottom">
-                    <span class="input-group-addon">PineAP Daemon: {{ settings.pineAPDaemon ? "Start" : "Stop" }}</span>
-                    <span class="input-group-btn">
-                        <button ng-disabled="pineAPenabling" class="btn btn-default" type="button"
-                                ng-click="togglePineAP()">
-                            <span ng-hide="pineAPenabling">Switch</span>
-                            <img ng-show="pineAPenabling" src="img/throbber.gif">
-                        </button>
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">Autostart PineAP: {{ settings.autostartPineAP ? "Enabled" : "Disabled" }}</span>
-                    <span class="input-group-btn">
-                        <button ng-disabled="pineAPenabling" class="btn btn-default" type="button"
-                                ng-click="toggleAutoStart()">
-                            <span>Switch</span>
-                        </button>
-                    </span>
-                </div>
-                <div class="input-group">
+                    </div>                
                     <div class="checkbox">
                         <label><input type="checkbox" value="" ng-model="settings.logEvents">
                             Log PineAP Events
@@ -64,6 +48,30 @@
                             Broadcast SSID Pool
                         </label>
                     </div>
+                </div>
+
+                <div class="input-group margin-bottom">
+                    <span class="input-group-addon" style="width: unset;">
+                        PineAP Daemon: {{ pineAPDaemonStatus }}
+                    </span>
+                    <span class="input-group-btn">
+                        <button ng-disabled="pineAPenabling" class="btn btn-default" type="button"
+                                ng-click="togglePineAP()">
+                            <span ng-hide="pineAPenabling">Switch</span>
+                            <img ng-show="pineAPenabling" src="img/throbber.gif">
+                        </button>
+                    </span>
+                </div>
+                <div class="input-group margin-bottom">
+                    <span class="input-group-addon" style="width: unset;">
+                        Autostart PineAP: {{ autostartPineAPStatus }}
+                    </span>
+                    <span class="input-group-btn">
+                        <button ng-disabled="pineAPenabling" class="btn btn-default" type="button"
+                                ng-click="toggleAutoStart()">
+                            <span>Switch</span>
+                        </button>
+                    </span>
                 </div>
                 <div class="input-group margin-bottom">
                     <span class="input-group-addon">Beacon Response Interval</span>
@@ -99,18 +107,10 @@
                 </div>
                 <br/>
                 <div class="input-group">
-                    <button class="btn btn-default" ng-hide="disableButton" ng-click="updateSettings()">Save
-                        PineAP Settings
+                    <button class="btn btn-default" ng-hide="disableButton" ng-click="updateSettings()">
+                        Save PineAP Settings
                     </button>
                     <img src="img/throbber.gif" alt="throbber.gif" ng-show="disableButton">
-                </div>
-            </div>
-            <div class="panel-footer" ng-hide="settings.pineAPDaemon && !saveAlert">
-                <div class="alert alert-info" ng-hide="settings.pineAPDaemon">
-                    <strong>Notice:</strong> In order to use some of these features, PineAP must first be enabled.
-                </div>
-                <div class="alert alert-success" ng-show="saveAlert">
-                    Autostart Configuration Saved
                 </div>
             </div>
         </div>
