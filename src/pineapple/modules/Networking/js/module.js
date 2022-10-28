@@ -116,6 +116,8 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
     $scope.connecting = false;
     $scope.noNetworkFound = false;
     $scope.loading = false;
+    $scope.info = '';
+    $scope.actions = '';
 
     $scope.getInterfaces = (function() {
         $scope.interfaces = [];
@@ -167,8 +169,7 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
         });
     });
 
-    $scope.reloadData = (function() {
-        $scope.loading = true;
+    $scope.checkConnection = (function() {
         $api.request({
             module: 'Networking',
             action: 'checkConnection'
@@ -181,7 +182,6 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
                     $scope.connectedSSID = response.ssid;
                     $scope.connectedIP = response.ip;
                 } else {
-                    $scope.connected = false;
                     $scope.getInterfaces();
                 }
             }
@@ -205,10 +205,6 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
             }
         });
     });
-
-    // from NetworkingInfoController
-    $scope.info = '';
-    $scope.actions = '';
 
     $scope.interfaceActions = (function(type, wlan) {
         $scope.actions = 'loading';
@@ -240,6 +236,14 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
                 $scope.info = response;
             }
         });
+    });
+
+    $scope.reloadData = (function() {
+        $scope.loading = true;
+        $scope.checkConnection();
+        if ($scope.connected) {
+            $scope.getInterfaces();
+        }
     });
 
     $scope.reloadData();
