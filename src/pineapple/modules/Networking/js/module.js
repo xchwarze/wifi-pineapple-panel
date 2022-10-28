@@ -182,6 +182,7 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
                     $scope.connectedSSID = response.ssid;
                     $scope.connectedIP = response.ip;
                 } else {
+                    $scope.connected = false;
                     $scope.getInterfaces();
                 }
             }
