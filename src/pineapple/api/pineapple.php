@@ -112,7 +112,7 @@ function downloadFile($file)
 
 function getFirmwareVersion()
 {
-    return trim(file_get_contents('/etc/pineapple/pineapple_version'));
+    return trim(file_get_contents('/pineapple/pineapple_version'));
 }
 
 function getDevice()

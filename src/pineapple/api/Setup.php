@@ -57,9 +57,9 @@ class Setup extends APIModule
 
     private function getChanges()
     {
-        if (file_exists("/etc/pineapple/changes")) {
-            $changes = file_get_contents("/etc/pineapple/changes");
-            $version = trim(file_get_contents('/etc/pineapple/pineapple_version'));
+        if (file_exists("/pineapple/changes")) {
+            $changes = file_get_contents("/pineapple/changes");
+            $version = trim(file_get_contents('/pineapple/pineapple_version'));
             $this->response = array('changes' => $changes, 'fwversion' => $version);
         } else {
             $this->response = array('changes' => NULL);

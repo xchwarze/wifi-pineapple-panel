@@ -7,7 +7,7 @@ echo "Retrieving /proc/cpuinfo"
 echo "============CPUINFO========" > $LOG
 cat /proc/cpuinfo >> $LOG
 echo "Retrieving firmware version"
-echo -n "Firmware Version: " >> $LOG && cat /etc/pineapple/pineapple_version >> $LOG
+echo -n "Firmware Version: " >> $LOG && cat /pineapple/pineapple_version >> $LOG
 echo "Retrieving lsusb output"
 echo "=============LSUSB=========" >> $LOG
 lsusb >> $LOG
