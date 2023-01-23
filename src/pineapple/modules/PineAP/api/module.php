@@ -199,8 +199,7 @@ class PineAP extends SystemModule
         $data = file_get_contents($fileName);
         $lines = explode("\n", $data);
         $line = $lines[$lineNumber - 1];
-        $ret = substr($line, 0, 1) === "#";
-        return $ret;
+        return substr($line, 0, 1) === "#";
     }
 
     private function getDowngradeType()
@@ -209,9 +208,8 @@ class PineAP extends SystemModule
             return "MSCHAPV2";
         } else if (!$this->isCommented(PineAP::EAP_USER_FILE, 5)) {
             return "GTC";
-        } else {
-            return "DISABLE";
         }
+        return "DISABLE";
     }
 
     private function enableMSCHAPV2Downgrade()
@@ -244,11 +242,9 @@ class PineAP extends SystemModule
 
         $mac = strtolower($this->request->mac);
         $probesArray = array();
-
         exec("/usr/bin/pineap list_probes ${mac}", $output);
-
         foreach ($output as $probeSSID) {
-            array_push($probesArray, $probeSSID);
+            $probesArray[] = $probeSSID;
         }
 
         $this->response = array('success' => true, 'probes' => implode("\n", array_unique($probesArray)));
@@ -653,22 +649,22 @@ class PineAP extends SystemModule
         $chalrespdata = array();
         $rows = $this->dbConnection->query("SELECT type, username, hex(challenge), hex(response) FROM chalresp;");
         foreach ($rows as $row) {
-            $x = array();
-            $x['type'] = $row['type'];
-            $x['username'] = $row['username'];
-            $x['challenge'] = $row['hex(challenge)'];
-            $x['response'] = $row['hex(response)'];
-            array_push($chalrespdata, $x);
+            $chalrespdata[] = [
+                'type' => $row['type'],
+                'username' => $row['username'],
+                'challenge' => $row['hex(challenge)'],
+                'response' => $row['hex(response)'],
+            ];
         }
 
         $basicdata = array();
         $rows = $this->dbConnection->query("SELECT type, identity, password FROM basic;");
         foreach ($rows as $row) {
-            $x = array();
-            $x['type'] = $row['type'];
-            $x['username'] = $row['identity'];
-            $x['password'] = $row['password'];
-            array_push($basicdata, $x);
+            $basicdata[] = [
+                'type' => $row['type'],
+                'username' => $row['identity'],
+                'password' => $row['password'],
+            ];
         }
         $this->response = array("success" => true, "chalrespdata" => $chalrespdata, "basicdata" => $basicdata);
     }
@@ -713,7 +709,6 @@ class PineAP extends SystemModule
         if ($statusOutput[0] == "ENABLED") {
             return true;
         }
-
         return false;
     }
 
@@ -802,11 +797,11 @@ class PineAP extends SystemModule
                 // A scan is running, but not for this BSSID.
                 $this->response = array('running' => true, 'currentBSSID' => false, 'bssid' => $status_output['bssid']);
                 return 2;
-            } else {
-                // No scan is running.
-                $this->response = array('running' => false, 'currentBSSID' => false);
-                return 0;
             }
+
+            // No scan is running.
+            $this->response = array('running' => false, 'currentBSSID' => false);
+            return 0;
         }
     }
 
