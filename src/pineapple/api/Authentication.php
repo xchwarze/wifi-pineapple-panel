@@ -27,6 +27,7 @@ class Authentication extends APIModule
             $result = $this->dbConnection->query("SELECT token FROM api_tokens WHERE token='%s';", $token);
             if (!empty($result) && isset($result[0]["token"]) && $result[0]["token"] === $token) {
                 $this->response = array("valid" => true);
+                return;
             }
         }
         $this->response = array("valid" => false);
@@ -39,9 +40,9 @@ class Authentication extends APIModule
             $name = $this->request->name;
             $this->dbConnection->exec("INSERT INTO api_tokens(token, name) VALUES('%s','%s');", $token, $name);
             $this->response = array("success" => true);
-        } else {
-            $this->error = "Missing token or name";
+            return;
         }
+        $this->error = "Missing token or name";
     }
 
     private function login()
@@ -54,7 +55,7 @@ class Authentication extends APIModule
                     return;
                 }
                 $epoch = intval($this->request->time);
-                if (is_int($epoch) && $epoch > 1) {
+                if ($epoch > 1) {
                     exec('date -s @' . $epoch);
                 }
                 return;
@@ -69,7 +70,7 @@ class Authentication extends APIModule
         $shadowContents = file_get_contents('/etc/shadow');
         $rootArray = explode(':', explode('root:', $shadowContents)[1]);
         $rootPass = $rootArray[0];
-        if ($rootPass != null && !empty($rootPass) && gettype($rootPass) === "string") {
+        if (!empty($rootPass) && gettype($rootPass) === "string") {
             return hash_equals($rootPass, crypt($password, $rootPass));
         }
         return false;

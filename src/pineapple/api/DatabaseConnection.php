@@ -24,13 +24,9 @@ class DatabaseConnection
             switch ($errorType) {
                 case 'databaseConnectionError':
                     return "Could not connect to database: $errorMessage";
-                    break;
+                case 'databaseExecutionError':
                 case 'databaseQueryError':
                     return "Could not execute query: $errorMessage";
-                    break;
-                case 'databaseExecutionError':
-                    return "Could not execute query: $errorMessage";
-                    break;
                 default:
                     return "Unknown database error";
             }
@@ -77,7 +73,7 @@ class DatabaseConnection
         }
         $resultArray = array();
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-            array_push($resultArray, $row);
+            $resultArray[] = $row;
         }
         return $resultArray;
     }

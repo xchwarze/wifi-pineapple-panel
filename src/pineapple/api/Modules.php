@@ -18,7 +18,7 @@ class Modules extends APIModule
         require_once('DatabaseConnection.php');
 
         $dir = scandir("../modules");
-        if ($dir == false) {
+        if ($dir === false) {
             $this->error = "Unable to access modules directory";
             return $this->modules;
         }
@@ -54,7 +54,7 @@ class Modules extends APIModule
                     $this->modules['systemModules'][$moduleInfo->index] = $module;
                 }
             } else {
-                array_push($this->modules['userModules'], $module);
+                $this->modules['userModules'][] = $module;
             }
         }
 
