@@ -199,7 +199,7 @@ class Advanced extends SystemModule
                 $this->response = array(
                     "completed" => true,
                     "sha256" => $fileHash,
-                    "downloaded" => sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor]
+                    "downloaded" => sprintf("%.2f", $bytes / pow(1024, $factor)) . @$sz[$factor]
                 );
             } else if ($fileHash == $this->request->checksum) {
                 $this->response = array("completed" => true);
@@ -266,6 +266,7 @@ class Advanced extends SystemModule
             $result = $this->dbConnection->query("SELECT token FROM api_tokens WHERE token='%s';", $token);
             if (!empty($result) && isset($result[0]["token"]) && $result[0]["token"] === $token) {
                 $this->response = array("valid" => true);
+                return;
             }
         }
 

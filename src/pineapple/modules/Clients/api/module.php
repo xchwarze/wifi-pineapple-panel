@@ -93,12 +93,12 @@ class Clients extends SystemModule
         $arpData = $this->getARPData();
         $ssidData = $this->getSSIDData();
         foreach ($stationData as $mac => $signal) {
-            $client = array();
-            $client['mac'] = $mac;
-            $client['ip'] = $arpData[$mac];
-            $client['ssid'] = $ssidData[$mac];
-            $client['host'] = $dhcpData[$mac][1];
-            array_push($connectedClients, $client);
+            $connectedClients[] = [
+                'mac' => $mac,
+                'ip' => $arpData[$mac],
+                'ssid' => $ssidData[$mac],
+                'host' => $dhcpData[$mac][1],
+            ];
         }
         $this->response = array(
             'clients' => $connectedClients

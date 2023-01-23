@@ -308,8 +308,9 @@ class PineAP extends SystemModule
         if ($this->checkPineAP()) {
             $sta = $this->request->sta;
             $clients = $this->request->clients;
-            $multiplier = intval($this->request->multiplier, 10);
+            $multiplier = intval($this->request->multiplier);
             $channel = $this->request->channel;
+            $success = false;
 
             if (empty($clients)) {
                 $this->response = array('error' => 'This AP has no clients', 'success' => false);
@@ -683,8 +684,7 @@ class PineAP extends SystemModule
             if (strtoupper($row['type']) !== "MSCHAPV2" && strtoupper($row['type']) != "EAP-TTLS/MSCHAPV2") {
                 continue;
             }
-            $x = $row['username'] . ':$NETNTLM$' . $row['hex(challenge)'] . '$' . $row['hex(response)'];
-            array_push($data, $x);
+            $data[] = $row['username'] . ':$NETNTLM$' . $row['hex(challenge)'] . '$' . $row['hex(response)'];
         }
         file_put_contents($jtrLocation, join("\n", $data));
         $this->response = array("download" => $this->downloadFile($jtrLocation));
@@ -701,8 +701,7 @@ class PineAP extends SystemModule
             if (strtoupper($row['type']) !== "MSCHAPV2" && strtoupper($row['type']) != "EAP-TTLS/MSCHAPV2") {
                 continue;
             }
-            $x = $row['username'] . '::::' . $row['hex(response)'] . ':' . $row['hex(challenge)'];
-            array_push($data, $x);
+            $data[] = $row['username'] . '::::' . $row['hex(response)'] . ':' . $row['hex(challenge)'];
         }
         file_put_contents($hashcatLocation, join("\n", $data));
         $this->response = array("download" => $this->downloadFile($hashcatLocation));
@@ -731,13 +730,10 @@ class PineAP extends SystemModule
     {
         $bssid = $this->request->bssid;
         $channel = $this->request->channel;
+        // We already set $this->response in checkPineAP() if it isnt running.
         if ($this->checkPineAP()) {
             $this->execBackground("pineap /etc/pineap.conf handshake_capture_start ${bssid} ${channel}");
             $this->response = array('success' => true);
-            return;
-        } else {
-            // We already set $this->response in checkPineAP() if it isnt running.
-            return;
         }
     }
 
@@ -763,11 +759,9 @@ class PineAP extends SystemModule
     {
         $handshakes = array();
         foreach (glob("/tmp/handshakes/*.pcap") as $handshake) {
-            $handshake = str_replace("/tmp/handshakes/", "", $handshake);
-            $handshake = str_replace("_full.pcap", "", $handshake);
-            $handshake = str_replace("_partial.pcap", "", $handshake);
+            $handshake = str_replace(["/tmp/handshakes/", "_full.pcap", "_partial.pcap"], "", $handshake);
             $handshake = str_replace('-', ':', $handshake);
-            array_push($handshakes, $handshake);
+            $handshakes[] = $handshake;
         }
 
         $this->response = array("handshakes" => $handshakes);

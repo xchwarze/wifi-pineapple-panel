@@ -66,18 +66,16 @@ class Filters extends SystemModule
     {
         if (exec("hostapd_cli -i wlan0 karma_get_black_white") === "WHITE") {
             return "Allow";
-        } else {
-            return "Deny";
         }
+        return "Deny";
     }
 
     private function getClientMode()
     {
         if (exec("hostapd_cli -i wlan0 karma_get_mac_black_white") === "WHITE") {
             return "Allow";
-        } else {
-            return "Deny";
         }
+        return "Deny";
     }
 
     private function getSSIDFilters()
@@ -106,24 +104,16 @@ class Filters extends SystemModule
 
     private function toggleClientMode()
     {
-        if ($this->request->mode === "Allow") {
-            exec("pineap /tmp/pineap.conf mac_filter white");
-            $this->uciSet('pineap.@config[0].mac_filter', 'white');
-        } else {
-            exec("pineap /tmp/pineap.conf mac_filter black");
-            $this->uciSet('pineap.@config[0].mac_filter', 'black');
-        }
+        $value = ($this->request->mode === 'Allow') ? 'white' : 'black';
+        exec("pineap /tmp/pineap.conf mac_filter {$value}");
+        $this->uciSet('pineap.@config[0].mac_filter', $value);
     }
 
     private function toggleSSIDMode()
     {
-        if ($this->request->mode === "Allow") {
-            $this->uciSet('pineap.@config[0].ssid_filter', 'white');
-            exec("pineap /tmp/pineap.conf ssid_filter white");
-        } else {
-            $this->uciSet('pineap.@config[0].ssid_filter', 'black');
-            exec("pineap /tmp/pineap.conf ssid_filter black");
-        }
+        $value = ($this->request->mode === 'Allow') ? 'white' : 'black';
+        exec("pineap /tmp/pineap.conf ssid_filter {$value}");
+        $this->uciSet('pineap.@config[0].ssid_filter', $value);
     }
 
     private function getClientData()

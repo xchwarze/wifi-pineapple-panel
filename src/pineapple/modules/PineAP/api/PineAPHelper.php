@@ -223,8 +223,6 @@ class PineAPHelper
         } else {
             $this->setSetting("beacon_interval", "{$interval}");
         }
-
-        return;
     }
 
     public function setResponseInterval($interval)
@@ -235,8 +233,6 @@ class PineAPHelper
         } else {
             $this->setSetting("beacon_response_interval", "{$interval}");
         }
-
-        return;
     }
 
     public function setSource($mac)
@@ -247,8 +243,6 @@ class PineAPHelper
         } else {
             $this->setSetting("pineap_mac", "{$mac}");
         }
-
-        return;
     }
 
     public function setTarget($mac)
@@ -259,7 +253,6 @@ class PineAPHelper
         } else {
             $this->setSetting("target_mac", "{$mac}");
         }
-        return;
     }
 
     public function deauth($target, $source, $channel, $multiplier = 1)

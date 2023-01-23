@@ -89,11 +89,7 @@ class Configuration extends SystemModule
 
     private function resetPineapple()
     {
-        if ($this->getDevice() === "nano") {
-            $this->execBackground("mtd -r erase rootfs_data");
-        } else if ($this->getDevice() === "tetra") {
-            $this->execBackground("jffs2reset -y && reboot &");
-        }
+        $this->execBackground("jffs2reset -y && reboot &");
         $this->response = array("success" => true);
     }
 
