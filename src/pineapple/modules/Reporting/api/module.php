@@ -37,12 +37,14 @@ class Reporting extends SystemModule
 
     private function getReportConfiguration()
     {
-        $this->response = array("config" => array(
-            "generateReport" => (exec("grep files/reporting /etc/crontabs/root") == "") ? false : true,
-            "storeReport" => $this->uciGet("reporting.@settings[0].save_report"),
-            "sendReport" => $this->uciGet("reporting.@settings[0].send_email"),
-            "interval" => (string) $this->uciGet("reporting.@settings[0].interval")
-        ));
+        $this->response = [
+            "config" => [
+                "generateReport" => (exec("grep files/reporting /etc/crontabs/root") == "") ? false : true,
+                "storeReport" => $this->uciGet("reporting.@settings[0].save_report"),
+                "sendReport" => $this->uciGet("reporting.@settings[0].send_email"),
+                "interval" => (string) $this->uciGet("reporting.@settings[0].interval")
+            ]
+        ];
 
         if ($this->getDevice() == "nano" && !$this->isSDAvailable()) {
             $this->response['config']['storeReport'] = false;
@@ -52,29 +54,33 @@ class Reporting extends SystemModule
 
     private function getReportContents()
     {
-        $this->response = array("config" => array(
-            "pineAPLog" => $this->uciGet("reporting.@settings[0].log"),
-            "clearLog" => $this->uciGet("reporting.@settings[0].clear_log"),
-            "siteSurvey" => $this->uciGet("reporting.@settings[0].survey"),
-            "siteSurveyDuration" => $this->uciGet("reporting.@settings[0].duration"),
-            "client" => $this->uciGet("reporting.@settings[0].client"),
-            "tracking" => $this->uciGet("reporting.@settings[0].tracking")
-        ));
+        $this->response = [
+            "config" => [
+                "pineAPLog" => $this->uciGet("reporting.@settings[0].log"),
+                "clearLog" => $this->uciGet("reporting.@settings[0].clear_log"),
+                "siteSurvey" => $this->uciGet("reporting.@settings[0].survey"),
+                "siteSurveyDuration" => $this->uciGet("reporting.@settings[0].duration"),
+                "client" => $this->uciGet("reporting.@settings[0].client"),
+                "tracking" => $this->uciGet("reporting.@settings[0].tracking")
+            ]
+        ];
     }
 
     private function getEmailConfiguration()
     {
-        $this->response = array("config" => array(
-            "from" => $this->uciGet("reporting.@ssmtp[0].from"),
-            "to" => $this->uciGet("reporting.@ssmtp[0].to"),
-            "server" => $this->uciGet("reporting.@ssmtp[0].server"),
-            "port" => $this->uciGet("reporting.@ssmtp[0].port"),
-            "domain" => $this->uciGet("reporting.@ssmtp[0].domain"),
-            "username" => $this->uciGet("reporting.@ssmtp[0].username"),
-            "password" => $this->uciGet("reporting.@ssmtp[0].password"),
-            "tls" => $this->uciGet("reporting.@ssmtp[0].tls"),
-            "starttls" => $this->uciGet("reporting.@ssmtp[0].starttls")
-        ));
+        $this->response = [
+            "config" => [
+                "from" => $this->uciGet("reporting.@ssmtp[0].from"),
+                "to" => $this->uciGet("reporting.@ssmtp[0].to"),
+                "server" => $this->uciGet("reporting.@ssmtp[0].server"),
+                "port" => $this->uciGet("reporting.@ssmtp[0].port"),
+                "domain" => $this->uciGet("reporting.@ssmtp[0].domain"),
+                "username" => $this->uciGet("reporting.@ssmtp[0].username"),
+                "password" => $this->uciGet("reporting.@ssmtp[0].password"),
+                "tls" => $this->uciGet("reporting.@ssmtp[0].tls"),
+                "starttls" => $this->uciGet("reporting.@ssmtp[0].starttls")
+            ]
+        ];
     }
 
     private function setReportConfiguration()
@@ -82,7 +88,7 @@ class Reporting extends SystemModule
         $this->uciSet("reporting.@settings[0].save_report", $this->request->config->storeReport);
         $this->uciSet("reporting.@settings[0].send_email", $this->request->config->sendReport);
         $this->uciSet("reporting.@settings[0].interval", $this->request->config->interval);
-        $this->response = array("success" => true);
+        $this->response = ["success" => true];
 
         if ($this->request->config->generateReport === true) {
             $hours_minus_one = $this->uciGet("reporting.@settings[0].interval")-1;
@@ -105,7 +111,7 @@ class Reporting extends SystemModule
         $this->uciSet("reporting.@settings[0].duration", $this->request->config->siteSurveyDuration);
         $this->uciSet("reporting.@settings[0].client", $this->request->config->client);
         $this->uciSet("reporting.@settings[0].tracking", $this->request->config->tracking);
-        $this->response = array("success" => true);
+        $this->response = ["success" => true];
     }
 
     private function setEmailConfiguration()
@@ -133,12 +139,12 @@ class Reporting extends SystemModule
             file_put_contents("/etc/ssmtp/ssmtp.conf", "UseSTARTTLS=YES\n", FILE_APPEND);
         }
 
-        $this->response = array("success" => true);
+        $this->response = ["success" => true];
     }
 
     private function testReportConfiguration()
     {
         $this->execBackground('/pineapple/modules/Reporting/files/reporting force_email');
-        $this->response = array("success" => true);
+        $this->response = ["success" => true];
     }
 }

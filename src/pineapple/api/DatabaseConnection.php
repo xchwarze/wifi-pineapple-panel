@@ -8,7 +8,7 @@ class DatabaseConnection
 
     public function __construct($databaseFile)
     {
-        $this->error = array();
+        $this->error = [];
         $this->databaseFile = $databaseFile;
         try {
             $this->dbConnection = new \SQLite3($this->databaseFile);
@@ -71,7 +71,7 @@ class DatabaseConnection
             $this->error['databaseQueryError'] = $this->dbConnection->lastErrorMsg();
             return $this->error;
         }
-        $resultArray = array();
+        $resultArray = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $resultArray[] = $row;
         }
@@ -87,7 +87,7 @@ class DatabaseConnection
             $this->error['databaseExecutionError'] = $e;
             return $this->error;
         }
-        return array('success' => $result);
+        return ['success' => $result];
     }
 
     public function __destruct()

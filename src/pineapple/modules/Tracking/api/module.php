@@ -47,7 +47,7 @@ class Tracking extends SystemModule
     private function getScript()
     {
         $trackingScript = file_get_contents("/etc/pineapple/tracking_script_user");
-        $this->response = array("trackingScript" => $trackingScript);
+        $this->response = ["trackingScript" => $trackingScript];
     }
 
     private function saveScript()
@@ -55,7 +55,7 @@ class Tracking extends SystemModule
         if (isset($this->request->trackingScript)) {
             file_put_contents("/etc/pineapple/tracking_script_user", $this->request->trackingScript);
         }
-        $this->response = array("success" => true);
+        $this->response = ["success" => true];
     }
 
     private function getTrackingList()
@@ -66,7 +66,7 @@ class Tracking extends SystemModule
         foreach ($result as $row) {
             $trackingList .= $row['mac'] . "\n";
         }
-        $this->response =  array("trackingList" => $trackingList);
+        $this->response =  ["trackingList" => $trackingList];
     }
 
     private function addMac()
