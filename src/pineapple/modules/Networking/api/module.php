@@ -81,8 +81,8 @@ class Networking extends SystemModule
                 $this->disconnect();
                 break;
 
-            case 'genOUIProcess':
-                $this->genOUIProcess();
+            case 'getOUI':
+                $this->getOUI();
                 break;
 
             case 'getFirewallConfig':
