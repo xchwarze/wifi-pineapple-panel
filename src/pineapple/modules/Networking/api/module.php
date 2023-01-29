@@ -217,18 +217,10 @@ class Networking extends SystemModule
     {
         $interfaceHelper = new \helper\Interfaces();
         $clientModeHelper = new \helper\ClientMode();
-        $accessPointHelper = new \helper\AccessPoint();
 
         $interface = $this->request->interface;
         $uciID = $interfaceHelper->getUciID($interface);
         $radioID = $interfaceHelper->getRadioID($interface);
-        $apConfig = $accessPointHelper->getAPConfig(false);
-
-        if ($radioID === false) {
-            exec('wifi config > /etc/config/wireless && wifi');
-            $accessPointHelper->saveAPConfig($apConfig);
-            $radioID = $interfaceHelper->getRadioID($interface);
-        }
 
         $this->response = $clientModeHelper->connectToAP($uciID, $this->request->ap, $this->request->key, $radioID);
     }

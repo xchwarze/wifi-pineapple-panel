@@ -2,7 +2,7 @@
 
 class AccessPoint
 {
-    public function saveAPConfig($apConfig, $restartService = true)
+    public function saveAPConfig($apConfig)
     {
         if (is_array($apConfig)) {
             $apConfig = (object)$apConfig;

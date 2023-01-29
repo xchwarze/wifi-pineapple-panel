@@ -61,6 +61,8 @@ class ClientMode
 
     public function connectToAP($uciID, $ap, $key, $radioID)
     {
+        exec('[ ! -z "$(wifi config)" ] && wifi config >> /etc/config/wireless');
+
         switch ($ap->security) {
             case 'Open':
                 $encryption = "none";
