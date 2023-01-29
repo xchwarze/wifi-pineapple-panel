@@ -30,6 +30,7 @@
         <li>Add "Info" section</li>
         <li>Add "Interface actions" section</li>
         <li>Use new feed for out.txt updates</li>
+        <li>Fix Networking wifi detection</li>
     </ul>
 
     <li>Advanced</li>
