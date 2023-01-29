@@ -44,7 +44,6 @@
                                     <input type="text" class="form-control" ng-model="connectedIP" disabled>
                                 </div>
                                 <br/>
-                                <button class="btn btn-default" ng-click="checkConnection()" ng-hide="disconnecting">Refresh</button>
                                 <button class="btn btn-default" ng-click="disconnect()" ng-hide="disconnecting">Disconnect</button>
                                 <img src="img/throbber.gif" ng-show="disconnecting">
                             </div>
@@ -297,6 +296,11 @@
                                 <ul class="dropdown-menu" aria-labelledby="NetworkingRouteDropdown">
                                     <li ng-click="restartDNS()"><a>Restart DNS</a></li>
                                 </ul>
+                            </span>
+                            <span class="pull-right">
+                                <button class="btn btn-default btn-xs btn-fixed-length" ng-disabled="loading" ng-click="reloadData();">
+                                    Refresh
+                                </button>
                             </span>
                         </h3>
                     </div>

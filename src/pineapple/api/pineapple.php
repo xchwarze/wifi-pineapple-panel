@@ -68,7 +68,7 @@ function uciGet($uciString, $autoBool = true)
     return $result;
 }
 
-function uciSet($settingString, $value)
+function uciSet($settingString, $value, $autoCommit = true)
 {
     $settingString = escapeshellarg($settingString);
     if (!empty($value)) {
@@ -80,22 +80,31 @@ function uciSet($settingString, $value)
     }
 
     exec("uci set {$settingString}={$value}");
-    exec("uci commit {$settingString}");
+    if ($autoCommit) {
+        exec("uci commit {$settingString}");
+    }
 }
 
-function uciAddList($settingString, $value)
+function uciAddList($settingString, $value, $autoCommit = true)
 {
     $settingString = escapeshellarg($settingString);
     if (!empty($value)) {
         $value = escapeshellarg($value);
     }
 
-    if ($value === "''") {
+    if ($value === "''" || $value === "") {
         $value = "'0'";
     }
 
     exec("uci add_list {$settingString}={$value}");
-    exec("uci commit {$settingString}");
+    if ($autoCommit) {
+        exec("uci commit {$settingString}");
+    }
+}
+
+function uciCommit()
+{
+    exec("uci commit");
 }
 
 function downloadFile($file)

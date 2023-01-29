@@ -2,43 +2,46 @@
 
 class AccessPoint
 {
-
-    public function saveAPConfig($apConfig)
+    public function saveAPConfig($apConfig, $restartService = true)
     {
-        uciSet('wireless.radio0.channel', $apConfig->selectedChannel);
-        $device = getDevice();
-        if ($apConfig->selectedChannel > 14 && $device == 'tetra') {
-            uciSet('wireless.radio0.hwmode', '11n');
+        if (is_array($apConfig)) {
+            $apConfig = (object)$apConfig;
         }
 
-        uciSet('wireless.@wifi-iface[0].ssid', $apConfig->openSSID);
-        uciSet('wireless.@wifi-iface[0].disabled', $apConfig->disableOpenAP);
-        uciSet('wireless.@wifi-iface[0].hidden', $apConfig->hideOpenAP);
-        uciSet('wireless.@wifi-iface[0].maxassoc', $apConfig->maxClients);
+        uciSet('wireless.radio0.channel', $apConfig->selectedChannel);
 
-        uciSet('wireless.@wifi-iface[1].ssid', $apConfig->managementSSID);
-        uciSet('wireless.@wifi-iface[1].key', $apConfig->managementKey);
-        uciSet('wireless.@wifi-iface[1].disabled', $apConfig->disableManagementAP);
-        uciSet('wireless.@wifi-iface[1].hidden', $apConfig->hideManagementAP);
+        uciSet('wireless.@wifi-iface[0].ssid', $apConfig->openSSID, false);
+        uciSet('wireless.@wifi-iface[0].disabled', $apConfig->disableOpenAP, false);
+        uciSet('wireless.@wifi-iface[0].hidden', $apConfig->hideOpenAP, false);
+        uciSet('wireless.@wifi-iface[0].maxassoc', $apConfig->maxClients, false);
+
+        uciSet('wireless.@wifi-iface[1].ssid', $apConfig->managementSSID, false);
+        uciSet('wireless.@wifi-iface[1].key', $apConfig->managementKey, false);
+        uciSet('wireless.@wifi-iface[1].disabled', $apConfig->disableManagementAP, false);
+        uciSet('wireless.@wifi-iface[1].hidden', $apConfig->hideManagementAP, false);
+
+        uciCommit();
         execBackground('wifi');
 
-        return array("success" => true);
+        return ["success" => true];
     }
 
-    public function getAPConfig()
+    public function getAPConfig($getChannelInfo = true)
     {
-        exec("iwinfo phy0 freqlist", $output);
-        preg_match_all("/\(Channel (\d+)\)$/m", implode("\n", $output), $channelList);
+        $channels = [];
+        if ($getChannelInfo) {
+            exec("iwinfo phy0 freqlist", $output);
+            preg_match_all("/\(Channel (\d+)\)$/m", implode("\n", $output), $channelList);
 
-        // Remove radar detection channels
-        $channels = array();
-        foreach ($channelList[1] as $channel) {
-            //if ((int)$channel < 52 || (int)$channel > 140) {
-                $channels[] = $channel;
-            //}
+            // Remove radar detection channels
+            foreach ($channelList[1] as $channel) {
+                if ((int)$channel < 52 || (int)$channel > 140) {
+                    $channels[] = $channel;
+                }
+            }
         }
 
-        return array(
+        return [
             "selectedChannel" => uciGet("wireless.radio0.channel"),
             "availableChannels" => $channels,
 
@@ -51,6 +54,6 @@ class AccessPoint
             "managementKey" => uciGet("wireless.@wifi-iface[1].key"),
             "disableManagementAP" => uciGet("wireless.@wifi-iface[1].disabled"),
             "hideManagementAP" => uciGet("wireless.@wifi-iface[1].hidden")
-        );
+        ];
     }
 }

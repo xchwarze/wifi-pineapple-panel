@@ -2,7 +2,6 @@
 
 class ClientMode
 {
-
     public function scanForNetworks($interface, $uciID, $radio)
     {
         $interface = escapeshellarg($interface);
@@ -23,17 +22,16 @@ class ClientMode
         }
 
         exec("iwinfo {$interface} scan", $apScan);
-
         if ($apScan[0] === 'No scan results') {
             return null;
         }
 
         $apArray = preg_split("/^Cell/m", implode("\n", $apScan));
 
-        $returnArray = array();
+        $returnArray = [];
         foreach ($apArray as $apData) {
             $apData = explode("\n", $apData);
-            $accessPoint = array();
+            $accessPoint = [];
             $accessPoint['mac'] = substr($apData[0], -17);
             $accessPoint['ssid'] = substr(trim($apData[1]), 8, -1);
             if (mb_detect_encoding($accessPoint['ssid'], "auto") === false) {
@@ -48,14 +46,13 @@ class ClientMode
             $accessPoint['quality'] = substr($signalString[1], 9);
 
             $security = substr(trim($apData[4]), 12);
+            $accessPoint['security'] = $security;
             if ($security === "none") {
                 $accessPoint['security'] = "Open";
-            } else {
-                $accessPoint['security'] = $security;
             }
 
             if ($accessPoint['mac'] && trim($apData[1]) !== "ESSID: unknown") {
-                array_push($returnArray, $accessPoint);
+                $returnArray[] = $accessPoint;
             }
         }
 
@@ -64,68 +61,56 @@ class ClientMode
 
     public function connectToAP($uciID, $ap, $key, $radioID)
     {
-        exec('[ ! -z "$(wifi config)" ] && wifi config > /etc/config/wireless');
-
-        $security = $ap->security;
-        switch ($security) {
+        switch ($ap->security) {
             case 'Open':
                 $encryption = "none";
                 break;
-
             case 'WPA (TKIP)':
             case 'WPA PSK (TKIP)':
                 $encryption = "psk+tkip";
                 break;
-
             case 'WPA (CCMP)':
             case 'WPA PSK (CCMP)':
                 $encryption = "psk+ccmp";
                 break;
-
             case 'WPA (TKIP, CCMP)':
             case 'WPA PSK (TKIP, CCMP)':
                 $encryption = "psk+tkip+ccmp";
                 break;
-
             case 'WPA2 (TKIP)':
             case 'WPA2 PSK (TKIP)':
                 $encryption = "psk2+tkip";
                 break;
-
             case 'WPA2 (CCMP)':
             case 'WPA2 PSK (CCMP)':
                 $encryption = "psk2+ccmp";
                 break;
-
             case 'WPA2 (TKIP, CCMP)':
             case 'WPA2 PSK (TKIP, CCMP)':
                 $encryption = "psk2+ccmp+tkip";
                 break;
-
             case 'mixed WPA/WPA2 (TKIP)':
             case 'mixed WPA/WPA2 PSK (TKIP)':
                 $encryption = "psk-mixed+tkip";
                 break;
-
             case 'mixed WPA/WPA2 (CCMP)':
             case 'mixed WPA/WPA2 PSK (CCMP)':
                 $encryption = "psk-mixed+ccmp";
                 break;
-
             case 'mixed WPA/WPA2 (TKIP, CCMP)':
             case 'mixed WPA/WPA2 PSK (TKIP, CCMP)':
                 $encryption = "psk-mixed+ccmp+tkip";
                 break;
-
             default:
                 $encryption = "";
         }
 
-        uciSet("wireless.@wifi-iface[{$uciID}].network", 'wwan');
-        uciSet("wireless.@wifi-iface[{$uciID}].mode", 'sta');
-        uciSet("wireless.@wifi-iface[{$uciID}].ssid", $ap->ssid);
-        uciSet("wireless.@wifi-iface[{$uciID}].encryption", $encryption);
-        uciSet("wireless.@wifi-iface[{$uciID}].key", $key);
+        uciSet("wireless.@wifi-iface[{$uciID}].network", 'wwan', false);
+        uciSet("wireless.@wifi-iface[{$uciID}].mode", 'sta', false);
+        uciSet("wireless.@wifi-iface[{$uciID}].ssid", $ap->ssid, false);
+        uciSet("wireless.@wifi-iface[{$uciID}].encryption", $encryption, false);
+        uciSet("wireless.@wifi-iface[{$uciID}].key", $key, false);
+        uciCommit();
 
         if ($radioID === false) {
             execBackground("wifi");
@@ -134,7 +119,7 @@ class ClientMode
             execBackground("wifi up {$radioID}");
         }
 
-        return array("success" => true);
+        return ["success" => true];
     }
 
     public function checkConnection()
@@ -147,19 +132,19 @@ class ClientMode
             $ssid = substr($ssidString, 7, -1);
             $ip = exec("ifconfig " . escapeshellarg($interface) . " | grep -m 1 inet | awk '{print \$2}' | awk -F':' '{print \$2}'");
 
-
-            return array("connected" => true, "interface" => $interface, "ssid" => $ssid, "ip" => $ip);
-        } else {
-            return array("connected" => false);
+            return ["connected" => true, "interface" => $interface, "ssid" => $ssid, "ip" => $ip];
         }
+
+        return ["connected" => false];
     }
 
     public function disconnect($uciID, $radioID)
     {
-        uciSet("wireless.@wifi-iface[{$uciID}].network", 'lan');
-        uciSet("wireless.@wifi-iface[{$uciID}].ssid", '');
-        uciSet("wireless.@wifi-iface[{$uciID}].encryption", 'none');
-        uciSet("wireless.@wifi-iface[{$uciID}].key", '');
+        uciSet("wireless.@wifi-iface[{$uciID}].network", 'lan', false);
+        uciSet("wireless.@wifi-iface[{$uciID}].ssid", '', false);
+        uciSet("wireless.@wifi-iface[{$uciID}].encryption", 'none', false);
+        uciSet("wireless.@wifi-iface[{$uciID}].key", '', false);
+        uciCommit();
 
         if ($radioID === false) {
             execBackground("wifi");
@@ -168,6 +153,6 @@ class ClientMode
             execBackground("wifi up {$radioID}");
         }
 
-        return array("success" => true);
+        return ["success" => true];
     }
 }

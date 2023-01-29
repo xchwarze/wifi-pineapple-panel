@@ -2,16 +2,16 @@
 
 class Interfaces
 {
-
     public function getMacData()
     {
-        $macData = array();
+        $macData = [];
         exec("ifconfig -a | grep wlan | awk '{print \$1\" \"\$5}'", $interfaceArray);
         foreach ($interfaceArray as $interface) {
             $interface = explode(" ", $interface);
             $macData[$interface[0]] = $interface[1];
         }
-        return $macData;
+
+        return array_reverse($macData);
     }
 
     public function getUciID($interface)
@@ -23,23 +23,22 @@ class Interfaces
             return 1;
         } elseif ($interfaceNumber === "0-2") {
             return 2;
-        } else {
-            return (intval($interfaceNumber) + 2);
         }
+
+        return (intval($interfaceNumber) + 2);
     }
 
     public function getRadioID($interface)
     {
         exec('wifi status', $wifiStatus);
         $radioArray = json_decode(implode("\n", $wifiStatus));
-
         foreach ($radioArray as $radio => $radioConfig) {
-            if (isset($radioConfig->interfaces[0]->config->ifname)) {
-                if ($radioConfig->interfaces[0]->config->ifname === $interface) {
-                    return $radio;
-                }
+            if (isset($radioConfig->interfaces[0]->config->ifname) &&
+                $radioConfig->interfaces[0]->config->ifname === $interface) {
+                return $radio;
             }
         }
+
         return false;
     }
 
@@ -62,7 +61,7 @@ class Interfaces
             exec("ifconfig {$interface} up");
         }
 
-        return array("success" => true, "uci" => $uciID);
+        return ["success" => true, "uci" => $uciID];
     }
 
     public function resetMac($interface)
@@ -70,13 +69,13 @@ class Interfaces
         $uciID = $this->getUciID($interface);
         exec("uci set wireless.@wifi-iface[{$uciID}].macaddr=''");
         exec("wifi");
-        return array("success" => true);
+        return ["success" => true];
     }
 
     public function resetWirelessConfig()
     {
         execBackground("wifi config > /etc/config/wireless && wifi");
-        return array("success" => true);
+        return ["success" => true];
     }
 
     public function getInterfaceList()
@@ -87,17 +86,15 @@ class Interfaces
 
     public function getClientInterfaces()
     {
-        $clientInterfaces = array();
+        $clientInterfaces = [];
         exec("ifconfig -a | grep wlan | awk '{print \$1}'", $interfaceArray);
-
         foreach ($interfaceArray as $interface) {
-            //if (substr($interface, 0, 5) === "wlan0") {
-            //    continue;
-            //}
-            array_push($clientInterfaces, $interface);
+            if (substr($interface, 0, 5) === "wlan0") {
+                continue;
+            }
+            $clientInterfaces[] = $interface;
         }
 
-        //return array_reverse($clientInterfaces);
-        return $clientInterfaces;
+        return array_reverse($clientInterfaces);
     }
 }
