@@ -33,9 +33,9 @@ abstract class Module
             $this->streamFunction->__invoke();
             return false;
         } elseif (empty($this->error) && empty($this->response)) {
-            return array('error' => 'Module returned empty response');
+            return ['error' => 'Module returned empty response'];
         } else {
-            return array('error' => $this->error);
+            return ['error' => $this->error];
         }
     }
 

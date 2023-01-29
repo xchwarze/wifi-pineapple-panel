@@ -68,7 +68,7 @@ class API
         }
 
         if (file_exists('/etc/pineapple/setupRequired')) {
-            $this->response = array('error' => 'Not Authenticated', 'setupRequired' => true);
+            $this->response = ['error' => 'Not Authenticated', 'setupRequired' => true];
         } else {
             $this->error = "Not Authenticated";
         }
@@ -98,7 +98,7 @@ class API
     public function finalize()
     {
         if ($this->error) {
-            return ")]}',\n" . json_encode(array("error" => $this->error));
+            return ")]}',\n" . json_encode(["error" => $this->error]);
         } elseif ($this->response) {
             return ")]}',\n" . json_encode($this->response);
         }

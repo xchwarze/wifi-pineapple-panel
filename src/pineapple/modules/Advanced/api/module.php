@@ -103,47 +103,47 @@ class Advanced extends SystemModule
         exec('free -m', $freeMem);
         $freeMem = implode("\n", $freeMem);
 
-        $this->response = array("freeDisk" => $freeDisk, "freeMem" => $freeMem);
+        $this->response = ["freeDisk" => $freeDisk, "freeMem" => $freeMem];
     }
 
     private function dropCaches()
     {
         $this->execBackground('echo 3 > /proc/sys/vm/drop_caches');
-        $this->response = array('success' => true);
+        $this->response = ['success' => true];
     }
 
     private function getUSB()
     {
         exec('lsusb', $lsusb);
         $lsusb = implode("\n", $lsusb);
-        $this->response = array('lsusb' => $lsusb);
+        $this->response = ['lsusb' => $lsusb];
     }
 
     private function getFstab()
     {
         $fstab = file_get_contents('/etc/config/fstab');
-        $this->response = array('fstab' => $fstab);
+        $this->response = ['fstab' => $fstab];
     }
 
     private function saveFstab()
     {
         if (isset($this->request->fstab)) {
             file_put_contents('/etc/config/fstab', $this->request->fstab);
-            $this->response = array("success" => true);
+            $this->response = ['success' => true];
         }
     }
 
     private function getCSS()
     {
         $css = file_get_contents('/pineapple/css/main.css');
-        $this->response = array('css' => $css);
+        $this->response = ['css' => $css];
     }
 
     private function saveCSS()
     {
         if (isset($this->request->css)) {
             file_put_contents('/pineapple/css/main.css', $this->request->css);
-            $this->response = array("success" => true);
+            $this->response = ['success' => true];
         }
     }
 
@@ -164,7 +164,7 @@ class Advanced extends SystemModule
                     }
 
                     unset($upgradeData['updates']);
-                    $this->response = array("upgrade" => true, "upgradeData" => $upgradeData);
+                    $this->response = ["upgrade" => true, "upgradeData" => $upgradeData];
                 } else {
                     $this->error = "No upgrade found.";
                 }
@@ -184,7 +184,7 @@ class Advanced extends SystemModule
         @unlink(self::UP_FLAG);
         $url = escapeshellarg($this->request->upgradeUrl);
         $this->execBackground("wget {$url} -O " . self::UP_PATH . " && touch " . self::UP_FLAG);
-        $this->response = array("success" => true);
+        $this->response = ["success" => true];
     }
 
     private function getDownloadStatus()
@@ -196,21 +196,21 @@ class Advanced extends SystemModule
                 $sz = 'BKMGTP';
                 $factor = floor((strlen($bytes) - 1) / 3);
   
-                $this->response = array(
+                $this->response = [
                     "completed" => true,
                     "sha256" => $fileHash,
                     "downloaded" => sprintf("%.2f", $bytes / pow(1024, $factor)) . @$sz[$factor]
-                );
+                ];
             } else if ($fileHash == $this->request->checksum) {
-                $this->response = array("completed" => true);
+                $this->response = ["completed" => true];
             } else {
                 $this->error = "Checksum mismatch";
             }
         } else {
-            $this->response = array(
+            $this->response = [
                 "completed" => false,
                 "downloaded" => filesize(self::UP_PATH)
-            );
+            ];
         }
     }
 
@@ -223,7 +223,7 @@ class Advanced extends SystemModule
             }
 
             $this->execBackground("sysupgrade {$params} " . self::UP_PATH);
-            $this->response = array("success" => true);
+            $this->response = ["success" => true];
         } else {
             $this->error = "Upgrade failed.";
         }
@@ -236,27 +236,24 @@ class Advanced extends SystemModule
 
     private function getCurrentVersion()
     {
-        $this->response = array("firmwareVersion" => $this->getFirmwareVersion());
+        $this->response = ["firmwareVersion" => $this->getFirmwareVersion()];
     }
 
     private function formatSDCard()
     {
         $this->execBackground("/pineapple/modules/Advanced/formatSD/format_sd");
-        $this->response = array('success' => true);
+        $this->response = ['success' => true];
     }
 
     private function formatSDCardStatus()
     {
-        if (!file_exists('/tmp/sd_format.progress')) {
-            $this->response = array('success' => true);
-        } else {
-            $this->response = array('success' => false);
-        }
+        $this->response = ['success' => (!file_exists('/tmp/sd_format.progress'))];
     }
 
     private function getApiTokens()
     {
-        $this->response = array("tokens" => $this->dbConnection->query("SELECT ROWID, token, name FROM api_tokens;"));
+        $tokens = $this->dbConnection->query("SELECT ROWID, token, name FROM api_tokens;");
+        $this->response = ["tokens" => $tokens];
     }
 
     private function checkApiToken()
@@ -265,12 +262,12 @@ class Advanced extends SystemModule
             $token = $this->request->token;
             $result = $this->dbConnection->query("SELECT token FROM api_tokens WHERE token='%s';", $token);
             if (!empty($result) && isset($result[0]["token"]) && $result[0]["token"] === $token) {
-                $this->response = array("valid" => true);
+                $this->response = ["valid" => true];
                 return;
             }
         }
 
-        $this->response = array("valid" => false);
+        $this->response = ["valid" => false];
     }
 
     private function addApiToken()
@@ -279,7 +276,7 @@ class Advanced extends SystemModule
             $token = hash('sha512', openssl_random_pseudo_bytes(32));
             $name = $this->request->name;
             $this->dbConnection->exec("INSERT INTO api_tokens(token, name) VALUES('%s','%s');", $token, $name);
-            $this->response = array("success" => true, "token" => $token, "name" => $name);
+            $this->response = ["success" => true, "token" => $token, "name" => $name];
         } else {
             $this->error = "Missing token name";
         }

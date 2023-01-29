@@ -16,7 +16,7 @@ class Notifications extends APIModule
             $this->error = $this->dbConnection->strError();
             return;
         }
-        $this->notifications = array();
+        $this->notifications = [];
         $this->dbConnection->exec("CREATE TABLE IF NOT EXISTS notifications (message VARCHAR NOT NULL, time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);");
         if (!empty($this->dbConnection->error)) {
             $this->error = $this->dbConnection->strError();
@@ -42,8 +42,7 @@ class Notifications extends APIModule
 
     public function addNotification($message)
     {
-        $result = $this->dbConnection->exec("INSERT INTO notifications (message) VALUES('%s');", $message);
-        return $result;
+        return $this->dbConnection->exec("INSERT INTO notifications (message) VALUES('%s');", $message);
     }
 
     public function getNotifications()
