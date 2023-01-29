@@ -118,7 +118,7 @@ $clients = $dbConnection->query("
     LEFT JOIN aps t2 ON
     t2.bssid = t1.bssid WHERE t2.bssid IS NULL AND
     t1.bssid != 'FF:FF:FF:FF:FF:FF' COLLATE NOCASE AND t1.scan_id='%d';
-    ", $client_row['scan_id']);
+    ", $scanID);
 
 foreach ($clients as $client_row) {
     $data[$scanID]['outOfRangeClients'][$client_row['mac']] = array();
@@ -129,7 +129,7 @@ $data[$scanID]['unassociatedClients'] = array();
 $clients = $dbConnection->query("SELECT mac FROM clients WHERE bssid='FF:FF:FF:FF:FF:FF' COLLATE NOCASE;");
 
 foreach ($clients as $client_row) {
-    array_push($data[$scanID]['unassociatedClients'], $client_row['mac']);
+    $data[$scanID]['unassociatedClients'][] = $client_row['mac'];
 }
 
 file_put_contents("php://stdout", json_encode($data, JSON_PRETTY_PRINT));

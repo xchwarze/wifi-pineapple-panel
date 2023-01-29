@@ -49,7 +49,6 @@ function udsSend($path, $message)
 
 function dgramUdsSend($path, $message)
 {
-    $sock = NULL;
     if(!($sock = socket_create(AF_UNIX, SOCK_DGRAM, 0))) {
         return false;
     }

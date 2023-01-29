@@ -64,7 +64,7 @@ class Clients extends SystemModule
             iw dev wlan0 station dump |
             awk \'{ if ($1 == "Station") { printf "%s ", $2; } else if ($1 == "inactive") {print $3;} }\'
         ', $stations);
-        foreach ($stations as $_ => $station) {
+        foreach ($stations as $key => $station) {
             if (empty($station)) {
                 continue;
             }
@@ -75,7 +75,7 @@ class Clients extends SystemModule
             iw dev wlan0-2 station dump |
             awk \'{ if ($1 == "Station") { printf "%s ", $2; } else if ($1 == "inactive") {print $3;} }\'
         ', $stations);
-        foreach ($stations as $_ => $station) {
+        foreach ($stations as $key => $station) {
             if (empty($station)) {
                 continue;
             }

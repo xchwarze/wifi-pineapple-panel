@@ -785,7 +785,6 @@ class PineAP extends SystemModule
         exec("pineap /tmp/pineap.conf get_status", $status_output);
         if ($status_output[0] === "PineAP is not running") {
             $this->error = "PineAP is not running";
-            return 0;
         } else {
             $status_output = implode("\n", $status_output);
             $status_output = json_decode($status_output, true);
@@ -801,8 +800,8 @@ class PineAP extends SystemModule
 
             // No scan is running.
             $this->response = array('running' => false, 'currentBSSID' => false);
-            return 0;
         }
+        return 0;
     }
 
     private function downloadHandshake()

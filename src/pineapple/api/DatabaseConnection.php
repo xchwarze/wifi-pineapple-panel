@@ -59,8 +59,7 @@ class DatabaseConnection
                 $sqlParameters[$i] = $escaped;
             }
         }
-        $safeQuery = vsprintf($sqlQuery, $sqlParameters);
-        return $safeQuery;
+        return vsprintf($sqlQuery, $sqlParameters);
     }
 
     public function query(...$query)

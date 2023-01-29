@@ -66,8 +66,7 @@ class Dashboard extends SystemModule
 
     private function getClients()
     {
-        $clients = exec('iw dev wlan0 station dump | grep Station | wc -l');
-        return $clients;
+        return exec('iw dev wlan0 station dump | grep Station | wc -l');
     }
 
     private function getLandingPageData()

@@ -22,12 +22,13 @@ if ($dbConnection === NULL) {
 if (isset($dbConnection->error['databaseConnectionError'])) {
 	exit($dbConnection->strError() . "\n");
 }
-$log = NULL;
+
+$sql = "SELECT * FROM log ORDER BY updated_at DESC;";
 if ($probesOnly) {
-    $log = $dbConnection->query("SELECT * FROM log WHERE log_type=0 ORDER BY updated_at DESC;");
-} else {
-    $log = $dbConnection->query("SELECT * FROM log ORDER BY updated_at DESC;");
+    $sql = "SELECT * FROM log WHERE log_type=0 ORDER BY updated_at DESC;";
 }
+$log = $dbConnection->query($sql);
+
 $clearlog = exec('uci get reporting.@settings[0].clear_log');
 if ($clearlog == '1') {
 	$dbConnection->exec('DELETE FROM log;');

@@ -103,7 +103,7 @@ class Notes extends SystemModule
         $keys = array();
         $res = $this->dbConnection->query("SELECT key FROM notes;");
         foreach ($res as $idx => $key) {
-            array_push($keys, $key['key']);
+            $keys[] = $key['key'];
         }
         return array("keys" => $keys);
     }

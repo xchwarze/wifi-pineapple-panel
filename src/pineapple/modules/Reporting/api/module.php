@@ -39,7 +39,7 @@ class Reporting extends SystemModule
     {
         $this->response = [
             "config" => [
-                "generateReport" => (exec("grep files/reporting /etc/crontabs/root") == "") ? false : true,
+                "generateReport" => !(exec("grep files/reporting /etc/crontabs/root") == ""),
                 "storeReport" => $this->uciGet("reporting.@settings[0].save_report"),
                 "sendReport" => $this->uciGet("reporting.@settings[0].send_email"),
                 "interval" => (string) $this->uciGet("reporting.@settings[0].interval")
@@ -95,12 +95,11 @@ class Reporting extends SystemModule
             $hour_string = ($hours_minus_one == 0) ? "*" : "*/" . ($hours_minus_one + 1);
             exec("sed -i '/DO NOT TOUCH/d /\\/pineapple\\/modules\\/Reporting\\/files\\/reporting/d' /etc/crontabs/root");
             exec("echo -e '#DO NOT TOUCH BELOW\\n0 {$hour_string} * * * /pineapple/modules/Reporting/files/reporting\\n#DO NOT TOUCH ABOVE' >> /etc/crontabs/root");
-            exec("/etc/init.d/cron start");
         } else {
             exec("sed -i '/DO NOT TOUCH/d /\\/pineapple\\/modules\\/Reporting\\/files\\/reporting/d' /etc/crontabs/root");
             exec("/etc/init.d/cron stop");
-            exec("/etc/init.d/cron start");
         }
+        exec("/etc/init.d/cron start");
     }
 
     private function setReportContents()

@@ -166,7 +166,7 @@ class Networking extends SystemModule
             $this->error = "Error: SSIDs must be at least one character.";
             return;
         }
-        if (strlen($config->managementKey) < 8 && $config->disableManagementAP == false) {
+        if (strlen($config->managementKey) < 8 && !$config->disableManagementAP) {
             $this->error = "Error: WPA2 Passwords must be at least 8 characters long.";
             return;
         }
