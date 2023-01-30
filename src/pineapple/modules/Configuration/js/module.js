@@ -44,11 +44,7 @@ registerController("ConfigurationGeneralController", ['$api', '$scope', '$timeou
 	});
 
 	$scope.resetPineapple = (function() {
-		if($scope.device === 'nano') {
-			$scope.resetMessage = "Are you sure you want to factory reset your WiFi Pineapple?\n\nThis will erase all data that has not been saved on the SD card.";
-		} else if($scope.device === 'tetra') {
-			$scope.resetMessage = "Are you sure you want to factory reset your WiFi Pineapple?\n\nThis will erase all data that has not been saved externally.";
-		}
+		$scope.resetMessage = "Are you sure you want to factory reset your WiFi Pineapple?\n\nThis will erase all data that has not been saved on the SD card.";
 
 		if (confirm($scope.resetMessage)) {
 			$api.request({

@@ -51,8 +51,8 @@ getSiteReport() {
         /etc/init.d/pineapd start
         sleep 3
         duration=$(uci get reporting.@settings[0].duration)
-        scan_type=0
-        cat /proc/cpuinfo | grep TETRA && scan_type=2
+        #scan_type=0
+        scan_type=2
         echo -e "\tRunning scan type $scan_type for 15 seconds"
         (/usr/bin/pineap /tmp/pineap.conf run_scan $duration $scan_type 2>&1) >> /tmp/reporting.log
         sleep 2

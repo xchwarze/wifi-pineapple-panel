@@ -43,7 +43,7 @@
                     </div>
                     <h5 class="panel-title" ng-show="debugStarted">Progress</h5>
                     <p>
-                        <textarea id="output" ng-show="debugStarted" id="debugGenerationOutput" class="form-control autoselect" rows="15" ng-model="output" readonly></textarea>
+                        <textarea id="output" ng-show="debugStarted" class="form-control autoselect" rows="15" ng-model="output" readonly></textarea>
                     </p>
                 </p>
             </div>
@@ -307,7 +307,7 @@ parent Access Point. If a Client is associated to an Access Point but idle, it m
         <div id="ReportingHelp" class="panel-collapse collapse" ng-controller="HelpController">
             <div class="panel-body">
                 <p>
-                    This feature enables the auditor to generate reports at a specified interval. The report may be sent via email and/or saved locally<span ng-if="device == 'nano'"> on a suitable SD card. See the Format SD Card option from the USB menu on the Advanced view to setup a new card</span>. Email Configuration must be complete in order for the Send Report via email function to operate successfully.
+                    This feature enables the auditor to generate reports at a specified interval. The report may be sent via email and/or saved locally on a suitable SD card. See the Format SD Card option from the USB menu on the Advanced view to setup a new card. Email Configuration must be complete in order for the Send Report via email function to operate successfully.
                 </p>
                 <p>
                     The Report Contents may contain: the PineAP Log with an option to clear after generating the report, a PineAP Site Survey similar to the Recon View with option to specify AP & Client scan duration, and PineAP Probing and Tracked Clients.
