@@ -6,7 +6,8 @@ class ClientMode
     {
         $interface = escapeshellarg($interface);
         if (substr($interface, -4, -1) === "mon") {
-            if ($interface == "'wlan1mon'") {
+            $pineapInterface = uciGet("pineap.@config[0].pineap_interface");
+            if ($interface === "'{$pineapInterface}'") {
                 exec("/etc/init.d/pineapd stop");
             }
             exec("airmon-ng stop {$interface}");
@@ -14,7 +15,6 @@ class ClientMode
             exec("iw dev {$interface} scan &> /dev/null");
         }
 
-        $device = getDevice();
         if (uciGet("wireless.@wifi-iface[{$uciID}].network") === 'wwan') {
             uciSet("wireless.@wifi-iface[{$uciID}].network", 'lan');
             exec("wifi up $radio");
@@ -26,34 +26,27 @@ class ClientMode
             return null;
         }
 
-        $apArray = preg_split("/^Cell/m", implode("\n", $apScan));
-
         $returnArray = [];
+        $apArray = preg_split("/^Cell/m", implode("\n", $apScan));
         foreach ($apArray as $apData) {
             $apData = explode("\n", $apData);
-            $accessPoint = [];
-            $accessPoint['mac'] = substr($apData[0], -17);
-            $accessPoint['ssid'] = substr(trim($apData[1]), 8, -1);
-            if (mb_detect_encoding($accessPoint['ssid'], "auto") === false) {
+            $ssid = substr(trim($apData[1]), 8, -1);
+            if (!$ssid || mb_detect_encoding($ssid, "auto") === false || $ssid === "unknown") {
                 continue;
             }
 
-            $base = $device == 'tetra' ? 23 : -2;
-            $accessPoint['channel'] = intval(substr(trim($apData[2]), $base));
-
+            $channelString = explode("  ", trim($apData[2]));
             $signalString = explode("  ", trim($apData[3]));
-            $accessPoint['signal'] = substr($signalString[0], 8);
-            $accessPoint['quality'] = substr($signalString[1], 9);
-
             $security = substr(trim($apData[4]), 12);
-            $accessPoint['security'] = $security;
-            if ($security === "none") {
-                $accessPoint['security'] = "Open";
-            }
 
-            if ($accessPoint['mac'] && trim($apData[1]) !== "ESSID: unknown") {
-                $returnArray[] = $accessPoint;
-            }
+            $returnArray[] = [
+                'mac' => substr($apData[0], -17),
+                'ssid' => $ssid,
+                'channel' => intval(substr($channelString[1], 9)),
+                'signal' => substr($signalString[0], 8),
+                'quality' => substr($signalString[1], 9),
+                'security' => ($security === "none") ? "Open" : $security,
+            ];
         }
 
         return $returnArray;
