@@ -115,7 +115,10 @@
         };
 
         this.onDeviceIdentified = function(callback, scope){
-            this.deviceCallbacks.push({callback: callback, scope: scope});
+            if (callback) {
+                this.deviceCallbacks.push({callback: callback, scope: scope});
+            }
+
             if (this.device !== undefined) {
                 for (var i = this.deviceCallbacks.length-1; i >=0; --i) {
                     this.deviceCallbacks[i].callback(this.device, this.deviceCallbacks[i].scope);
@@ -215,13 +218,13 @@
             module: 'Configuration',
             action: 'getDeviceConfig'
         }, function(response, scope){
+            if (!response || response.error) {
+                return;
+            }
+
             scope.device = response.config.deviceType;
             scope.deviceConfig = response.config;
-            for (var i = scope.deviceCallbacks.length - 1; i >= 0; --i) {
-                var callbackObj = scope.deviceCallbacks[i];
-                callbackObj.callback(scope.device, callbackObj.scope);
-            }
-            scope.deviceCallbacks = [];
+            scope.onDeviceIdentified();
         }, this);
 
         this.checkAuth();
