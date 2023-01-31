@@ -37,7 +37,7 @@ echo "============SURVEY=========" >> $LOG
 echo -e "\tEnsuring pineapd is started"
 (/etc/init.d/pineapd start 2>&1) >> $LOG
 scan_type=0
-cat /proc/cpuinfo | grep TETRA && scan_type=2
+cat /pineapple/config.php | grep "'tetra'" && scan_type=2
 echo -e "\tRunning scan type $scan_type for 15 seconds"
 (/usr/bin/pineap /tmp/pineap.conf run_scan 15 $scan_type 2>&1) >> $LOG
 sleep 2

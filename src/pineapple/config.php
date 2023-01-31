@@ -3,7 +3,7 @@
 class DeviceConfig
 {
     // third party modules can change the options based on this
-    // the allowed values are: 'nano' or 'tetra'
+    // the allowed values are: "nano" or "tetra"
     const DEVICE_TYPE = 'tetra';
 
     const USE_INTERNAL_STORAGE = true;
