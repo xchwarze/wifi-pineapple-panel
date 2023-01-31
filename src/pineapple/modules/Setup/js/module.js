@@ -8,7 +8,7 @@ registerController('SetupController', ['$api', '$scope', '$interval', '$timeout'
     $scope.selectedCountryCode = '';
     $scope.macFilterMode = '';
     $scope.ssidFilterMode = '';
-    $scope.device = '';
+    $scope.showFirewallConfig = false;
     $scope.error = '';
     $scope.changes = "";
     $scope.hideOpenAP = false;
@@ -137,7 +137,7 @@ registerController('SetupController', ['$api', '$scope', '$interval', '$timeout'
             system: 'setup',
             action: 'getDeviceData'
         }, function(response) {
-            $scope.device = response.device;
+            $scope.showFirewallConfig = response.config.showFirewallConfig;
             if (response.complete) {
                 $scope.complete = true;
                 $("#loginModal").remove();

@@ -1,5 +1,7 @@
 <?php namespace helper;
 
+require_once('../config.php');
+
 function execBackground($command)
 {
     exec("echo \"{$command}\" | /usr/bin/at now", $var);
@@ -125,13 +127,18 @@ function getFirmwareVersion()
 
 function getDevice()
 {
-    $data = file_get_contents('/proc/cpuinfo');
-    if (preg_match('/NANO/', $data)) {
-        return 'nano';
-    } elseif (preg_match('/TETRA/', $data)) {
-        return 'tetra';
-    }
-    return 'unknown';
+    return \DeviceConfig::DEVICE_TYPE;
+}
+
+function getDeviceConfig()
+{
+    return [
+        'deviceType' => \DeviceConfig::DEVICE_TYPE,
+        'useInternalStorage' => \DeviceConfig::USE_INTERNAL_STORAGE,
+        'useUSBStorage' => \DeviceConfig::USE_USB_STORAGE,
+        'showFirewallConfig' => \DeviceConfig::SHOW_FIREWALL_CONFIG,
+        'showScanType' => \DeviceConfig::SHOW_SCAN_TYPE,
+    ];
 }
 
 function getMacFromInterface($interface)

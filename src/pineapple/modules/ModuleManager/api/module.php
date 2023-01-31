@@ -155,17 +155,12 @@ class ModuleManager extends SystemModule
 
     private function checkDestination()
     {
-        $responseArray = array('module' => $this->request->name, 'internal' => false, 'sd' => false);
-
-        if (disk_free_space('/') > ($this->request->size + 150000)) {
-            $responseArray['internal'] = true;
-        }
-
-        if ($this->isSDAvailable()) {
-            $responseArray['sd'] = true;
-        }
-
-        $this->response = $responseArray;
+        $config = $this->getDeviceConfig();
+        $this->response = array(
+            'module' => $this->request->name,
+            'internal' => (disk_free_space('/') > ($this->request->size + 150000) && $config['useInternalStorage']),
+            'sd' => ($this->isSDAvailable() && $config['useUSBStorage']),
+        );
     }
 
     private function removeModule()

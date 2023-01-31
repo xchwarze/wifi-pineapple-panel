@@ -9,17 +9,6 @@ registerController("ModuleManagerController", ['$api', '$scope', '$timeout', '$i
     $scope.downloading = false;
     $scope.installing = false;
     $scope.linking = true;
-    $scope.device = undefined;
-
-    $scope.getDevice = (function() {
-        $api.request({
-            module: "Configuration",
-            action: "getDevice"
-        }, function(response) {
-            $scope.device = response.device;
-        });
-    });
-    $scope.getDevice();
 
     $scope.getAvailableModules = (function() {
         $scope.loading = true;
@@ -61,32 +50,6 @@ registerController("ModuleManagerController", ['$api', '$scope', '$timeout', '$i
         });
     });
 
-    $scope.checkDestination = (function(moduleName, moduleSize) {
-        $(window).scrollTop(0);
-
-        if ($rootScope.installedModules[moduleName] !== undefined && $rootScope.installedModules[moduleName]['type'] === 'System') {
-            $scope.selectedModule = {module: moduleName, internal: true, sd: false};
-            return;
-        }
-
-        if ($scope.device === 'tetra') {
-            $scope.selectedModule = {module: moduleName, internal: true, sd: false};
-            $scope.downloadModule('internal');
-            return;
-        }
-
-        $api.request({
-            module: 'ModuleManager',
-            action: 'checkDestination',
-            name: moduleName,
-            size: moduleSize
-        }, function(response) {
-            if (response.error === undefined) {
-                $scope.selectedModule = response;
-            }
-        });
-    });
-
     $scope.removeModule = (function(name) {
         $api.request({
             module: 'ModuleManager',
@@ -119,10 +82,13 @@ registerController("ModuleManagerController", ['$api', '$scope', '$timeout', '$i
         });
     });
 
-    if ($scope.device === 'nano') {
-        $scope.restoreSDcardModules();
-    } else {
-        $scope.linking = false;
-    }
+    $api.onDeviceIdentified(function(device, scope) {
+        if ($api.deviceConfig.useUSBStorage) {
+            scope.restoreSDcardModules();
+        } else {
+            scope.linking = false;
+        }
+    }, $scope);
+
     $scope.getInstalledModules();
 }]);

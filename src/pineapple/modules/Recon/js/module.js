@@ -35,6 +35,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
     $scope.error = false;
     $scope.scanID = null;
     $scope.device = undefined;
+    $scope.showScanType = false;
     $scope.wsStarted = false;
     $scope.noteKeys = [];
     $scope.noteRefreshInterval = null;
@@ -50,7 +51,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         if ($scope.scanSettings.scanDuration === "0") {
             $scope.scanSettings.live = true;
         }
-        $cookies.put('liveScan', $scope.scanSettings.live);($cookies.getAll());
+        $cookies.put('liveScan', $scope.scanSettings.live);
     };
 
     function parseScanResults(results) {
@@ -509,18 +510,18 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         return ($scope.noteKeys !== undefined) && ($scope.noteKeys.indexOf(key) !== -1);
     };
 
-
     $scope.checkScan();
     $scope.$on('$destroy', function() {
         $scope.cancelIntervals();
         $scope.closeWS();
     });
 
-    $api.onDeviceIdentified(function(device) {
-        $scope.updateScanSettings();
-        $scope.device = device;
-        $scope.getScanLocation();
-        $scope.displayCurrentScan();
-        $scope.getNoteKeys();
+    $api.onDeviceIdentified(function(device, scope) {
+        scope.device = device;
+        scope.showScanType = $api.deviceConfig.showScanType;
+        scope.updateScanSettings();
+        scope.getScanLocation();
+        scope.displayCurrentScan();
+        scope.getNoteKeys();
     }, $scope);
 }]);

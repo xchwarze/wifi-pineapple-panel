@@ -7,7 +7,6 @@ registerController('ReportConfigurationController', ['$api', '$scope', '$timeout
         sendReport: false,
         interval: 1
     };
-    $scope.device = undefined;
 
     $scope.saveConfiguration = (function() {
         $api.request({
@@ -24,17 +23,17 @@ registerController('ReportConfigurationController', ['$api', '$scope', '$timeout
         });
     });
 
-    $api.onDeviceIdentified(function(device, scope) {
-        scope.device = device;
-    }, $scope);
-
-    $api.request({
-        module: 'Reporting',
-        action: 'getReportConfiguration'
-    }, function(response) {
-        $scope.config = response.config;
-        $scope.sdDisabled = response.sdDisabled && $scope.device === 'nano';
+    $scope.getConfiguration = (function() {
+        $api.request({
+            module: 'Reporting',
+            action: 'getReportConfiguration'
+        }, function(response) {
+            $scope.config = response.config;
+            $scope.sdDisabled = response.sdDisabled;
+        });
     });
+
+    $scope.getConfiguration();
 }]);
 
 registerController('ReportContentController', ['$api', '$scope', '$timeout', function($api, $scope, $timeout) {

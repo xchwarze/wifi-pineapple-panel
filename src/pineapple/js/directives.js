@@ -594,23 +594,12 @@
                 content: '=content'
             },
             controller: ['$scope', '$api', '$timeout', '$http', '$interval', '$templateCache', '$rootScope', function($scope, $api, $timeout, $http, $interval, $templateCache, $rootScope){
-                $scope.device = '';
                 $rootScope.installedModules = [];
                 $scope.selectedModule = null;
 
                 $scope.destroyModal = function(){
                     $('#install-hook').modal('hide');
                 };
-
-                $scope.getDevice = (function() {
-                    $api.request({
-                        module: "Configuration",
-                        action: "getDevice"
-                    }, function(response) {
-                        $scope.device = response.device;
-                    });
-                });
-                $scope.getDevice();
 
                 $scope.getInstalledModules = (function() {
                     $api.request({
@@ -634,17 +623,6 @@
 
                 $scope.checkDestination = (function(moduleName, moduleSize, moduleType) {
                     $(window).scrollTop(0);
-
-                    if (moduleType === 'Sys') {
-                        $scope.selectedModule = {module: moduleName, internal: true, sd: false};
-                        return;
-                    }
-
-                    if ($scope.device === 'tetra') {
-                        $scope.selectedModule = {module: moduleName, internal: true, sd: false};
-                        return;
-                    }
-
                     $api.request({
                         module: 'ModuleManager',
                         action: 'checkDestination',
@@ -656,7 +634,6 @@
                         }
                     });
                 });
-                $scope.checkDestination($scope.content.name, $scope.content.module['size'], $scope.content.module['type']);
 
                 $scope.downloadModule = (function(dest) {
                     $api.request({
@@ -724,6 +701,8 @@
                         }, 500);
                     });
                 });
+
+                $scope.checkDestination($scope.content.name, $scope.content.module['size'], $scope.content.module['type']);
             }]
         };
     })

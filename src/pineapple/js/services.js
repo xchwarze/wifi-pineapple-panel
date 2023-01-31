@@ -29,6 +29,7 @@
     .service('$api', ['$http', function($http){
         this.navbarReloader = false;
         this.device = undefined;
+        this.deviceConfig = undefined;
         this.deviceCallbacks = [];
 
         this.request = (function(data, callback, scope) {
@@ -212,9 +213,10 @@
 
         this.request({
             module: 'Configuration',
-            action: 'getDevice'
+            action: 'getDeviceConfig'
         }, function(response, scope){
-            scope.device = response.device;
+            scope.device = response.config.deviceType;
+            scope.deviceConfig = response.config;
             for (var i = scope.deviceCallbacks.length - 1; i >= 0; --i) {
                 var callbackObj = scope.deviceCallbacks[i];
                 callbackObj.callback(scope.device, callbackObj.scope);

@@ -233,7 +233,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4 class="panel-title">Filters <span ng-if="device == 'tetra'">&amp; Firewall</span></h4>
+                    <h4 class="panel-title">Filters <span ng-if="showFirewallConfig">&amp; Firewall</span></h4>
                 </div>
                 <div id="FiltersSetup" class="panel-body">
                     <div class="col-md-12">
@@ -299,7 +299,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-5" ng-show="device == 'tetra'">
+                            <div class="col-md-5" ng-show="showFirewallConfig">
                                 <h3>Firewall Settings</h3>
                                 <div class="input-group">
                                     <p class="text-info">These firewall rules allow you to configure access to the SSH

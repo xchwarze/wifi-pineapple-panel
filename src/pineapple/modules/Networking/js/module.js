@@ -254,7 +254,7 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
     $scope.firewallUpdated = false;
     $scope.WANSSHAccess = false;
     $scope.WANUIAccess = false;
-    $scope.device = '';
+    $scope.showFirewallConfig = false;
 
     $scope.reloadData = (function() {
         $api.request({
@@ -285,7 +285,7 @@ registerController('NetworkingFirewallController', ['$api', '$scope', '$timeout'
     });
 
     $api.onDeviceIdentified(function(device, scope) {
-        scope.device = device;
+        scope.showFirewallConfig = $api.deviceConfig.showFirewallConfig;
     }, $scope);
 
     //$scope.reloadData();

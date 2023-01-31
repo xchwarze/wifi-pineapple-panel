@@ -43,13 +43,9 @@ class Reporting extends SystemModule
                 "storeReport" => $this->uciGet("reporting.@settings[0].save_report"),
                 "sendReport" => $this->uciGet("reporting.@settings[0].send_email"),
                 "interval" => (string) $this->uciGet("reporting.@settings[0].interval")
-            ]
+            ],
+            "sdDisabled" => !$this->isSDAvailable(),
         ];
-
-        if ($this->getDevice() == "nano" && !$this->isSDAvailable()) {
-            $this->response['config']['storeReport'] = false;
-            $this->response['sdDisabled'] = true;
-        }
     }
 
     private function getReportContents()

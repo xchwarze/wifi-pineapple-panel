@@ -101,6 +101,11 @@ abstract class Module
         return \helper\getBoard();
     }
 
+    protected function getDeviceConfig()
+    {
+        return \helper\getDeviceConfig();
+    }
+
     protected function getMacFromInterface($interface)
     {
         return \helper\getMacFromInterface($interface);

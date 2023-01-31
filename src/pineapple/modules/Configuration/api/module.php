@@ -8,69 +8,56 @@ class Configuration extends SystemModule
             case 'getCurrentTimeZone':
                 $this->getCurrentTimeZone();
                 break;
-
             case 'getLandingPageData':
                 $this->getLandingPageData();
                 break;
-
             case 'saveLandingPage':
                 $this->saveLandingPageData();
                 break;
-
             case 'changePass':
                 $this->changePass();
                 break;
-
             case 'changeTimeZone':
                 $this->changeTimeZone();
                 break;
-
             case 'resetPineapple':
                 $this->resetPineapple();
                 break;
-
             case 'haltPineapple':
                 $this->haltPineapple();
                 break;
-
             case 'rebootPineapple':
                 $this->rebootPineapple();
                 break;
-
             case 'getLandingPageStatus':
                 $this->getLandingPageStatus();
                 break;
-
             case 'getAutoStartStatus':
                 $this->getAutoStartStatus();
                 break;
-
             case 'enableLandingPage':
                 $this->enableLandingPage();
                 break;
-
             case 'disableLandingPage':
                 $this->disableLandingPage();
                 break;
-
             case 'enableAutoStart':
                 $this->enableAutoStart();
                 break;
-
             case 'disableAutoStart':
                 $this->disableAutoStart();
                 break;
-
             case 'getButtonScript':
                 $this->getButtonScript();
                 break;
-
             case 'saveButtonScript':
                 $this->saveButtonScript();
                 break;
-
             case 'getDevice':
                 $this->getDeviceName();
+                break;
+            case 'getDeviceConfig':
+                $this->getDeviceConfigArray();
                 break;
         }
     }
@@ -190,6 +177,11 @@ class Configuration extends SystemModule
     private function getDeviceName()
     {
         $this->response = array("device" => $this->getDevice());
+    }
+
+    private function getDeviceConfigArray()
+    {
+        $this->response = array("config" => $this->getDeviceConfig());
     }
 
     protected function changePass()

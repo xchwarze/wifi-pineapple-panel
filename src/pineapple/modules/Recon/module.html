@@ -9,7 +9,7 @@
                     <div class="col-md-8">
                         <div class="row">
                             <div class="input-group">
-                                <div ng-show="device == 'tetra'">
+                                <div ng-show="showScanType">
                                     <label class="radio-inline"><input type="radio" ng-model="scanType" value="0" ng-disabled="running">2.4GHz</label>
                                     <label class="radio-inline"><input type="radio" ng-model="scanType" value="1" ng-disabled="running">5GHz</label>
                                     <label class="radio-inline"><input type="radio" ng-model="scanType" value="2" ng-disabled="running">Both</label>

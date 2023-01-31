@@ -43,7 +43,7 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
     $scope.lsusb = "";
     $scope.fstab = "";
     $scope.fstabSaved = false;
-    $scope.device = "";
+    $scope.useUSBStorage = false;
 
     $scope.formatSDCard = (function() {
         $api.request({
@@ -111,7 +111,7 @@ registerController("AdvancedUSBController", ['$api', '$scope', '$timeout', '$int
     $scope.reloadData();
     
     $api.onDeviceIdentified(function(device, scope) {
-        scope.device = device;
+        scope.useUSBStorage = $api.deviceConfig.useUSBStorage;
     }, $scope);
 
 

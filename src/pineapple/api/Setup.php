@@ -77,7 +77,7 @@ class Setup extends APIModule
 
         $this->response = array(
             'complete' => $complete,
-            'device'   => \helper\getDevice(),
+            'config'   => \helper\getDeviceConfig(),
         );
     }
 
