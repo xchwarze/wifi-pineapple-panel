@@ -25,7 +25,7 @@
                 <br/>
                 <p>
                     <textarea class="form-control" rows="15" onmouseup="getClientLineNumber(this);"
-                              ng-model="clientFilters" readonly></textarea>
+                              ng-model="clientFilters" spellcheck="false" readonly></textarea>
                 </p>
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="MAC Address" name="mac" ng-model="mac">
@@ -71,7 +71,7 @@
                 <br/>
                 <p>
                     <textarea class="form-control" rows="15" onmouseup="getSSIDLineNumber(this);" ng-model="ssidFilters"
-                              readonly></textarea>
+                              spellcheck="false" readonly></textarea>
                 </p>
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="SSID" name="ssid" ng-model="ssid">

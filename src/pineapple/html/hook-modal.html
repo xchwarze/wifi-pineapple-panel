@@ -60,7 +60,7 @@
                     <br>
                     <div class="alert well-sm alert-success" ng-show="probesAdded">All probes added to the PineAP Pool</div>
                     <div class="alert alert-danger text-center" ng-show="probeError">{{ probeError }}</div>
-                    <textarea class="form-control" rows="10" ng-model="probes" ng-show="probes" readonly></textarea>
+                    <textarea class="form-control" rows="10" ng-model="probes" ng-show="probes" spellcheck="false" readonly></textarea>
                 </div>
                 <div ng-if="hook == 'mac'">
                     <hr>
@@ -77,7 +77,7 @@
                     <hr>
                     <h4>Notes</h4>
                     <input class="form-control" type="text" name="name" ng-model="noteData.name" placeholder="Nickname">
-                    <textarea class="form-control" id="notes" rows="6" placeholder="Add notes..." ng-model="noteData.note">
+                    <textarea class="form-control" id="notes" rows="6" placeholder="Add notes..." ng-model="noteData.note" spellcheck="false">
                     </textarea>
                     <button class="btn btn-lg btn-default btn-block" type="button" ng-click="setNoteData()">
                         Save Notes

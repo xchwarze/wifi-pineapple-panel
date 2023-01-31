@@ -68,7 +68,7 @@
                         <div class="alert well-sm alert-success ng-hide" ng-show="formatSuccess">Successfully formatted SD Card</div>
                         <pre class="scrollable-pre" ng-show="lsusb">{{ lsusb }}</pre>
                         <p>
-                            <textarea class="form-control" rows="8" ng-model="fstab"></textarea>
+                            <textarea class="form-control" rows="8" ng-model="fstab" spellcheck="false"></textarea>
                         </p>
                         <p class="alert well-sm alert-success" ng-show="fstabSaved">Fstab saved successfully</p>
                         <button type="submit" class="btn btn-default" ng-click="saveFstab()">Save Fstab</button>
@@ -134,7 +134,7 @@
                     </div>
                     <div class="panel-body">
                         <p>
-                            <textarea class="form-control" rows="13" ng-model="css"></textarea>
+                            <textarea class="form-control" rows="13" ng-model="css" spellcheck="false"></textarea>
                         </p>
                         <p class="alert well-sm alert-success" ng-show="cssSaved">CSS saved successfully</p>
                         <button type="submit" class="btn btn-default" ng-click="saveCSS()">Save CSS</button>

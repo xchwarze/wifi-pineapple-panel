@@ -17,7 +17,7 @@
             </div>
             <div class="panel-body">
                 <p>
-                    <textarea class="form-control" rows="15" onmouseup="getLineNumber(this);" ng-model="trackingList" readonly></textarea>
+                    <textarea class="form-control" rows="15" onmouseup="getLineNumber(this);" ng-model="trackingList" spellcheck="false" readonly></textarea>
                 </p>
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="MAC Address" name="mac" ng-model="mac">
@@ -41,7 +41,7 @@
             </div>
             <div class="panel-body">
                 <p>
-                    <textarea class="form-control" rows="15" ng-model="trackingScript"></textarea>
+                    <textarea class="form-control" rows="15" ng-model="trackingScript" spellcheck="false"></textarea>
                 </p>
                 <p class="alert well-sm alert-success" ng-show="scriptSaved">Script saved successfully</p>
                 <button type="submit" class="btn btn-default" ng-click="saveScript()">Save Script</button>

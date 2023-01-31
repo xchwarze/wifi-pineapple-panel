@@ -139,7 +139,7 @@
             <div class="panel-body">
                 <p>
                     <textarea id="ssidPool" class="form-control" rows="15" ng-mouseup="getSSIDLineNumber()"
-                              ng-model="ssidPool" readonly></textarea>
+                              ng-model="ssidPool" spellcheck="false" readonly></textarea>
                 </p>
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="SSID" name="ssid" ng-model="ssid">
@@ -436,7 +436,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <textarea class="form-control uppercase" id="payload" rows="6"
-                                      placeholder="Hex Encoded Payload..." ng-model="payload"></textarea>
+                                      placeholder="Hex Encoded Payload..." ng-model="payload" spellcheck="false"></textarea>
                         </div>
                         <br/>
                         <div class="input-group">
