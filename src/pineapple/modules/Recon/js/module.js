@@ -473,7 +473,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
             module: 'Recon',
             action: 'checkScanStatus'
         }, function(response) {
-            $scope.getScans();
+            //$scope.getScans();
             if (!response.completed && response.scanID !== null) {
                 $scope.scanID = response.scanID;
                 $scope.loading = true;

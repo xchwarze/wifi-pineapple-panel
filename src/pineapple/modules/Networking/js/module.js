@@ -183,7 +183,7 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
                     $scope.connectedIP = response.ip;
                 } else {
                     $scope.connected = false;
-                    $scope.getInterfaces();
+                    //$scope.getInterfaces();
                 }
             }
         });

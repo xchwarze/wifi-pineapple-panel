@@ -8,7 +8,7 @@ registerController("ModuleManagerController", ['$api', '$scope', '$timeout', '$i
     $scope.selectedModule = false;
     $scope.downloading = false;
     $scope.installing = false;
-    $scope.linking = true;
+    $scope.linking = false;
 
     $scope.getAvailableModules = (function() {
         $scope.loading = true;
@@ -81,14 +81,6 @@ registerController("ModuleManagerController", ['$api', '$scope', '$timeout', '$i
             }
         });
     });
-
-    $api.onDeviceIdentified(function(device, scope) {
-        if ($api.deviceConfig.useUSBStorage) {
-            scope.restoreSDcardModules();
-        } else {
-            scope.linking = false;
-        }
-    }, $scope);
 
     $scope.getInstalledModules();
 }]);
