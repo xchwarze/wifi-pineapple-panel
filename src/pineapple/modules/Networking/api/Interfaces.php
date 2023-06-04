@@ -89,7 +89,7 @@ class Interfaces
         $clientInterfaces = [];
         exec("ifconfig -a | grep wlan | awk '{print \$1}'", $interfaceArray);
         foreach ($interfaceArray as $interface) {
-            if (substr($interface, 0, 5) === "wlan0") {
+            if (\DeviceConfig::HIDE_WLAN0_CLIENT && substr($interface, 0, 5) === "wlan0") {
                 continue;
             }
             $clientInterfaces[] = $interface;

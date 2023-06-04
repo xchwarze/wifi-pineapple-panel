@@ -138,6 +138,7 @@ function getDeviceConfig()
         'useUSBStorage' => \DeviceConfig::USE_USB_STORAGE,
         'showFirewallConfig' => \DeviceConfig::SHOW_FIREWALL_CONFIG,
         'showScanType' => \DeviceConfig::SHOW_SCAN_TYPE,
+        'hideWlan0Client' => \DeviceConfig::HIDE_WLAN0_CLIENT,
     ];
 }
 

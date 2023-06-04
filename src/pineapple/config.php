@@ -14,4 +14,7 @@ class DeviceConfig
 
     // third party modules do not have this flag implemented
     const SHOW_SCAN_TYPE = true;
+
+    // hide wlan0 in getClientInterfaces() enumeration
+    const HIDE_WLAN0_CLIENT = true;
 }
