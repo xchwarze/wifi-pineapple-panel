@@ -126,8 +126,8 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
             module: 'Networking',
             action: 'getClientInterfaces'
         }, function(response) {
+            $scope.actions = '';
             if (response.error === undefined) {
-                $scope.actions = '';
                 $scope.interfaces = response;
                 $scope.selectedInterface = $scope.interfaces[0];
             }
