@@ -4,17 +4,12 @@ require_once('DatabaseConnection.php');
 
 class API
 {
-
     private $request;
     private $response;
     private $error;
     private $dbConnection;
     const DATABASE = "/etc/pineapple/pineapple.db";
 
-    /**
-     * The constructor parses the JSON data from PHP's input.
-     * Notify the user of errors.
-     */
     public function __construct()
     {
         $this->request = @json_decode(file_get_contents('php://input'));
@@ -38,10 +33,6 @@ class API
         }
     }
 
-    /**
-     * Checks if the user is currently authenticated
-     * @return boolean
-     */
     public function authenticated()
     {
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
@@ -51,15 +42,16 @@ class API
 
             $this->error = "Invalid CSRF token";
             return false;
-        } elseif (isset($this->request->system) && $this->request->system === 'authentication') {
-            if (isset($this->request->action) && $this->request->action === 'login') {
+        }
+
+        if (isset($this->request->system)) {
+            if (($this->request->system === 'authentication' && isset($this->request->action) && $this->request->action === 'login')
+                || ($this->request->system === 'setup' && file_exists('/etc/pineapple/setupRequired'))) {
                 return true;
             }
-        } elseif (isset($this->request->system) && $this->request->system === 'setup') {
-            if (file_exists('/etc/pineapple/setupRequired')) {
-                return true;
-            }
-        } elseif (isset($this->request->apiToken)) {
+        }
+
+        if (isset($this->request->apiToken)) {
             $token = $this->request->apiToken;
             $result = $this->dbConnection->query("SELECT token FROM api_tokens WHERE token='%s';", $token);
             if (!empty($result) && isset($result[0]["token"]) && $result[0]["token"] === $token) {
@@ -76,10 +68,6 @@ class API
         return false;
     }
 
-    /**
-     * Routes the API request to the appropriate modules
-     * @return void
-     */
     public function route()
     {
         if (isset($this->request->system) && !empty($this->request->system)) {
@@ -91,10 +79,6 @@ class API
         }
     }
 
-    /**
-     * Function to finalize API and form the JSON return string
-     * @return String JSON String
-     */
     public function finalize()
     {
         if ($this->error) {
@@ -105,27 +89,20 @@ class API
         return "";
     }
 
-    /**
-    * Function to lazy load a module class given a module name
-    * @param String $moduleName The module Name
-    * @return String The class of the module just loaded
-    */
     private function lazyLoad($moduleName)
     {
         require_once("Module.php");
         require_once("SystemModule.php");
 
-        $found = false;
         $moduleClass = "";
         foreach (glob('/pineapple/modules/*') as $moduleFolder) {
             if (str_replace('/pineapple/modules/', '', $moduleFolder) === $moduleName) {
-                $found = true;
                 require_once("$moduleFolder/api/module.php");
                 $moduleClass = "pineapple\\{$moduleName}";
             }
         }
 
-        if (!$found) {
+        if (empty($moduleClass)) {
             $this->error = "Module {$moduleName} does not exist or is defined incorrectly";
             return null;
         }
@@ -138,12 +115,6 @@ class API
         return $moduleClass;
     }
 
-    /**
-     * Function to route a module request to
-     * it's appropriate module.
-     * @param  String $moduleName The module Name
-     * @return void
-     */
     private function routeToModule($moduleName)
     {
         session_write_close();
@@ -158,12 +129,6 @@ class API
         $this->response = $module->getResponse();
     }
 
-    /**
-     * Function to route a system request to the
-     * appropriate component.
-     * @param  String $systemRequest The system request
-     * @return void
-     */
     private function routeToSystem($systemRequest)
     {
         require_once("APIModule.php");
@@ -227,10 +192,7 @@ class API
         exit();
     }
 
-    /**
-    * Does magic
-    */
-    public function magic()
+    public function handleRequest()
     {
         if (isset($_GET['download'])) {
             $this->handleDownload();

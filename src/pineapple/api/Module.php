@@ -1,10 +1,5 @@
 <?php namespace pineapple;
 
-/**
- * This class will contain the base code which all modules
- * must extend.
- */
-
 abstract class Module
 {
     protected $request;
