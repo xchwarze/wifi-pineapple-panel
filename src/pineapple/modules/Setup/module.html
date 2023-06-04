@@ -27,10 +27,14 @@
          data-keyboard="false" role="dialog">
         <div class="modal-dialog" data-keyboard="false">
             <div class="modal-content">
-                <div class="modal-body">
+                <div class="modal-header">
                     <span class="text-center">
                         <h1>Changes for {{fwversion}}</h1>
                     </span>
+                    <h4>This build is for use with <a href="https://github.com/xchwarze/wifi-pineapple-cloner" target="_blank">Wifi Pineapple Cloner</a> project!</h4>
+                    <span>If you like the result you can <a href="https://github.com/xchwarze/wifi-pineapple-cloner#patreon-and-tips" target="_blank">collaborate with the developer</a> so he keeps working on this project.</span>
+                </div>
+                <div class="modal-body">
                     <div ng-bind-html="changes | rawHTML" data-html="true"></div>
                 </div>
                 <div class="modal-footer">
