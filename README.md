@@ -12,7 +12,7 @@ The following functionalities are modified looking for a better user experience
  - Compress PNG images (size -55K)
  - Compress SVG images (size -7K)
  - Update Bootstrap to 3.4.1 (size +2K)
- - Fix mobile view
+ - Rebuild mobile view
  - Add Chevron icon to accordions (size +1K)
  - Change notification time from 6000 to 30000 (decrease RPM from 10 to 2)
  - Added more refresh buttons
