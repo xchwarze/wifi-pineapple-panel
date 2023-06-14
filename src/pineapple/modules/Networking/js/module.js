@@ -215,9 +215,8 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
             type: type,
             interface: wlan
         }, function(response) {
+            $scope.actions = '';
             if (response.error === undefined) {
-                $scope.actions = response;
-
                 // reload interfaces in monitor command cases
                 if (type === 3 || type === 4) {
                     $scope.getInterfaces();
@@ -234,7 +233,7 @@ registerController('NetworkingModeController', ['$api', '$scope', '$timeout', fu
             type: type
         }, function(response) {
             if (response.error === undefined) {
-                $scope.info = response;
+                $scope.info = response.info;
             }
         });
     });

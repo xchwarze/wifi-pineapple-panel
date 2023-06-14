@@ -294,7 +294,7 @@ class Networking extends SystemModule
         }
 
         exec($command, $info);
-        $this->response = implode("\n", $info);
+        $this->response = ["info" => implode("\n", $info)];
     }
 
     private function interfaceActions()
@@ -315,6 +315,6 @@ class Networking extends SystemModule
         }
 
         exec($command, $info);
-        $this->response = implode("\n", $info);
+        $this->response = ["info" => implode("\n", $info)];
     }
 }
