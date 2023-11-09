@@ -41,23 +41,6 @@ function checkRunningFull($processString) {
     return count($output) > 0;
 }
 
-function udsSend($path, $message)
-{
-    $sock = stream_socket_client("unix://{$path}", $errno, $errstr);
-    fwrite($sock, $message);
-    fclose($sock);
-    return true;
-}
-
-function dgramUdsSend($path, $message)
-{
-    if(!($sock = socket_create(AF_UNIX, SOCK_DGRAM, 0))) {
-        return false;
-    }
-    socket_sendto($sock, $message, strlen($message), 0, $path);
-    return true;
-}
-
 function uciGet($uciString, $autoBool = true)
 {
     $uciString = escapeshellarg($uciString);

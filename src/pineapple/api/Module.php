@@ -106,16 +106,6 @@ abstract class Module
         return \helper\getMacFromInterface($interface);
     }
 
-    protected function udsSend($path, $message)
-    {
-        return \helper\udsSend($path, $message);
-    }
-
-    protected function dgramUdsSend($path, $message)
-    {
-        return \helper\dgramUdsSend($path, $message);
-    }
-
     protected function installDependency($dependencyName, $installToSD = false)
     {
         if ($installToSD && !$this->isSDAvailable()) {
