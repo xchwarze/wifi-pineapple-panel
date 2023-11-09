@@ -20,7 +20,6 @@ The following functionalities are modified looking for a better user experience
  - Expose AngularJS Pineapple API in JS window
  - Add timeout and prevent duplicated request in API service
  - Refactor all indexedDB code
- - Project minification (Optional: use packer tools)
 
 ## Dashboard
  - Change update time from 5000 to 10000 (decrease RPM from 12 to 6)
@@ -67,13 +66,13 @@ The following functionalities are modified looking for a better user experience
 
 # Notes
 
- 1. For edit notification timer you can use this
+1. For edit notification timer you can use this
  ```bash
  # sed -i 's/OLD-VALUE/NEW-VALUE/' FILE
  sed -i 's/30000/60000/' src/pineapple/js/controllers.js
 ```
 
- 2. To open the menu on hover uncomment this in src/pineapple/main.css
+2. To open the menu on hover uncomment this in src/pineapple/main.css
  ```css
 .sidebar:hover {
 	margin-left: 0;
@@ -101,3 +100,4 @@ curl_close($ch);
 header('Content-Type: application/json');
 echo $response;
 ```
+ 
