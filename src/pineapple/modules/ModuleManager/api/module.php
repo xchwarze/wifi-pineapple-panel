@@ -80,7 +80,6 @@ class ModuleManager extends SystemModule
                 $module['version'] = $moduleData->version;
                 $module['description'] = $moduleData->description;
                 $module['size'] = exec("du -sh /pineapple/modules/$moduleDirectory/ | awk '{print $1;}'");
-                $module['checksum'] = $moduleData->checksum;
                 if (isset($moduleData->system)) {
                     $module['type'] = "System";
                 } elseif (isset($moduleData->cliOnly)) {
