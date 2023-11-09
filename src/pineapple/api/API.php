@@ -26,7 +26,7 @@ class API
             session_start();
         }
         if (!isset($_SESSION['XSRF-TOKEN'])) {
-            $_SESSION['XSRF-TOKEN'] = sha1(session_id() . openssl_random_pseudo_bytes(16));
+            $_SESSION['XSRF-TOKEN'] = sha1(session_id() . random_bytes(16));
         }
         if (!isset($_COOKIE['XSRF-TOKEN']) || $_COOKIE['XSRF-TOKEN'] !== $_SESSION['XSRF-TOKEN']) {
             setcookie('XSRF-TOKEN', $_SESSION['XSRF-TOKEN'], 0, '/', '', false, false);

@@ -273,7 +273,7 @@ class Advanced extends SystemModule
     private function addApiToken()
     {
         if (isset($this->request->name)) {
-            $token = hash('sha512', openssl_random_pseudo_bytes(32));
+            $token = hash('sha512', random_bytes(32));
             $name = $this->request->name;
             $this->dbConnection->exec("INSERT INTO api_tokens(token, name) VALUES('%s','%s');", $token, $name);
             $this->response = ["success" => true, "token" => $token, "name" => $name];
