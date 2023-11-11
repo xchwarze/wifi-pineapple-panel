@@ -144,5 +144,5 @@ function getBoard()
 function fileGetContentsSSL($url)
 {
     $url = escapeshellarg($url);
-    return exec("uclient-fetch -q -O - {$url}");
+    return exec("uclient-fetch -q -T 10 -O - {$url}");
 }

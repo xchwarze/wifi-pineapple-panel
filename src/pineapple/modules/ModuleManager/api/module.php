@@ -106,7 +106,7 @@ class ModuleManager extends SystemModule
         }
 
         $module = "{$this->request->moduleName}.tar.gz";
-        $this->execBackground("uclient-fetch -q -O {$dest}{$module} '" . self::REMOTE_URL . "/modules/build/{$module}' && touch /tmp/moduleDownloaded");
+        $this->execBackground("uclient-fetch -q -T 10 -O {$dest}{$module} '" . self::REMOTE_URL . "/modules/build/{$module}' && touch /tmp/moduleDownloaded");
         $this->response = array('success' => true);
     }
 
