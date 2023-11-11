@@ -20,6 +20,8 @@ The following functionalities are modified looking for a better user experience
  - Expose AngularJS Pineapple API in JS window
  - Add timeout and prevent duplicated request in API service
  - Refactor all indexedDB code
+ - Removed use of php7-mod-sockets and php7-mod-openssl (size -200K)
+ - Implemented use of uclient-fetch as a replacement for wget and file_get_contents(https)
 
 ## Dashboard
  - Change update time from 5000 to 10000 (decrease RPM from 12 to 6)
