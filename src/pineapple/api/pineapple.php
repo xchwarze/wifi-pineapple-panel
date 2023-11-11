@@ -140,3 +140,9 @@ function getBoard()
 
     return false;
 }
+
+function fileGetContentsSSL($url)
+{
+    $url = escapeshellarg($url);
+    return exec("uclient-fetch -q -O - {$url}");
+}

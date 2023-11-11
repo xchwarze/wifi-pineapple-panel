@@ -47,7 +47,7 @@ class ModuleManager extends SystemModule
 
     private function getAvailableModules()
     {
-        $moduleData = @file_get_contents(self::REMOTE_URL . "/modules/build/modules.json");
+        $moduleData = @$this->fileGetContentsSSL(self::REMOTE_URL . "/modules/build/modules.json");
         if ($moduleData !== false) {
             $moduleData = json_decode($moduleData);
             if (json_last_error() === JSON_ERROR_NONE) {

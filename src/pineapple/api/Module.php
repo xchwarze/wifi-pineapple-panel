@@ -126,4 +126,9 @@ abstract class Module
     {
         return \helper\checkDependency($dependencyName);
     }
+
+    protected function fileGetContentsSSL($url)
+    {
+        return \helper\fileGetContentsSSL($url);
+    }
 }

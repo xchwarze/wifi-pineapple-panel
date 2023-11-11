@@ -149,7 +149,7 @@ class Advanced extends SystemModule
 
     private function checkForUpgrade()
     {
-        $upgradeData = @file_get_contents(self::REMOTE_URL . "/json/upgrades.json");
+        $upgradeData = @$this->fileGetContentsSSL(self::REMOTE_URL . "/json/upgrades.json");
         if ($upgradeData !== false) {
             $upgradeData = json_decode($upgradeData, true);
             if (json_last_error() === JSON_ERROR_NONE) {
