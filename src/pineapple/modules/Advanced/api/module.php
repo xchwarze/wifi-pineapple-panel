@@ -183,7 +183,7 @@ class Advanced extends SystemModule
         @unlink(self::UP_PATH);
         @unlink(self::UP_FLAG);
         $url = escapeshellarg($this->request->upgradeUrl);
-        $this->execBackground("wget {$url} -O " . self::UP_PATH . " && touch " . self::UP_FLAG);
+        $this->execBackground("uclient-fetch -q -O " . self::UP_PATH . " {$url} && touch " . self::UP_FLAG);
         $this->response = ["success" => true];
     }
 
