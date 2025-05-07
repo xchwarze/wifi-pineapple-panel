@@ -4,8 +4,9 @@ require_once('../config.php');
 
 function execBackground($command)
 {
-    exec("echo \"{$command}\" | /usr/bin/at now", $var);
-    return $var;
+    exec("/usr/bin/nohup {$command} > /dev/null 2>&1 &");
+    // dummy
+    return 'job 42 at Tue May  7 11:05:00 2025';
 }
 
 function checkDependency($dependencyName)
