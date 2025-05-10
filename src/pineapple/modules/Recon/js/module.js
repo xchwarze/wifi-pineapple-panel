@@ -16,10 +16,10 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
             - https://stackoverflow.com/questions/38078884/two-way-binding-on-primitive-variables-in-angularjs-directive
      */
     $scope.scanSettings = {
-        scanDuration: $cookies.get('scanDuration') !== undefined ? $cookies.get('scanDuration') : '0',
-        live: $cookies.get('liveScan') !== undefined ? $cookies.get('liveScan') === 'true' : true
+        scanDuration: $cookies.get('scanDuration') !== undefined ? $cookies.get('scanDuration') : '60',
+        live: $cookies.get('liveScan') !== undefined ? $cookies.get('liveScan') === 'true' : false
     };
-    $scope.scanType = '0';
+    $scope.scanType = '2';
     $scope.updateInterval = 1500;
     $scope.percentageInterval = 300;
     $scope.percent = 0;
@@ -77,6 +77,18 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
                     $scope.percent += percentage;
                 }
             }, $scope.percentageInterval);
+
+            $scope.updatePercentageIntervalUpdater = $interval(function () {
+                if (($scope.percent) < 100 && $scope.running) {
+                    $api.request({
+                        module: 'Recon',
+                        action: 'loadResults',
+                        scanID: $scope.scanID
+                    }, function(response) {
+                        parseScanResults(response);
+                    });
+                }
+            }, 7000);
         }
     }
 
@@ -203,6 +215,9 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         if ($scope.updatePercentageInterval) {
             $interval.cancel($scope.updatePercentageInterval);
         }
+        if ($scope.updatePercentageIntervalUpdater) {
+            $interval.cancel($scope.updatePercentageIntervalUpdater);
+        }
         if ($scope.noteRefreshInterval) {
             $interval.cancel($scope.noteRefreshInterval);
         }
@@ -211,6 +226,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         }
         $scope.checkScanInterval = null;
         $scope.updatePercentageInterval = null;
+        $scope.updatePercentageIntervalUpdater = null;
         $scope.noteRefreshInterval = null;
         $scope.wsTimeout = null;
     };

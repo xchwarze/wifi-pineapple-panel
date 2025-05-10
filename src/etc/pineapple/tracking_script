@@ -1,0 +1,15 @@
+#!/bin/bash
+
+export MAC=$TRACKING_MAC
+export TYPE=$TRACKING_ACTION
+export SSID=$TRACKING_SSID
+
+[[ "$(uci get reporting.@settings[0].tracking)" == "1" ]] && {
+	[[ "$TYPE" == "0" ]] && {
+	    echo "$(date): Probe request from $MAC for SSID '$SSID'" >> /tmp/tracking.report
+	} || {
+	    echo "$(date): Association from $MAC to SSID '$SSID'" >> /tmp/tracking.report
+	}
+}
+
+/etc/pineapple/tracking_script_user
