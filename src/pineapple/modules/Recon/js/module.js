@@ -136,11 +136,11 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
     };
 
     $scope.startScan = function() {
-        $scope.preparingScan = true;
-        $scope.percent = 0;
         if ($scope.running) {
             return;
         }
+        $scope.preparingScan = true;
+        $scope.percent = 0;
         if ($scope.scanSettings.scanDuration === "0") {
             $scope.scanSettings.live = true;
         }
@@ -340,6 +340,11 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
     };
 
     $scope.displayScan = function() {
+        if (!$scope.selectedScan || !$scope.selectedScan.scan_id) {
+            $scope.loadedScan = null;
+            return;
+        }
+
         $scope.getNoteKeys();
         $scope.loadingScan = true;
         $api.request({
@@ -379,34 +384,58 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         if ($scope.ws !== undefined && $scope.ws.readyState !== WebSocket.CLOSED) {
             return;
         }
-        $scope.ws = new WebSocket("ws://" + window.location.hostname + ":1337/?authtoken=" + $scope.wsAuthToken);
-        $scope.ws.onerror = (function() {
-            $scope.wsTimeout = $timeout($scope.startWS, 1000);
-        });
-        $scope.ws.onopen = (function() {
-            $scope.ws.onerror = (function(){});
-            $scope.running = true;
 
+        var pendingWSData = null;
+        var wsScheduled = false;
+        $scope.ws = new WebSocket("ws://" + window.location.hostname + ":1337/?authtoken=" + $scope.wsAuthToken);
+
+        $scope.ws.onerror = (function() {
+            $scope.$evalAsync(function () {
+                $scope.wsTimeout = $timeout($scope.startWS, 1000);
+            });
         });
+
+        $scope.ws.onopen = (function() {
+            $scope.$evalAsync(function () {
+                $scope.ws.onerror = (function(){});
+                $scope.running = true;
+            });
+        });
+
         $scope.ws.onclose = (function() {
-            $scope.listening = false;
-            $scope.closeWS();
+            $scope.$evalAsync(function () {
+                $scope.listening = false;
+                $scope.closeWS();
+            });
         });
 
         $scope.ws.onmessage = (function(message) {
-            $scope.listening = true;
-            if ($scope.paused) {
+            pendingWSData = message.data;
+            if (wsScheduled) {
                 return;
             }
-            var data = JSON.parse(message.data);
-            if (data.scan_complete === true) {
-                $scope.checkScan();
-                return;
-            }
-            $scope.accessPoints = data.ap_list;
-            $scope.unassociatedClients = data.unassociated_clients;
-            $scope.outOfRangeClients = data.out_of_range_clients;
-            annotateMacs();
+            wsScheduled = true;
+
+            $scope.$evalAsync(function () {
+                wsScheduled = false;
+                $scope.listening = true;
+                if ($scope.paused || !pendingWSData) {
+                    return;
+                }
+
+                var data = JSON.parse(pendingWSData);
+                pendingWSData = null;
+
+                if (data.scan_complete === true) {
+                    $scope.checkScan();
+                    return;
+                }
+                $scope.accessPoints = data.ap_list;
+                $scope.unassociatedClients = data.unassociated_clients;
+                $scope.outOfRangeClients = data.out_of_range_clients;
+                $scope.outOfRangeClientsCount = Object.keys(data.out_of_range_clients).length;
+                annotateMacs();
+            });
         });
     });
 

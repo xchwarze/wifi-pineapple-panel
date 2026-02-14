@@ -15,6 +15,7 @@
     <ul>
         <li>Add results counter in titles with badges</li>
         <li>Fix column alignment</li>
+        <li>Fix result lag</li>
     </ul>
 
     <li>PineAP</li>
