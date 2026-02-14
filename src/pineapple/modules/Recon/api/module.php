@@ -32,6 +32,7 @@ abstract class EncryptionFields
 class Recon extends SystemModule
 {
     private $dbConnection = null;
+    const CLI = 'python';
     const PATH_WS_SCRIPT = '/pineapple/modules/Recon/api/reconpp.py';
     const CLI_PINEAP = 'pineap /tmp/pineap.conf';
 
@@ -143,14 +144,14 @@ class Recon extends SystemModule
 
     private function startReconPP()
     {
-        if ($this->checkRunningFull("python " . Recon::PATH_WS_SCRIPT)) {
+        if ($this->checkRunningFull(Recon::CLI . " " . Recon::PATH_WS_SCRIPT)) {
            $this->response = ["success" => true];
            return;
         }
 
         $dbPath = $this->uciGet("pineap.@config[0].recon_db_path");
         $scanID = $this->getCurrentScanID();
-        $this->execBackground("python " . Recon::PATH_WS_SCRIPT . " {$dbPath} {$scanID}");
+        $this->execBackground(Recon::CLI . " " . Recon::PATH_WS_SCRIPT . " {$dbPath} {$scanID}");
 
         $this->response = ["success" => true];
     }
@@ -167,7 +168,7 @@ class Recon extends SystemModule
             if (!is_numeric($this->getCurrentScanID())) {
                 exec(Recon::CLI_PINEAP . " run_scan {$scanDuration} {$scanType}");
                 $scanID = $this->getCurrentScanID();
-                $this->execBackground("python " . Recon::PATH_WS_SCRIPT . " {$dbLocation} {$scanID}");
+                $this->execBackground(Recon::CLI . " " . Recon::PATH_WS_SCRIPT . " {$dbLocation} {$scanID}");
             }
             $this->startReconPP();
             $this->response = ["success" => true, "scanID" => $scanID];
@@ -202,7 +203,7 @@ class Recon extends SystemModule
 
     private function wsRunning()
     {
-        return $this->checkRunningFull("python " . Recon::PATH_WS_SCRIPT);
+        return $this->checkRunningFull(Recon::CLI . " " . Recon::PATH_WS_SCRIPT);
     }
 
     private function checkScanStatus()
