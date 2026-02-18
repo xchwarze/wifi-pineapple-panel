@@ -127,6 +127,7 @@ registerController('ReconController', ['$api', '$scope', '$rootScope', '$interva
         if ($scope.running) {
             return;
         }
+        $scope.cancelIntervals();
         $scope.preparingScan = true;
         $scope.percent = 0;
         if ($scope.scanSettings.scanDuration === "0") {
