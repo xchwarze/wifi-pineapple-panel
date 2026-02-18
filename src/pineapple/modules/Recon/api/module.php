@@ -32,8 +32,8 @@ abstract class EncryptionFields
 class Recon extends SystemModule
 {
     private $dbConnection = null;
-    const CLI = 'python';
-    const PATH_WS_SCRIPT = '/pineapple/modules/Recon/api/reconpp.py';
+    const CLI = 'php-cli';
+    const PATH_WS_SCRIPT = '/pineapple/modules/Recon/api/recon-websocket.php';
     const CLI_PINEAP = 'pineap /tmp/pineap.conf';
 
     public function __construct($request)
